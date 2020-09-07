@@ -46,7 +46,7 @@ docker build -t $SPRING_IMG .
 
 # Create docker container and run
 # sudo docker run --name $BACK_DOCKER --network="host" -v tvility:/tvility -d $BACK_IMG
-docker run --name $SPRING_DOCKER --network="host" -d $SPRING_IMG
+# docker run --name $SPRING_DOCKER --network="host" -d $SPRING_IMG
 
 ##################################################
 ##  Step 4 : Build and Deploy frontend project  ##
@@ -59,7 +59,7 @@ pwd
 docker build -t $FRONT_IMG .
 
 # Create docker container and run
-docker run --name $FRONT_DOCKER -p 8901:8901 -d $FRONT_IMG
+# docker run --name $FRONT_DOCKER -p 8901:8901 -d $FRONT_IMG
 
 ################################################
 ##  Step 5 : Build and Deploy Django project  ##
