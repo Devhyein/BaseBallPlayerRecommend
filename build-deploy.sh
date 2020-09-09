@@ -38,6 +38,8 @@ docker rm -f $FRONT_DOCKER || true
 cd springback
 pwd
 
+chmod +x ./mvnw
+
 # Build spring project
 ./mvnw package
 
