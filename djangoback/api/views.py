@@ -2,6 +2,14 @@
 from api import models, serializers
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
+from bs4 import BeautifulSoup
+
+def getPlayersRecords(request):
+    url = 'http://www.statiz.co.kr/stat.php?mid=stat&re=0&ys=1982&ye=2020&se=0&te=&tm=&ty=0&qu=auto&po=0&as=&ae=&hi=&un=&pl=&da=1&o1=WAR_ALL_ADJ&o2=TPA&de=1&lr=0&tr=&cv=&ml=1&sn=30&pa=0&si=&cn='
+    webpage = urlopen(url)
+    source = BeautifulSoup(webpage, 'html.parser', from_encoding='utf-8')
+    table = 
+
 
 # 페이지네이션을 위한 클래스 생성
 # PageNumberPagination 을 상속받음
