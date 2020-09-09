@@ -93,3 +93,166 @@
 * RAA with ADJ: 포지션 가중치를 반영한 평균대비 수비득점기여.
 * WAA w/o ADJ: 평균대비 수비 승리기여도.
 * WAA with ADJ: 포지션 가중치를 반영한 평균대비 수비 승리기여도.
+
+## 인프라 세팅
+### 서버 접속: Alias 이용
+- Git Bash를 실행한다
+- cd ~ 입력하여 홈 디렉토리로 이동
+- vi .bashrc 입력하여 .bashrc 파일을 생성 & 편집 (홈 디렉토리에 .bashrc를 생성해야 알아듣는다. 사용자 설정 파일임.)
+```
+alias goaws='cd [pem파일 경로] && ssh -i J3A110T.pem ubuntu@j3a110.p.ssafy.io'
+```
+- Git Bash를 재실행한 뒤, 'goaws' 명령어 입력을 통해 서버로 접속한다
+
+### 패키지 설치 관리자 (apt) 업데이트
+```
+sudo apt update
+sudo apt upgrade
+```
+
+### Java
+* OpenJDK 14 설치
+```
+curl -O https://download.java.net/java/GA/jdk14/076bab302c7b4508975440c56f6cc26a/36/GPL/openjdk-14_linux-x64_bin.tar.gz
+tar xvf openjdk-14_linux-x64_bin.tar.gz
+sudo mv jdk-14 /opt/
+
+sudo tee /etc/profile.d/jdk14.sh
+
+export JAVA_HOME=/opt/jdk-14
+export PATH=\$PATH:\$JAVA_HOME/bin
+
+source /etc/profile.d/jdk14.sh
+
+$ echo $JAVA_HOME
+$ java --version
+```
+
+* OpenJDK 8 설치: 젠킨스 때문에 8 버전도 필요함
+```
+sudo apt-get install openjdk-8-jdk
+java -version
+```
+
+* update-alternatives 설정??
+```
+sudo update-alternatives --install /usr/bin/java java /opt/jdk-14/bin/java 1
+sudo update-alternatives --config java
+```
+
+### Jenkins
+* 설치
+```
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update
+sudo apt-get install jenkins
+```
+
+* 자바 8 연동
+```
+cd /etc/init.d
+sudo vi jenkins
+
+파일 내용에서 PATH=... 부분 찾아서 java 8 경로 집어넣기
+
+젠킨스 실행
+
+sudo usermod -a -G docker jenkins (젠킨스가 도커 sudo 없이 실행가능하게 해주기)
+
+젠킨스 서버 (8080 포트) 접속 후
+sudo cat /var/lib/...
+에서 비밀번호 알아내서 입력.
+```
+
+* 젠킨스 설정 & 깃랩 연동
+    * Freestyle Project 생성   
+    * Manage Jenkins -> gitlab 플러그인 설치   
+    * Manage Jenkins -> Configure Systems -> Gitlab 에 빈칸 채워넣어 설정 (gitlab host URL: lab.ssafy.com, API 토큰 필요)
+    * Config -> 소스코드 매니지먼트 -> gitlab 주소 입력
+    * Credentials 설정: username with password
+    * Build when a change is pushed to GitLab 체크 -> push events 체크
+    * 상세설정에서 Allowed branches -> master 브랜치로 설정
+    * Secret Token 생성 -> gitlab의 Setting - Integration 탭에서 젠킨스 URL과 시크릿 토큰 넣어주고 Add Webhook
+
+### Nginx
+```
+sudo apt-get install nginx
+cd /etc/nginx
+nginx.conf 파일을 확인해보면 세부 설정파일 경로가 conf.d로 설정되어 있는걸 확인할 수 있다
+cd /etc/nginx/conf.d
+
+<spring.conf>
+server {
+       listen 80;
+       listen [::]:80;
+       server_name example.com;
+       location /spring {
+           rewrite ^/spring^/ /$1 break; -- /spring/ 을 그대로 붙여서 넘겨주겠다.
+           proxy_pass http://localhost:8902; -- 넘겨줄 URL
+       }
+}
+<front.conf>
+server {
+       listen 80;
+       listen [::]:80;
+       server_name example.com;
+       location / {
+           proxy_pass http://localhost:8901/;
+       }
+}
+
+
+sudo nginx -t (문법 검사)
+sudo service nginx reload
+
+```
+
+### Docker
+* 의존성 패키지 설치
+```
+sudo apt-get install curl apt-transport-https ca-certificates software-properties-common
+```
+
+* 리포지토리 접근을 위한 인증키 추가
+```
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+* 리포지토리 추가
+```
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt upgrade
+```
+
+* 도커 설치 및 체크
+```
+apt-cache policy docker-ce
+sudo apt install docker-ce
+sudo service docker status
+sudo service docker start
+```
+
+* 유저가 도커를 sudo 없이 사용하는 권한 부여하고 테스트
+```
+sudo usermod -aG docker $USER
+docker info
+docker ps
+```
+
+### MariaDB
+* 도커 위에서 돌리기 & 설정
+```
+docker run --name maria-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=legend! -d mariadb
+docker exec -it maria-db mysql -u root -p
+
+create database legend;
+create user 'legend'@'%' identified by 'legend!';
+grant all privileges on legend.* to 'legend'@'%';
+```
+
+### 기타 이슈
+- ./mvnw 실행 권한 없음: build-deploy.sh에 권한부여 명령어 추가
+- 서버에서, 로컬에서 적용되는 코드 각각 다르게 어떻게?
