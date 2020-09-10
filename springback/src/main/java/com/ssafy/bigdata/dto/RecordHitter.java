@@ -1,4 +1,4 @@
-package com.ssafy.bigdata.model.dto;
+package com.ssafy.bigdata.dto;
 
 public class RecordHitter{
     private int hitter_id;

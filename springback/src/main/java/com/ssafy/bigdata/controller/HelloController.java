@@ -3,7 +3,7 @@ package com.ssafy.bigdata.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ssafy.bigdata.model.RestResponse;
+import com.ssafy.bigdata.dto.RestResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
