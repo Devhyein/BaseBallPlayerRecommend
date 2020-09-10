@@ -256,3 +256,20 @@ grant all privileges on legend.* to 'legend'@'%';
 ### 기타 이슈
 - ./mvnw 실행 권한 없음: build-deploy.sh에 권한부여 명령어 추가
 - 서버에서, 로컬에서 적용되는 코드 각각 다르게 어떻게?
+
+## Commit Convention
+* git flow policy
+- develop 브랜치 하위에 front, spring, django 세 개의 브랜치   
+- 각자 로컬에서 작업할 땐 저 셋 중 하나 아래에서 하위 브랜치로 feature/(작업기능명) 따서 작업. (작업기능명) 의 이름이 길어지면 언더바 사용   
+- front, spring, django 까지는 각자 merge 하고, develop으로 merge 할 때는 merge request   
+
+* commit message
+ex) [Feat] Add social login
+- 커밋 타입: Feat, Fix, Refactor, Docs, Release
+- 커밋 제목: 영어로 간략하게 작성
+- 내용 (optional): 그 아랫줄부터는 자유롭게 내용 작성
+
+* merge request 
+ex) Feature/social_login to Front
+- 제목: 어떤 브랜치에서 어떤 브랜치로 머지하는지
+- 내용 (optional): 커밋했던 것들 내용 대충 요약 (영어로...)
