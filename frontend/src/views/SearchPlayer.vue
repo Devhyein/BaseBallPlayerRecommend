@@ -34,26 +34,8 @@
 
       <!--Charts-->
       <div class="row">
-        <!--Line Chart-->
-        <div class="col-xl-4 mb-5 mb-xl-0">
-          <card type="default" header-classes="bg-transparent">
-            <div slot="header" class="row align-items-center">
-              <div class="col">
-                <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-                <h5 class="h3 text-white mb-0">Sales value</h5>
-              </div>
-            </div>
-            <line-chart
-              :height="200"
-              ref="bigChart"
-              :chart-data="bigLineChart.chartData"
-              :extra-options="bigLineChart.extraOptions"
-            ></line-chart>
-          </card>
-        </div>
-
         <!-- 5Tool Chart -->
-        <div class="col-xl-4">
+        <div class="col-xl-4 mb-5 mb-xl-0">
           <player-radar-chart :five_tool="playerStats.five_tool"></player-radar-chart>
         </div>
 
@@ -78,32 +60,24 @@
 <script>
 // Charts
 import * as chartConfigs from "@/components/Charts/config";
-import LineChart from "@/components/Charts/LineChart";
 
 import PlayerStatChart from "@/components/Player/PlayerStatChart";
 import PlayerRadarChart from "@/components/Player/PlayerRadarChart";
 
+// Tables
+import PlayerListTable from "./Tables/PlayerListTable";
+import PlayerStatTable from "./Tables/PlayerStatTable";
+
 export default {
   components: {
-    LineChart,
     PlayerStatChart,
     PlayerRadarChart,
+
+    PlayerListTable,
+    PlayerStatTable,
   },
   data() {
     return {
-      bigLineChart: {
-        allData: [
-          [0, 20, 10, 30, 15, 40, 20, 60, 60],
-          [0, 20, 5, 25, 10, 30, 15, 40, 40],
-        ],
-        activeIndex: 0,
-        chartData: {
-          datasets: [],
-          labels: [],
-        },
-        extraOptions: chartConfigs.blueChartOptions,
-      },
-
       ////////////////////////////////////////////////////////////////////////////
       playerList: [
         {
@@ -263,19 +237,6 @@ export default {
     },
   },
   methods: {
-    initBigChart(index) {
-      let chartData = {
-        datasets: [
-          {
-            label: "Performance",
-            data: this.bigLineChart.allData[index],
-          },
-        ],
-        labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-      };
-      this.bigLineChart.chartData = chartData;
-      this.bigLineChart.activeIndex = index;
-    },
     changeSearchType(t) {
       this.searchType = t;
     },
@@ -286,9 +247,7 @@ export default {
       alert(this.searchVal);
     },
   },
-  mounted() {
-    this.initBigChart(0);
-  },
+  mounted() {},
 };
 </script>
 <style></style>
