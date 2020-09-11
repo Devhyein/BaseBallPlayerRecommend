@@ -97,7 +97,10 @@ DATABASES = {
     'HOST': 'j3a110.p.ssafy.io',
     'PORT': '3306',
     'USER': 'legend',
-    'PASSWORD': 'legend!'
+    'PASSWORD': 'legend!',
+    'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True }
   }
 }
 

@@ -8,7 +8,15 @@ router = DefaultRouter(trailing_slash=False)
 
 # 'stores' url 로 요청시 StoreViewSet 에 설정된 내용대로 값을 반환해줌
 # http://~~~/api/stores => 중간에 api 는 proj 의 urls 의 내용 참고
-router.register(r"stores", views.StoreViewSet, basename="stores")
+
+# 두번째 인자로는 ViewSet이라는게 들어가야 한다. 알아보기
+# router.register(r"stores", views.StoreViewSet, basename="stores")
+# router.register(r"crawling", views.PlayerViewSet, basename="crawling")
 
 # 라우터에 등록한 url 패턴들을 urlpatterns 변수에 저장해놓기
-urlpatterns = router.urls
+#urlpatterns = router.urls
+
+urlpatterns = [
+    url(r'hitterdata', views.getHittersRecords),
+    url(r'pitcherdata', views.getPitchersRecords)
+]

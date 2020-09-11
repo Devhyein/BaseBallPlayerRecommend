@@ -13,7 +13,7 @@ driver = webdriver.Chrome('../chromedriver.exe')
 # pa, sn: pa번째 선수부터 sn명의 목록을 한 페이지에 띄운다.
 # ys, ye: year start ~ end
 # 이상하게 한번에 몇명을 긁는지에 따라 다 안 긁힐때가 있다. 왜?
-url = 'http://www.statiz.co.kr/stat.php?re=0&lr=0&sn=120&pa=0&ys=2010&ye=2020'
+url = 'http://www.statiz.co.kr/stat.php?re=0&lr=0&sn=30&pa=0&ys=2020&ye=2020'
 driver.implicitly_wait(20) # 로딩될때까지 대기를 줬는데도?
 driver.get(url)
 #webpage = urlopen(url)
