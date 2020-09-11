@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ssafy.bigdata.dto.StatForChart;
 
-import org.mapstruct.Mapper;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 @Mapper
