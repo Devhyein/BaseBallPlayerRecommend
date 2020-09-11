@@ -7,6 +7,7 @@ public class Player {
     private int player_num;
     private int player_age;
     private int player_position;
+    private String player_team;
 
     public int getPlayer_id() {
         return player_id;
@@ -56,10 +57,18 @@ public class Player {
         this.player_position = player_position;
     }
 
+    public String getPlayer_team() {
+        return player_team;
+    }
+
+    public void setPlayer_team(String player_team) {
+        this.player_team = player_team;
+    }
+
     @Override
     public String toString() {
         return "Player [player_age=" + player_age + ", player_id=" + player_id + ", player_name=" + player_name
-                + ", player_num=" + player_num + ", player_position=" + player_position + ", team_id=" + team_id + "]";
+                + ", player_num=" + player_num + ", player_position=" + player_position + ", team_id=" + player_team + "]";
     }
 
     public Player() {
