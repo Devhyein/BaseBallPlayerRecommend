@@ -2,12 +2,12 @@
   <card type="default" header-classes="bg-transparent">
     <div slot="header" class="row align-items-center">
       <div class="col">
-        <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
-        <h5 class="h3 mb-0">Total orders</h5>
+        <h6 class="text-uppercase text-muted ls-1 mb-1">Stat graph</h6>
+        <h5 class="h3 mb-0 text-secondary">5-Tools</h5>
       </div>
     </div>
 
-    <radar-chart :height="200" ref="radarChart" :chart-data="chartData"></radar-chart>
+    <radar-chart :height="200" ref="radarChart" :chart-data="chartData" :extra-options="extraOptions"></radar-chart>
   </card>
 </template>
 <script>
@@ -19,7 +19,20 @@ export default {
     RadarChart,
   },
   data() {
-    return {};
+    return {
+      extraOptions: {
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          },
+          responsive: true,
+          scale: {
+            ticks :{
+              display: false,
+            } 
+          }
+        },
+    };
   },
   props: {
     five_tool: Object,

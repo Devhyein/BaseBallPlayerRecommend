@@ -16,13 +16,6 @@ export default {
       ctx: null
     };
   },
-  options: {
-    scale: {
-      ticks :{
-        showLabelBackdrop: false
-      } 
-    }
- },
   mounted() {
     this.$watch(
       'chartData',
