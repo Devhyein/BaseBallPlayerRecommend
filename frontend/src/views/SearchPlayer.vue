@@ -59,8 +59,6 @@
 
 <script>
 // Charts
-import * as chartConfigs from "@/components/Charts/config";
-
 import PlayerStatChart from "@/components/Player/PlayerStatChart";
 import PlayerRadarChart from "@/components/Player/PlayerRadarChart";
 
