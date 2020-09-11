@@ -7,12 +7,12 @@
       </div>
     </div>
 
-    <bar-chart :height="350" ref="barChart" :chart-data="redBarChart.chartData"></bar-chart>
+    <bar-chart :height="200" ref="barChart" :chart-data="chartData"></bar-chart>
   </card>
 </template>
 <script>
   // Charts
-  import * as chartConfigs from '@/components/Charts/config';
+  // import * as chartConfigs from '@/components/Charts/config';
   import BarChart from '@/components/Charts/BarChart';
 
   export default {
@@ -21,46 +21,28 @@
     },
     data() {
       return {
-        bigLineChart: {
-          allData: [
-            [0, 20, 10, 30, 15, 40, 20, 60, 60],
-            [0, 20, 5, 25, 10, 30, 15, 40, 40]
-          ],
-          activeIndex: 0,
-          chartData: {
-            datasets: [],
-            labels: [],
-          },
-          extraOptions: chartConfigs.blueChartOptions,
-        },
-        redBarChart: {
-          chartData: {
-            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-              label: 'Sales',
-              data: [25, 20, 30, 22, 17, 29]
-            }]
-          }
-        }
       };
     },
-    methods: {
-      initBigChart(index) {
-        let chartData = {
-          datasets: [
-            {
-              label: 'Performance',
-              data: this.bigLineChart.allData[index]
-            }
-          ],
-          labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    props: {
+      cols: Array
+      , vals: Array
+
+      , originVals: Array
+    },
+    computed: {
+      chartData() {
+        let cData = {
+          labels: this.cols,
+          datasets: [{
+            label: 'Rate',
+            data: this.vals
+          }]
         };
-        this.bigLineChart.chartData = chartData;
-        this.bigLineChart.activeIndex = index;
+
+        return cData;
       }
     },
-    mounted() {
-      this.initBigChart(0);
+    methods: {
     }
   };
 </script>
