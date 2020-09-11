@@ -36,13 +36,16 @@ public class PlayerController {
         final RestResponse response = new RestResponse();
         
         List<Player> res = new ArrayList<Player>();
-
-        res = playerService.searchPlayerList(search);
-
-        response.status = true;
-        response.msg = "success";
-        response.data = res;
-
+        try {
+            res = playerService.searchPlayerList(search);
+            response.status = true;
+            response.msg = "success";
+            response.data = res;
+        } catch (Exception e){
+            response.status = false;
+            response.msg = "search player list error";
+            response.data = null;
+        }
         return response;
     }
 }
