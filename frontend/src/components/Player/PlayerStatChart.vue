@@ -7,7 +7,12 @@
       </div>
     </div>
 
-    <bar-chart :height="200" ref="barChart" :chart-data="chartData"></bar-chart>
+    <bar-chart
+      :height="200"
+      ref="barChart"
+      :chart-data="chartData"
+      :extra-options="extraOptions"
+    />
   </card>
 </template>
 <script>
@@ -21,12 +26,27 @@
     },
     data() {
       return {
+        extraOptions: {
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          },
+          responsive: true,
+          tooltips: {
+            callbacks: {
+              label: (tooltipItem, data) => {
+                let idx = tooltipItem['index'];
+                return 'Value: ' + this.originVals[idx] 
+                     + ' Rate: ' + data['datasets'][0]['data'][idx];
+              }
+            }
+          }
+        },
       };
     },
     props: {
       cols: Array
       , vals: Array
-
       , originVals: Array
     },
     computed: {
