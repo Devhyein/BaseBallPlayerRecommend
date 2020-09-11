@@ -3,6 +3,7 @@ package com.ssafy.bigdata.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.StatForChart;
 import com.ssafy.bigdata.service.PlayerService;
@@ -34,7 +35,7 @@ public class PlayerController {
     public Object search_player(@RequestParam final String search) {
         final RestResponse response = new RestResponse();
         
-        List<StatForChart> res = new ArrayList<StatForChart>();
+        List<Player> res = new ArrayList<Player>();
 
         res = playerService.searchPlayerList(search);
 
