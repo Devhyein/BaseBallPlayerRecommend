@@ -29,7 +29,7 @@ class Player(models.Model):
     team = models.ForeignKey('Team', models.DO_NOTHING)
     player_name = models.CharField(max_length=50, blank=True, null=True)
     player_num = models.IntegerField(blank=True, null=True)
-    player_age = models.IntegerField(blank=True, null=True)
+    player_birth = models.CharField(max_length=20, blank=True, null=True)
     player_position = models.ForeignKey('Position', models.DO_NOTHING, db_column='player_position')
 
     class Meta:
