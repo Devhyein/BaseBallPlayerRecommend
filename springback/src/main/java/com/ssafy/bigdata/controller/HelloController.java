@@ -32,4 +32,15 @@ public class HelloController {
 
         return response;
     }
+
+    @ApiOperation(value = "예외 테스트")
+    @GetMapping("/exception")
+    public Object exceptionTest() throws Exception {
+        final RestResponse response = new RestResponse();
+
+        response.status = true;
+        response.msg = "테스트에요!!";
+
+        throw new Exception("Exception Test");
+    }
 }
