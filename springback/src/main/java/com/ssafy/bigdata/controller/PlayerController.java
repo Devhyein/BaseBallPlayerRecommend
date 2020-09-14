@@ -6,6 +6,8 @@ import java.util.List;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.StatForChart;
+import com.ssafy.bigdata.dto.ToolsHitter;
+import com.ssafy.bigdata.dto.ToolsPitcher;
 import com.ssafy.bigdata.service.PlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,33 @@ public class PlayerController {
             response.msg = "search player list error";
             response.data = null;
         }
+        return response;
+    }
+
+    @ApiOperation(value = "선수 스택")
+    @GetMapping("/info/player")
+    // 선수 이름 검색 시 해당 검색어 들어가는 선수 반환
+    public Object playerStack(@RequestParam int num) {
+        final RestResponse response = new RestResponse();
+        
+        // 선수 번호를 가지고 선수의 포지션 알아옴.
+        String position = playerService.findPlayerPosition(num);
+        List<Object> res = new ArrayList<Object>();
+        // 투수면 ToolsPitcher, 타자면 ToolsHitter 선언
+        System.out.println("POSITION : "+position);
+       if(position.equals("투수")){
+           List<Object> pitcher = new ArrayList<Object>();
+           pitcher = playerService.getPlayerStacksPitcher(num);
+           res.add(pitcher);
+       } else {
+            List<Object> hitter = new ArrayList<Object>();
+            hitter = playerService.getPlayerStacksHitter(num);
+            res.add(hitter);
+       }
+        response.status = true;
+        response.msg = "success";
+        response.data = res;
+
         return response;
     }
 }
