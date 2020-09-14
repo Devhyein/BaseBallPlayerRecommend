@@ -26,7 +26,7 @@
       <!--Table-->
       <div class="row mt-5">
         <div class="col-xl-12 mb-5">
-          <player-list-table :tableData="playerList" :clickRow="playerStat"/>
+          <player-list-table :tableData="playerList" @clickRow="playerStat"/>
         </div>
       </div>
       <!--End table-->

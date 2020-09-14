@@ -12,7 +12,7 @@ const getPlayerList = (data,callback,errorCallback) => {
             // RestAPI 에서 null 이 아닌 응답이 왔을 때
             else {
                 // res.data 가 Rest 서버에서 반환한 객체
-                responseData = res.data
+                let responseData = res.data
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
