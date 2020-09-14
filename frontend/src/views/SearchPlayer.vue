@@ -17,8 +17,7 @@
           class="input-group-alternative col-lg-10"
           alternative
           addon-right-icon="fas fa-search"
-          :value="searchVal"
-          @input="setSearchVal"
+          v-model="searchVal"
           @clickIcon="search"
         ></base-input>
       </div>
@@ -27,7 +26,7 @@
       <!--Table-->
       <div class="row mt-5">
         <div class="col-xl-12 mb-5">
-          <player-list-table :tableData="playerList" />
+          <player-list-table :tableData="playerList" :clickRow="playerStat"/>
         </div>
       </div>
       <!--End table-->
@@ -66,6 +65,9 @@ import PlayerRadarChart from "@/components/Player/PlayerRadarChart";
 import PlayerListTable from "./Tables/PlayerListTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
+// API
+import PlayerAPI from "@/api/PlayerAPI"
+
 export default {
   components: {
     PlayerStatChart,
@@ -77,120 +79,17 @@ export default {
   data() {
     return {
       ////////////////////////////////////////////////////////////////////////////
-      playerList: [
-        {
-          player_id: 1234,
-          player_name: "서민성",
-          player_team: "한화이글스",
-          player_num: 4,
-          player_age: 27,
-          position: "좌익수",
-        },
-        {
-          player_id: 2214,
-          player_name: "김민건",
-          player_team: "한화이글스",
-          player_num: 14,
-          player_age: 27,
-          position: "우익수",
-        },
-        {
-          player_id: 121,
-          player_name: "유지민",
-          player_team: "한화이글스",
-          player_num: 114,
-          player_age: 25,
-          position: "포수",
-        },
-        {
-          player_id: 41,
-          player_name: "전혜민",
-          player_team: "한화이글스",
-          player_num: 24,
-          player_age: 24,
-          position: "투수",
-        },
-        {
-          player_id: 23,
-          player_name: "윤수민",
-          player_team: "한화이글스",
-          player_num: 34,
-          player_age: 27,
-          position: "유격수",
-        },
-        {
-          player_id: 1,
-          player_name: "스프링",
-          player_team: "한화이글스",
-          player_num: 94,
-          player_age: 58,
-          position: "프레임웤",
-        },
-      ],
+      playerList: [],
       playerStats: {
         five_tool: {
-          power: 0.79,
-          speed: 0.58,
-          contact: 0.92,
-          defense: 0.3,
-          shoulder: 0.24,
+          power: 0,
+          speed: 0,
+          contact: 0,
+          defense: 0,
+          shoulder: 0,
         },
         // 투수 스탯이라고 가정
-        stats: [
-          { stat_name: "g", stat_value: 25, stat_mean: 25, stat_std: 0.5 },
-          { stat_name: "cg", stat_value: 5, stat_mean: 7, stat_std: 0.4 },
-          { stat_name: "sho", stat_value: 3, stat_mean: 1, stat_std: 0.9 },
-          { stat_name: "gs", stat_value: 25, stat_mean: 25, stat_std: 0.5 },
-          { stat_name: "w", stat_value: 16, stat_mean: 8, stat_std: 0.7 },
-          { stat_name: "l", stat_value: 4, stat_mean: 6, stat_std: 0.3 },
-          { stat_name: "sv", stat_value: 0, stat_mean: 1, stat_std: 0 },
-          { stat_name: "hld", stat_value: 0, stat_mean: 1, stat_std: 0 },
-          { stat_name: "ip", stat_value: 192.2, stat_mean: 200, stat_std: 0.4 },
-          { stat_name: "r", stat_value: 42, stat_mean: 60, stat_std: 0.35 },
-          { stat_name: "er", stat_value: 39, stat_mean: 65, stat_std: 0.2 },
-          { stat_name: "h", stat_value: 147, stat_mean: 200, stat_std: 0.3 },
-          { stat_name: "2b", stat_value: 0, stat_mean: 1, stat_std: 0 },
-          { stat_name: "3b", stat_value: 0, stat_mean: 1, stat_std: 0 },
-          {
-            stat_name: "homerun",
-            stat_value: 11,
-            stat_mean: 20,
-            stat_std: 0.33,
-          },
-          { stat_name: "bb", stat_value: 45, stat_mean: 50, stat_std: 0.4 },
-          { stat_name: "ibb", stat_value: 2, stat_mean: 5, stat_std: 0.2 },
-          { stat_name: "hbp", stat_value: 9, stat_mean: 20, stat_std: 0.1 },
-          { stat_name: "so", stat_value: 187, stat_mean: 80, stat_std: 0.8 },
-          { stat_name: "bk", stat_value: 1, stat_mean: 1, stat_std: 0.5 },
-          { stat_name: "wp", stat_value: 6, stat_mean: 5, stat_std: 0.55 },
-          {
-            stat_name: "era",
-            stat_value: 1.82,
-            stat_mean: 1.82,
-            stat_std: 0.5,
-          },
-          { stat_name: "fip", stat_value: 2.9, stat_mean: 2.8, stat_std: 0.52 },
-          {
-            stat_name: "whip",
-            stat_value: 1.01,
-            stat_mean: 0.6,
-            stat_std: 0.7,
-          },
-          {
-            stat_name: "era_plus",
-            stat_value: 253.6,
-            stat_mean: 255,
-            stat_std: 0.46,
-          },
-          {
-            stat_name: "fip_plus",
-            stat_value: 159.5,
-            stat_mean: 160,
-            stat_std: 0.49,
-          },
-          { stat_name: "war", stat_value: 9.2, stat_mean: 10, stat_std: 0.48 },
-          { stat_name: "wpa", stat_value: 0, stat_mean: 1, stat_std: 0 },
-        ],
+        stats: [],
       },
       ////////////////////////////////////////////////////////////////////////////
 
@@ -238,12 +137,20 @@ export default {
     changeSearchType(t) {
       this.searchType = t;
     },
-    setSearchVal(s) {
-      this.searchVal = s;
-    },
     search() {
-      alert(this.searchVal);
+      PlayerAPI.getPlayerList(
+        this.searchVal,
+        res => {
+          this.playerList = res;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     },
+    playerStat(id) {
+      alert(id);
+    }
   },
   mounted() {},
 };

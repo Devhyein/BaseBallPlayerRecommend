@@ -21,7 +21,7 @@
         </template>
 
         <template slot-scope="{row}">
-          <th scope="row">
+          <th scope="row" @click="clickRow(row.player_id)">
             {{row.player_name}}
           </th>
           <td>
@@ -98,6 +98,9 @@
         if(this.to > this.total) this.to = this.total;
 
         this.showData = this.tableData.slice(this.from, this.to);
+      },
+      clickRow(id) {
+        this.$emit("clickRow", id);
       }
     },
   }
