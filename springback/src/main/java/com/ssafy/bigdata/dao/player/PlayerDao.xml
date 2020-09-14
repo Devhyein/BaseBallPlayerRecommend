@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.bigdata.dao.player.PlayerDao">
+    <select id="searchPlayerList" resultType="Player" parameterType="string">
+        select * from player
+        where player_name like concat('%',#{player_name},'%')
+    </select>
+
+    <select id="findTeamName" resultType="string" parameterType="int">
+        select team_name from team
+        where team_id = #{team_id}
+    </select>
+</mapper>
+

@@ -1,4 +1,4 @@
-package com.ssafy.bigdata.model;
+package com.ssafy.bigdata.dto;
 
 public class RestResponse {
     public boolean status;
