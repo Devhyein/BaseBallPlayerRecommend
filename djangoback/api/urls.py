@@ -16,7 +16,10 @@ router = DefaultRouter(trailing_slash=False)
 # 라우터에 등록한 url 패턴들을 urlpatterns 변수에 저장해놓기
 #urlpatterns = router.urls
 
+# localhost:8000/api/pitcherdata -> views.py의 getPiterchersRecords() 메서드 호출
+
 urlpatterns = [
     url(r'hitterdata', views.getHittersRecords),
-    url(r'pitcherdata', views.getPitchersRecords)
+    url(r'pitcherdata', views.getPitchersRecords),
+    url(r'fielderdata', views.getFieldersRecords)
 ]
