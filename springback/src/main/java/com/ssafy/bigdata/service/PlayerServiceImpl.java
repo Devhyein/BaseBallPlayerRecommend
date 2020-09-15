@@ -69,36 +69,38 @@ public class PlayerServiceImpl implements PlayerService {
 
     // 투수의 5툴 계산하는 메소드
     /*
-    평균자책점 = ERA+ or FIP+ (높을수록 좋음)
-    체력 (이닝소화력) = 이닝 / 경기수 (높을수록 좋음)
-    제구력: SO/BB (높을수록 좋음)
-    안정성: 폭투, 보크 (낮을수록 좋음)
-    장타 억제력?: 홈런 (낮을수록 좋음)
-    */
+     * 평균자책점 = ERA+ or FIP+ (높을수록 좋음) 
+     * 체력 (이닝소화력) = 이닝 / 경기수 (높을수록 좋음) 
+     * 제구력: SO/BB (높을수록 좋음) 
+     * 안정성: 폭투, 보크 (낮을수록 좋음)
+     * 장타 억제력?: 홈런 (낮을수록 좋음)
+     */
     public ToolsPitcher calculateToolsPitcher(RecordPitcher record) {
         ToolsPitcher tools = new ToolsPitcher();
-        tools.setEra(record.getPitcher_era_plus()/300);
+        
+        tools.setEra((float) (record.getPitcher_era_plus() / 370.4));
 
         int game = record.getPitcher_g() * 9;
         float inning = record.getPitcher_ip();
-        if(game!=0)
-            tools.setHealth(inning/game);
-        else 
+        if (game != 0)
+            tools.setHealth((float) ((inning / game) / 67.68));
+        else
             tools.setHealth(0);
 
-        if(record.getPitcher_bb()!=0) {
-            float controll = record.getPitcher_so()/(record.getPitcher_bb());
-            tools.setControll(controll/15);
+        if (record.getPitcher_bb() != 0) {
+            float controll = record.getPitcher_so() / (record.getPitcher_bb());
+            tools.setControll(controll / 12);
         } else {
             tools.setControll(0);
         }
 
         float stab = record.getPitcher_bk() + record.getPitcher_wp();
-        tools.setStability(1 - stab/15);
+        tools.setStability(1 - stab / 20);
 
         float de = record.getPitcher_homerun();
-        tools.setDeterrent(1 - de/20);
-        
+        tools.setDeterrent(1 - de / 31);
+
+        //System.out.println(tools);
         return tools;
     }
 
@@ -120,48 +122,47 @@ public class PlayerServiceImpl implements PlayerService {
 
     // 타자 5툴 계산하는 메소드
     /*
-    파워: 장타율, 홈런
-    스피드: 도루, 도루성공율 (도루/도루+도실), 3루타
-    컨택: 타율, BB/K
-    수비: 수비율, RNG
-    어깨 (송구능력): 보살, ARM (외야수), CS (포수)
-    */
+     * 파워: 장타율, 홈런
+     * 스피드: 도루, 도루성공율 (도루/도루+도실), 3루타 
+     * 컨택: 타율, BB/K 수비: 수비율, RNG 
+     * 어깨(송구능력): 보살, ARM (외야수), CS (포수)
+     */
     public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) {
         ToolsHitter res = new ToolsHitter();
 
-        res.setPower(hitter.getHitter_homerum() + hitter.getHitter_slg());
+        res.setPower((float) ((hitter.getHitter_homerum() + hitter.getHitter_slg()) / 53.714));
 
         float sp = hitter.getHitter_cs() + hitter.getHitter_sb();
         float speed1 = 0;
-        if(sp!=0){
-            speed1 = hitter.getHitter_cs() / sp;
+        if (sp != 0) {
+            speed1 = hitter.getHitter_sb() / sp;
         }
         float speed2 = 0;
-        if(hitter.getHitter_ab()!=0){
+        if (hitter.getHitter_ab() != 0) {
             speed2 = hitter.getHitter_triple() / hitter.getHitter_ab();
         }
-        res.setSpeed(speed1 + speed2);
+        res.setSpeed((float) ((speed1 + speed2) / 1.1));
 
         float controll = 0;
-        if(hitter.getHitter_pa()!=0) {
-            controll = (hitter.getHitter_bb() - hitter.getHitter_so())/hitter.getHitter_pa();
+        if (hitter.getHitter_pa() != 0) {
+            controll = (hitter.getHitter_bb() - hitter.getHitter_so()) / hitter.getHitter_pa();
         }
         res.setContact(hitter.getHitter_ba() + controll);
 
         float defense = fielder.getFielder_fld() + fielder.getFielder_rng();
-        res.setDefense((float) (defense * 0.8));
+        res.setDefense((float) (defense / 22.24));
 
-        float shoulder = fielder.getFielder_a()/350;
+        float shoulder = fielder.getFielder_a()/451;
         // 여기 fielder.getFielder_id -> getPlayer_id 로 수정했어여..
         String position = playerDao.findPlayerPosition(fielder.getPlayer_id());
-        if(position.equals("포수")){
-            shoulder += fielder.getFielder_cs();
-        } else if(position.equals("좌익수") || position.equals("중견수") || position.equals("우익수")) {
-            shoulder += fielder.getFielder_arm();
+        if (position.equals("포수")) {
+            shoulder += (fielder.getFielder_cs()+2.8)/5.83;
+        } else if (position.equals("좌익수") || position.equals("중견수") || position.equals("우익수")) {
+            shoulder += (fielder.getFielder_arm()+6.12)/13.24;
         }
         res.setShoulder(shoulder);
-        // System.out.println(res);
+        //System.out.println(res);
         return res;
     }
-    
+
 }
