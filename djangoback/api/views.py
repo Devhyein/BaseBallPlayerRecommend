@@ -171,6 +171,8 @@ def getRecords_crawling(type, year, start):
     elif type==2:
         records = df.drop(columns=['player_name', 'birth', 'team', 'position', 'WAAwithADJ*'])
 
+    ## 플레이어 ID 해시로 생성
+
     engine = create_engine(database_url, echo=False)
 
     # ValueError: Cannot assign "1": "Player.player_position" must be a "Position" instance 에러: 외래키 제약조건 관련
@@ -179,10 +181,15 @@ def getRecords_crawling(type, year, start):
             pos = Position.objects.get(pk=1)
         else:
             pos = Position.objects.get(pk=positions[p.position])
+            
+        # player_id: 이름 + 생일 hash로 생성
+        hash_string = p.player_name + p.birth
+        pid = abs(hash(hash_string)) % (10 ** 8)
+        
         # insert
-        Player(player_name=p.player_name, team_id=teams[p.team], player_birth=p.birth, player_position=pos).save()
-        player_obj = Player.objects.filter(player_name=p.player_name) # 리스트로 온다. select ~ where 문에 해당하므로
-        pid = player_obj[0].player_id
+        Player(player_id=pid, player_name=p.player_name, team_id=teams[p.team], player_birth=p.birth, player_position=pos).save()
+        #player_obj = Player.objects.filter(player_name=p.player_name) # 리스트로 온다. select ~ where 문에 해당하므로
+        #pid = player_obj[0].player_id
         records['player_id'][i] = pid
 
     print(records)
