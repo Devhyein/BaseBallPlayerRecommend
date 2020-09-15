@@ -1,5 +1,5 @@
 <template>
-  <card type="default" header-classes="bg-transparent">
+  <card :type="type" header-classes="bg-transparent">
     <div slot="header" class="row align-items-center">
       <div class="col">
         <h6 class="text-uppercase text-muted ls-1 mb-1">Stat graph</h6>
@@ -36,6 +36,7 @@ export default {
   },
   props: {
     five_tool: Object,
+    type: String
   },
   computed: {
     chartData() {
