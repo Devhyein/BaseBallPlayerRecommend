@@ -1,26 +1,28 @@
 <template>
   <div>
-    <base-header type="gradient-default" class="pb-6 pb-8 pt-5 pt-md-8"></base-header>
+    <base-header type="gradient-default" class="pb-5 pt-5"></base-header>
 
-    <!--Charts-->
-    <div class="container-fluid mt--7">
+    <!--Content-->
+    <div class="container-fluid mt-4">
       <!--Search form-->
-      <div class="row">
-        <base-dropdown class="col-lg-2 mb-2">
-          <base-button slot="title" type="secondary" class="dropdown-toggle">{{searchType}}</base-button>
-          <span class="dropdown-item" @click="changeSearchType('Name')">Name</span>
-          <span class="dropdown-item" @click="changeSearchType('Team')">Team</span>
-          <span class="dropdown-item" @click="changeSearchType('Position')">Position</span>
-        </base-dropdown>
-        <base-input
-          placeholder="Search"
-          class="input-group-alternative col-lg-10"
-          alternative
-          addon-right-icon="fas fa-search"
-          v-model="searchVal"
-          @clickIcon="search"
-        ></base-input>
-      </div>
+        <form class="navbar-search form-inline">
+            <base-dropdown class="text-center">
+              <base-button slot="title" type="secondary" class="dropdown-toggle">{{searchType}}</base-button>
+              <span class="dropdown-item" @click="changeSearchType('Name')">Name</span>
+              <span class="dropdown-item" @click="changeSearchType('Team')">Team</span>
+              <span class="dropdown-item" @click="changeSearchType('Position')">Position</span>
+            </base-dropdown>
+            <div class="form-group mb-0">
+                <base-input
+                  placeholder="Search"
+                  class="input-group-alternative"
+                  alternative
+                  addon-right-icon="fas fa-search"
+                  v-model="searchVal"
+                  @clickIcon="search"
+                ></base-input>
+            </div>
+        </form>
       <!--End search form-->
 
       <!--Table-->
