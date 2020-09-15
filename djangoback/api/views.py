@@ -9,9 +9,32 @@ import pandas as pd
 import re
 from .models import *
 from django.conf import settings
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
+
+pitcher_cols = ['player_id', 'birth', 'player_name', 'pitcher_year', 'team', 'WAR*',
+            'pitcher_G', 'pitcher_CG', 'pitcher_SHO', 'pitcher_GS', 'pitcher_W', 'pitcher_L', 'pitcher_SV', 
+            'pitcher_HLD', 'pitcher_IP', 'pitcher_R', 'pitcher_ER', 'pitcher_HT', 'pitcher_H', 'pitcher_2B', 'pitcher_3B', 
+            'pitcher_Homerun', 'pitcher_BB',
+            'pitcher_IBB', 'pitcher_HBP', 'pitcher_SO', 'pitcher_BK', 'pitcher_WP', 
+            'pitcher_ERA', 'pitcher_FIP', 'pitcher_WHIP', 'pitcher_ERA_plus', 'pitcher_FIP_plus', 'pitcher_WAR', 'pitcher_WPA']
+
+hitter_cols = []
 
 def getPitchersRecords(request):
+    for year in range(2019, 1982, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
+        for start in range(0, 500, 25):
+            inserted = getRecords_crawling(1, year, start)
+            if (inserted == 0): # 페이지에 선수정보가 더이상 안뜨면 다음년도로 넘어감 
+                break
+
+def getHittersRecords(request):
+    for year in range(2019, 1982, -1):
+        for start in range(0, 500, 25):
+            inserted = getRecords_crawling(0, year, start)
+            if (inserted == 0): 
+                break
+
+def getRecords_crawling(type, year, start):
 
     user = settings.DATABASES['default']['USER']
     password = settings.DATABASES['default']['PASSWORD']
@@ -28,7 +51,7 @@ def getPitchersRecords(request):
     )
 
     driver = webdriver.Chrome('chromedriver.exe')
-    url = 'http://www.statiz.co.kr/stat.php?re=1&lr=0&sn=30&pa=0&ys=2020&ye=2020'
+    url = 'http://www.statiz.co.kr/stat.php?re=' + str(type) + '&lr=0&sn=25&pa=' + str(start) + '&ys=' + str(year) + '&ye=' + str(year)
     driver.implicitly_wait(20) # 로딩될때까지 대기를 줬는데도?
     driver.get(url)
     page = driver.execute_script('return document.body.innerHTML')
@@ -38,12 +61,12 @@ def getPitchersRecords(request):
     #print(table)
 
     # '타자' (HT로 표시) 를 빼먹었었다.
-    cols = ['player_id', 'player_name', 'pitcher_year', 'team', 'WAR*',
-            'pitcher_G', 'pitcher_CG', 'pitcher_SHO', 'pitcher_GS', 'pitcher_W', 'pitcher_L', 'pitcher_SV', 
-            'pitcher_HLD', 'pitcher_IP', 'pitcher_R', 'pitcher_ER', 'pitcher_HT', 'pitcher_H', 'pitcher_2B', 'pitcher_3B', 
-            'pitcher_Homerun', 'pitcher_BB',
-            'pitcher_IBB', 'pitcher_HBP', 'pitcher_SO', 'pitcher_BK', 'pitcher_WP', 
-            'pitcher_ERA', 'pitcher_FIP', 'pitcher_WHIP', 'pitcher_ERA_plus', 'pitcher_FIP_plus', 'pitcher_WAR', 'pitcher_WPA']
+    # birth: 생일. 동명이인 구분을 위해서 스탯티즈에서는 이름-생일을 pk로 사용하고 있는 것 같다
+    cols = []
+    if type == 1:
+        cols = pitcher_cols
+    else:
+        cols = hitter_cols
 
     datas = []
     regex = re.compile('\d\d\D+')
@@ -51,39 +74,54 @@ def getPitchersRecords(request):
     for row in table: # 각 줄
         cells = row.select('td')
         temp_list = []
-
         for data in cells: # 각 칸
+            # data의 타입이 string이 아니라는 점에 주의... str 캐스팅을 한번 해줘야 문자열 메서드를 쓸 수 있었다
+            data_str = str(data)
+            if len(temp_list) == 1 and data_str.find("a href") > 0: # 선수이름 링크 보고 생일 뽑아내기
+                birthday = data_str.split("birth=")[1][:10]
+                temp_list.append(birthday)
+
             text = data.get_text()
             
+            # 연도-팀-세부포지션 뽑아내기. 투수는 세부포지션이 없지만 타자는 있다.
             if regex.match(text):
-                year = text[:2]
-                team = text[2:]
-                temp_list.append(year)
-                temp_list.append(team)
+                if type == 1:
+                    year = text[:2]
+                    team = text[-1]
+                    temp_list.append(year)
+                    temp_list.append(team)
+                elif type == 0:
+                    pass
             
             else:
+                if text == '  ': # 비어있는 칸 처리: 일단은 0으로 하긴 했는데 null같은 걸로 보내는게 낫나?
+                    text = '0'
                 temp_list.append(text)
 
-        #print(len(temp_list))
-        if len(temp_list) == 34:
-            #print(temp_list)
+        print(len(temp_list))
+        if len(temp_list) == 35:
+            print(temp_list)
             datas.append(temp_list)
 
     df = pd.DataFrame(datas, columns=cols)
     print(df)
 
-    players = df[["player_name", "team"]]
+    players = df[["player_name", "team", "birth"]]
     print(players)
-    records = df.drop(columns=['player_name', 'team', 'WAR*', 'pitcher_HT']) # DB 저장용
+    records = df.drop(columns=['player_name', 'birth', 'team', 'WAR*', 'pitcher_HT']) # DB 저장용
 
-    teams = {'K': 1, '삼': 3, '두': 4, 'S': 6, 'L': 11, '롯': 13, '한': 14, 'N': 16, '키': 19}
+    # KIA랑 KT가 둘 다 K인데 어떡하냐? (kt: 21)
+    # 어떤 데이터는 KT를 k로 표기하고 있다....
+    # 삼미랑 삼성도 삼이다 둘 다... (삼미: 10)
+    teams = {'K': 1, '해': 2, '삼': 3, '두': 4, 'O': 5, 'S': 6, '현': 7, '태': 8, '청': 9, 
+            'L': 11, 'M': 12, '롯': 13, '한': 14, '빙': 15, 'N': 16, '히': 17, '넥': 18, '키': 19, '쌍': 20, 'k': 21}
 
     engine = create_engine(database_url, echo=False)
 
     # ValueError: Cannot assign "1": "Player.player_position" must be a "Position" instance 에러: 외래키 제약조건 관련
     for i, p in players.iterrows():
         pos = Position.objects.get(pk=1)
-        Player(player_name=p.player_name, team_id=teams[p.team], player_position=pos).save()
+        Player(player_name=p.player_name, team_id=teams[p.team], player_birth=p.birth, player_position=pos).save()
         player_obj = Player.objects.filter(player_name=p.player_name) # 리스트로 온다. select ~ where 문에 해당하므로
         pid = player_obj[0].player_id
         records['player_id'][i] = pid
@@ -91,6 +129,8 @@ def getPitchersRecords(request):
     print(records)
     records = records.set_index('player_id')
     records.to_sql('record_pitcher', con=engine, if_exists='append')
+
+    return len(records)
     # players_from_db = Player.objects.all()
     # for p in players_from_db:
     #     print(p.player_name)
