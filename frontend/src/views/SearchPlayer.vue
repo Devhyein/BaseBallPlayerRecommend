@@ -1,6 +1,6 @@
 <template>
   <div>
-    <base-header type="gradient-success" class="pb-6 pb-8 pt-5 pt-md-8"></base-header>
+    <base-header type="gradient-default" class="pb-6 pb-8 pt-5 pt-md-8"></base-header>
 
     <!--Charts-->
     <div class="container-fluid mt--7">
@@ -35,12 +35,12 @@
       <div class="row">
         <!-- 5Tool Chart -->
         <div class="col-xl-4 mb-5 mb-xl-0">
-          <player-radar-chart :five_tool="playerStats.five_tool"></player-radar-chart>
+          <player-radar-chart :five_tool="playerStats.five_tool" :type="chartType"></player-radar-chart>
         </div>
 
         <!--Bar Chart-->
         <div class="col-xl-8">
-          <player-stat-chart :cols="cols" :vals="vals" :originVals="originVals" />
+          <player-stat-chart :cols="cols" :vals="vals" :originVals="originVals" :type="chartType"/>
         </div>
       </div>
       <!-- End charts-->
@@ -95,7 +95,9 @@ export default {
 
       searchType: "Name",
       searchVal: "",
-    };
+
+      chartType: "secondary"
+    }
   },
   computed: {
     cols() {
