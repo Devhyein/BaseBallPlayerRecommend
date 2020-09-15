@@ -8,12 +8,13 @@
       <template slot="links">
         <sidebar-item
           :link="{
-            name: 'Dashboard',
+            name: 'Main',
             icon: 'ni ni-tv-2 text-primary',
-            path: '/dashboard'
+            path: '/main'
           }"
         />
 
+        <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
         <sidebar-item :link="{name: 'Search Player', icon: 'ni ni-planet text-blue', path: '/search/player'}"/>
         <sidebar-item :link="{name: 'Icons', icon: 'ni ni-planet text-blue', path: '/icons'}"/>
         <sidebar-item :link="{name: 'Maps', icon: 'ni ni-pin-3 text-orange', path: '/maps'}"/>
