@@ -25,18 +25,21 @@
         SELECT * FROM player p, record_pitcher r 
         WHERE p.player_id=r.player_id 
         And p.player_id=#{player_id}
+        order by pitcher_year desc limit 1
     </select>
 
     <select id="getPlayerStacksHitter" resultType="RecordHitter" parameterType="int">
         SELECT * FROM player p, record_hitter r 
         WHERE p.player_id=r.player_id 
         And p.player_id=#{player_id}
+        order by hitter_year desc limit 1
     </select>
 
-    <select id="getPlayerStacksFielder" resultType="RecordFielder" parameterType="int">
+    <select id="getPlayerStackFielder" resultType="RecordFielder" parameterType="int">
         SELECT * FROM player p, record_fielder r 
         WHERE p.player_id=r.player_id 
         And p.player_id=#{player_id}
+        order by fielder_year desc limit 1
     </select>
 </mapper>
 

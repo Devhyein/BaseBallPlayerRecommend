@@ -33,7 +33,6 @@ public class TeamController {
 
     @ApiOperation(value = "팀 분석")
     @GetMapping("/info/team/defaultstat")
-    // URL 어떻게 받을 지 프런트랑 얘기 해봐야 함 (팀명 or 팀번호)
     public Object search_player(@RequestParam int num) {
         final RestResponse response = new RestResponse();
         response.status = true;

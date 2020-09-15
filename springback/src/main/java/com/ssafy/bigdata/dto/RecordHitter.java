@@ -16,8 +16,8 @@ public class RecordHitter{
     private int hitter_rbi;
     private int hitter_sb;
     private int hitter_cs;
-    private int hitter_bob;
     private int hitter_bb;
+    private int hitter_hbp;
     private int hitter_ibb;
     private int hitter_so;
     private int hitter_gdp;
@@ -37,7 +37,7 @@ public class RecordHitter{
 
     public RecordHitter(int hitter_id, int player_id, int hitter_year, int hitter_gamecnt, int hitter_pa, int hitter_ab,
             int hitter_score, int hitter_hit, int hitter_double, int hitter_triple, int hitter_homerum, int hitter_tb,
-            int hitter_rbi, int hitter_sb, int hitter_cs, int hitter_bob, int hitter_bb, int hitter_ibb, int hitter_so,
+            int hitter_rbi, int hitter_sb, int hitter_cs, int hitter_hbp, int hitter_bb, int hitter_ibb, int hitter_so,
             int hitter_gdp, int hitter_sh, int hitter_sf, float hitter_ba, float hitter_obp, float hitter_slg,
             float hitter_ops, float hitter_woba, float hitter_wrc, float hitter_war, float hitter_wpa) {
         this.hitter_id = hitter_id;
@@ -55,7 +55,7 @@ public class RecordHitter{
         this.hitter_rbi = hitter_rbi;
         this.hitter_sb = hitter_sb;
         this.hitter_cs = hitter_cs;
-        this.hitter_bob = hitter_bob;
+        this.hitter_hbp = hitter_hbp;
         this.hitter_bb = hitter_bb;
         this.hitter_ibb = hitter_ibb;
         this.hitter_so = hitter_so;
@@ -192,12 +192,12 @@ public class RecordHitter{
         this.hitter_cs = hitter_cs;
     }
 
-    public int getHitter_bob() {
-        return hitter_bob;
+    public int getHitter_hbp() {
+        return hitter_hbp;
     }
 
-    public void setHitter_bob(int hitter_bob) {
-        this.hitter_bob = hitter_bob;
+    public void setHitter_hbp(int hitter_hbp) {
+        this.hitter_hbp = hitter_hbp;
     }
 
     public int getHitter_bb() {
@@ -315,7 +315,7 @@ public class RecordHitter{
     @Override
     public String toString() {
         return "RecordHitter [hitter_ab=" + hitter_ab + ", hitter_ba=" + hitter_ba + ", hitter_bb=" + hitter_bb
-                + ", hitter_bob=" + hitter_bob + ", hitter_cs=" + hitter_cs + ", hitter_double=" + hitter_double
+                + ", hitter_hbp=" + hitter_hbp + ", hitter_cs=" + hitter_cs + ", hitter_double=" + hitter_double
                 + ", hitter_gamecnt=" + hitter_gamecnt + ", hitter_gdp=" + hitter_gdp + ", hitter_hit=" + hitter_hit
                 + ", hitter_homerum=" + hitter_homerum + ", hitter_ibb=" + hitter_ibb + ", hitter_id=" + hitter_id
                 + ", hitter_obp=" + hitter_obp + ", hitter_ops=" + hitter_ops + ", hitter_pa=" + hitter_pa

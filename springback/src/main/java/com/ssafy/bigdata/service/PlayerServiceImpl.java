@@ -75,7 +75,7 @@ public class PlayerServiceImpl implements PlayerService {
     안정성: 폭투, 보크 (낮을수록 좋음)
     장타 억제력?: 홈런 (낮을수록 좋음)
     */
-    private ToolsPitcher calculateToolsPitcher(RecordPitcher record) {
+    public ToolsPitcher calculateToolsPitcher(RecordPitcher record) {
         ToolsPitcher tools = new ToolsPitcher();
         tools.setEra(record.getPitcher_era_plus()/300);
 
@@ -126,7 +126,7 @@ public class PlayerServiceImpl implements PlayerService {
     수비: 수비율, RNG
     어깨 (송구능력): 보살, ARM (외야수), CS (포수)
     */
-    private ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) {
+    public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) {
         ToolsHitter res = new ToolsHitter();
 
         res.setPower(hitter.getHitter_homerum() + hitter.getHitter_slg());
@@ -152,14 +152,15 @@ public class PlayerServiceImpl implements PlayerService {
         res.setDefense((float) (defense * 0.8));
 
         float shoulder = fielder.getFielder_a()/350;
-        String position = playerDao.findPlayerPosition(fielder.getFielder_id());
+        // 여기 fielder.getFielder_id -> getPlayer_id 로 수정했어여..
+        String position = playerDao.findPlayerPosition(fielder.getPlayer_id());
         if(position.equals("포수")){
             shoulder += fielder.getFielder_cs();
         } else if(position.equals("좌익수") || position.equals("중견수") || position.equals("우익수")) {
             shoulder += fielder.getFielder_arm();
         }
         res.setShoulder(shoulder);
-        System.out.println(res);
+        // System.out.println(res);
         return res;
     }
     
