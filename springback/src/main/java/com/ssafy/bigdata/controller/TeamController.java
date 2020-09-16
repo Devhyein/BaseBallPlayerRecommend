@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
@@ -53,7 +54,7 @@ public class TeamController {
 
         // 팀 분석 하기 위한 서비스 호출
         System.out.println(num);
-        Object data = teamService.analyzeStat(num);
+        Map<String,Object> data = teamService.analyzeStat(num);
         System.out.println(data);
         // 여기서 분석한 데이터 -> 파이썬으로 전송
         try {
@@ -69,10 +70,13 @@ public class TeamController {
     }
 
     // 파이썬에 팀 스탯 보내는 메소드
-    private ResponseEntity<RestResponse> sendToPython(Object data) throws IOException {
+    private ResponseEntity<RestResponse> sendToPython(Map<String,Object> data) throws IOException {
         final RestResponse result = new RestResponse();
-        
-        URL url = new URL("http://localhost:8903/api/recommend1?data=" + data);
+
+        URL url = new URL("http://127.0.0.1:8000/api/recommend1?team_id=" + data.get("team_id") +"power=" + data.get("power")+ "&speed=" + data.get("speed")
+            + "&contact=" + data.get("contact") + "&defense=" + data.get("defense") + "&shoulder=" + data.get("shoulder")
+            + "&era=" + data.get("era") + "&health=" + data.get("health") + "&control=" + data.get("control")
+            + "&stability=" + data.get("stability") + "&deterrent=" + data.get("deterrent"));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
@@ -81,19 +85,6 @@ public class TeamController {
         System.out.println("Recommend Python server response code: " + responseCode);
 
         if(responseCode == 200) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            // JSONObject responseJson = new JSONObject(sb.toString());
-            // JSONArray data = responseJson.getJSONArray("data");
-
-            // ArrayList<Object> final_result = new ArrayList<Object>();
-            // RestTemplate restTemplate = new RestTemplate();
-
             result.status = true;
             result.msg = "success";
             // result.data = final_result;

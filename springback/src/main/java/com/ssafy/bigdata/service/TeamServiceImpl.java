@@ -37,7 +37,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Object analyzeStat(int num) {
+    public Map<String,Object> analyzeStat(int num) {
             
         Map<String, Object> object = new HashMap<>();
         // 1. 이 팀의 최신 라인업 불러오기
