@@ -1,9 +1,79 @@
 <template>
   <div>
-    <base-header type="gradient-success" class="pb-6 pb-8 pt-5 pt-md-8">
-      <!-- Card stats -->
-        <main-carousel></main-carousel>
+    <base-header type="gradient-success" class="pb-6 pb-6 pt-5 pt-md-6">
+      <main-carousel></main-carousel>
     </base-header>
+    <br>
+     <!-- Card stats -->
+        <div class="row">
+          <div class="col-xl-3 col-lg-6">
+            <stats-card
+              title="Team analysis"
+              type="gradient-orange"
+              sub-title="10개의 구단"
+              icon="img/icons/KBO.png"
+              class="mb-4 mb-xl-0"
+            >
+              <template slot="footer">
+                <span class="text-success mr-2">
+                  Analysis of strengths
+                  <br />and weaknesses of all clubs
+                </span>
+              </template>
+            </stats-card>
+          </div>
+
+          <div class="col-xl-3 col-lg-6">
+            <stats-card
+              title="Player Recommendation"
+              type="gradient-red"
+              sub-title="35,390명의 선수"
+              icon="img/icons/Player.png"
+              class="mb-4 mb-xl-0"
+            >
+              <template slot="footer">
+                <span class="text-success mr-2">
+                  Recommendation service
+                  <br />according to position and specific player
+                </span>
+              </template>
+            </stats-card>
+          </div>
+
+          <div class="col-xl-3 col-lg-6">
+            <stats-card
+              title="Lineup service"
+              type="gradient-green"
+              sub-title="비교할 수 있는 라인업"
+              icon="img/icons/LineUp.jpg"
+              class="mb-4 mb-xl-0"
+            >
+              <template slot="footer">
+                <span class="text-success mr-2">
+                  Create the best team
+                  <br />with your own lineup
+                </span>
+              </template>
+            </stats-card>
+          </div>
+
+          <div class="col-xl-3 col-lg-6">
+            <stats-card
+              title="Custom service"
+              type="gradient-info"
+              sub-title="당신이 찾는 그 선수"
+              icon="img/icons/report.png"
+              class="mb-4 mb-xl-0"
+            >
+              <template slot="footer">
+                <span class="text-success mr-2">
+                  Custom player
+                  <br />recommendations for each club
+                </span>
+              </template>
+            </stats-card>
+          </div>
+        </div>
   </div>
 </template>
 <script>
