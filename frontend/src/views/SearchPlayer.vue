@@ -240,6 +240,17 @@ export default {
     selectPlayer(index) {
       console.log(this.playerListShowData[index])
       this.playerName = this.playerListShowData[index].player_name;
+
+      PlayerAPI.getPlayerStat(
+        this.playerListShowData[index].player_id,
+        res => {
+          console.log(res);
+          this.playerStats = res;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     }
   },
   mounted() {},

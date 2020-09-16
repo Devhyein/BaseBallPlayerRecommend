@@ -24,15 +24,10 @@
         <!-- 선수 교체 -->
         <base-button
           slot="title"
-          type="secondary">
+          type="secondary"
+          @click="changePlayer">
           선수 교체
         </base-button>
-      </div>
-      <div class="col text-center align-self-center">
-        <h3>팀 스탯 정보</h3>
-      </div>
-      <div class="col mr-1 ml-1 text-center align-self-center">
-        <h3>추천 선수 목록</h3>
       </div>
     </div>
 
@@ -71,11 +66,6 @@
             :subTitle="playerName"
             :data="playerStatData"
             :type="chartType" />
-          <!--
-          <player-radar-chart
-            :five_tool="playerStats.five_tool"
-            :type="chartType" />
-          -->
         </div>
       </div>
 
@@ -85,11 +75,22 @@
         <div class="row">
           <custom-table
             class="custom-table"
-            tableTitle="Recommend Player"
+            tableTitle="추천 선수"
             :tableData="recommendPlayerTableData"
             :cols="tableColumns"
             :selectedRow="recommendSel"
             @clickRow="clickRecommendPlayer"
+          />
+        </div>
+        <!-- 2. 선수 목록에서 제외된 선수 목록 테이블 -->
+        <div class="row mt-2" v-if="removedPlayers.length > 0">
+          <custom-table
+            class="custom-table"
+            tableTitle="제외된 선수"
+            :tableData="removedPlayerTableData"
+            :cols="tableColumns"
+            :selectedRow="removedSel"
+            @clickRow="clickRemovedPlayer"
           />
         </div>
       </div>
@@ -224,10 +225,14 @@ export default {
         }
       ],
 
+      // 선수 목록에서 제외된 선수 목록
+      removedPlayers: [],
+
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
       lineupSel: -1,
       recommendSel: -1,
+      removedSel: -1,
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
       lineupName: "라인업 선택",
@@ -243,11 +248,27 @@ export default {
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
       playerName: "Select player",
 
-      chartType: "secondary"
+      // 그래프 타입(배경 색)
+      chartType: "secondary",
+
+      // 테이블을 위한 데이터
+      lineupPlayerTableData: [],
+      recommendPlayerTableData: [],
+      removedPlayerTableData: [],
+
+      // 차트를 위한 데이터
+      teamStatData: {},
+      playerStatData: {},
     }
   },
-  computed: {
-    lineupPlayerTableData() {
+  created() {
+    this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+    this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
+    this.teamStatData = this.computeTeamStatData();
+    this.playerStatData = this.computePlayerStatData();
+  },
+  methods: {
+    computeLineupPlayerTableData() {
       let arr = [];
       for(let player of this.lineupPlayers) {
         let atBat = player.order + '번 타자';
@@ -263,7 +284,7 @@ export default {
       }
       return arr;
     },
-    recommendPlayerTableData() {
+    computeRecommendPlayerTableData() {
       let arr = [];
       for(let player of this.recommendPlayers) {
         let atBat = player.order + '번 타자';
@@ -279,7 +300,23 @@ export default {
       }
       return arr;
     },
-    teamStatData() {
+    computeRemovedPlayerTableData() {
+      let arr = [];
+      for(let player of this.removedPlayers) {
+        let atBat = player.order + '번 타자';
+        if(player.order == 0) {
+          atBat = '투수';
+        }
+
+        arr.push([
+          atBat, 
+          player.position, 
+          player.name
+        ]);
+      }
+      return arr;
+    },
+    computeTeamStatData() {
       let obj = {};
       let label = [];
       let data = [];
@@ -293,7 +330,7 @@ export default {
       obj.data = data;
       return obj;
     },
-    playerStatData() {
+    computePlayerStatData() {
       let obj = {};
       let label = [];
       let data = [];
@@ -306,9 +343,7 @@ export default {
       obj.label = label;
       obj.data = data;
       return obj;
-    }
-  },
-  methods: {
+    },
     changeLineup(id, name) {
       this.lineupId = id;
       this.lineupName = name;
@@ -323,7 +358,43 @@ export default {
       if(this.recommendSel != index) {
         this.playerName = this.recommendPlayers[index].name;
         this.recommendSel = index;
+        this.removedSel = -1;
       }
+    },
+    clickRemovedPlayer(index) {
+      if(this.removedSel != index) {
+        this.playerName = this.removedPlayers[index].name;
+        this.removedSel = index;
+        this.recommendSel = -1;
+      }
+    },
+    changePlayer() {
+      // 양쪽이 모두 선택되지 않은경우 그냥 반환
+      if(this.lineupSel == -1 || 
+          (this.recommendSel == -1 && this.removedSel == -1)) {
+        return;
+      }
+
+      // 선수 목록에서 한명 빼서 temp 에 보관
+      let temp = this.lineupPlayers[this.lineupSel];
+
+      // 1. recommend 와 교환
+      if(this.recommendSel != -1) {
+        this.lineupPlayers[this.lineupSel] = this.recommendPlayers[this.recommendSel];
+        this.recommendPlayers.splice(this.recommendSel, 1);
+      }
+      // 2. removed 와 교환
+      else if(this.removedSel != -1) {
+        this.lineupPlayers[this.lineupSel] = this.removedPlayers[this.removedSel];
+        this.removedPlayers.splice(this.removedSel, 1);
+      }
+      
+      // 선수목록에서 빠진건 무조건 removedPlayers 로 가기
+      this.removedPlayers.push(temp);
+
+      this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+      this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
+      this.removedPlayerTableData = this.computeRemovedPlayerTableData();
     }
   }
 };
