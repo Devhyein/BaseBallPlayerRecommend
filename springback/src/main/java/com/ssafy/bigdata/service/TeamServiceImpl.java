@@ -47,7 +47,7 @@ public class TeamServiceImpl implements TeamService {
 
             // 타자 1번 ~ 9번까지의 레코드 가져와서 5툴 가져오기
             List<ToolsHitter> toolsHitter = new ArrayList<ToolsHitter>();
-            List<ToolsPitcher> toolsPitcher = new ArrayList<ToolsPitcher>();
+            ToolsPitcher toolsPitcher = new ToolsPitcher();
             // 레코드 가져와서 5툴 계산
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter1())
@@ -105,7 +105,7 @@ public class TeamServiceImpl implements TeamService {
             }
 
             try {
-                toolsPitcher.add(playerService.calculateToolsPitcher(playerDao.getPlayerStacksPitcher(lineup.getPitcher())));
+                toolsPitcher = playerService.calculateToolsPitcher(playerDao.getPlayerStacksPitcher(lineup.getPitcher()));
             } catch(Exception e){
                 e.printStackTrace();
             }
