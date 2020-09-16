@@ -16,9 +16,9 @@ public interface PlayerService {
 
 	public String findPlayerPosition(int num);
 
-	public ToolsPitcher getPlayerStacksPitcher(int num) throws Exception;
+	public ToolsPitcher getPlayerStatsPitcher(int num) throws Exception;
 
-	public ToolsHitter getPlayerStacksHitter(int num) throws Exception;
+	public ToolsHitter getPlayerStatsHitter(int num) throws Exception;
 
 	public ToolsPitcher calculateToolsPitcher(RecordPitcher record) throws Exception;
 

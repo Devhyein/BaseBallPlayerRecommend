@@ -53,10 +53,10 @@ public class PlayerController {
         return response;
     }
 
-    @ApiOperation(value = "선수 스택")
+    @ApiOperation(value = "선수 스탯")
     @GetMapping("/info/player")
     // 선수 이름 검색 시 해당 검색어 들어가는 선수 반환
-    public Object playerStack(@RequestParam int num) {
+    public Object playerStat(@RequestParam int num) {
         final RestResponse response = new RestResponse();
         
         // 선수 번호를 가지고 선수의 포지션 알아옴.
@@ -66,9 +66,9 @@ public class PlayerController {
         System.out.println("POSITION : "+position);
         try {
             if(position.equals("투수")){
-                res.put("five_tool", playerService.getPlayerStacksPitcher(num));
+                res.put("five_tool", playerService.getPlayerStatsPitcher(num));
             } else {
-                res.put("five_tool", playerService.getPlayerStacksHitter(num));
+                res.put("five_tool", playerService.getPlayerStatsHitter(num));
             }
      
         } catch (Exception e) {
@@ -77,7 +77,6 @@ public class PlayerController {
             response.data = null;
             return response;
         }
-
 
 
         response.status = true;

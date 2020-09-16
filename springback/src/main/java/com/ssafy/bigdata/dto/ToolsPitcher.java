@@ -3,17 +3,17 @@ package com.ssafy.bigdata.dto;
 public class ToolsPitcher {
     private float era;
     private float health;
-    private float controll;
+    private float control;
     private float stability;
     private float deterrent;
 
     public ToolsPitcher() {
     }
 
-    public ToolsPitcher(float era, float health, float controll, float stability, float deterrent) {
+    public ToolsPitcher(float era, float health, float control, float stability, float deterrent) {
         this.era = era;
         this.health = health;
-        this.controll = controll;
+        this.control = control;
         this.stability = stability;
         this.deterrent = deterrent;
     }
@@ -34,12 +34,12 @@ public class ToolsPitcher {
         this.health = health;
     }
 
-    public float getControll() {
-        return controll;
+    public float getControl() {
+        return control;
     }
 
-    public void setControll(float controll) {
-        this.controll = controll;
+    public void setControl(float control) {
+        this.control = control;
     }
 
     public float getStability() {
@@ -60,7 +60,7 @@ public class ToolsPitcher {
 
     @Override
     public String toString() {
-        return "ToolsPitcher [controll=" + controll + ", deterrent=" + deterrent + ", era=" + era + ", health=" + health
+        return "ToolsPitcher [control=" + control + ", deterrent=" + deterrent + ", era=" + era + ", health=" + health
                 + ", stability=" + stability + "]";
     }
 

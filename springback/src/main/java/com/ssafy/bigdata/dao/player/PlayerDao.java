@@ -22,10 +22,10 @@ public interface PlayerDao {
 
 	public String findPlayerPosition(int num);
 
-	public RecordPitcher getPlayerStacksPitcher(int num);
+	public RecordPitcher getPlayerStatsPitcher(int num);
 
-	public RecordHitter getPlayerStacksHitter(int num);
+	public RecordHitter getPlayerStatsHitter(int num);
 
-	public RecordFielder getPlayerStackFielder(int num);
+	public RecordFielder getPlayerStatsFielder(int num);
     
 }

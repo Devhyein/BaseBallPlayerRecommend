@@ -53,9 +53,9 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public ToolsPitcher getPlayerStacksPitcher(int num) throws Exception{
+    public ToolsPitcher getPlayerStatsPitcher(int num) throws Exception{
         
-        RecordPitcher record = playerDao.getPlayerStacksPitcher(num);
+        RecordPitcher record = playerDao.getPlayerStatsPitcher(num);
         // 5 tool
         ToolsPitcher five_tool = calculateToolsPitcher(record);
         
@@ -83,10 +83,10 @@ public class PlayerServiceImpl implements PlayerService {
             tools.setHealth(0);
 
         if (record.getPitcher_bb() != 0) {
-            float controll = record.getPitcher_so() / (record.getPitcher_bb());
-            tools.setControll((float) (Math.round((controll / 12) * 100) / 100.0));
+            float control = record.getPitcher_so() / (record.getPitcher_bb());
+            tools.setControl((float) (Math.round((control / 12) * 100) / 100.0));
         } else {
-            tools.setControll(0);
+            tools.setControl(0);
         }
 
         float stab = record.getPitcher_bk() + record.getPitcher_wp();
@@ -100,10 +100,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public ToolsHitter getPlayerStacksHitter(int num) throws Exception{
+    public ToolsHitter getPlayerStatsHitter(int num) throws Exception{
       
-        RecordHitter recordHitter = playerDao.getPlayerStacksHitter(num);
-        RecordFielder recordFielder = playerDao.getPlayerStackFielder(num);
+        RecordHitter recordHitter = playerDao.getPlayerStatsHitter(num);
+        RecordFielder recordFielder = playerDao.getPlayerStatsFielder(num);
         // 5 tool
         ToolsHitter five_tool = calculateToolsHitter(recordHitter, recordFielder);
        
@@ -133,11 +133,11 @@ public class PlayerServiceImpl implements PlayerService {
         }
         res.setSpeed((float) (Math.round(((speed1 + speed2) / 1.1) * 100) / 100.0));
 
-        float controll = 0;
+        float control = 0;
         if (hitter.getHitter_pa() != 0) {
-            controll = (hitter.getHitter_bb() - hitter.getHitter_so()) / hitter.getHitter_pa();
+            control = (hitter.getHitter_bb() - hitter.getHitter_so()) / hitter.getHitter_pa();
         }
-        res.setContact((float) (Math.round((hitter.getHitter_ba() + controll) * 100) / 100.0));
+        res.setContact((float) (Math.round((hitter.getHitter_ba() + control) * 100) / 100.0));
 
         float defense = fielder.getFielder_fld() + fielder.getFielder_rng();
         res.setDefense((float) (Math.round((defense / 22.24)*100)/100.0));
