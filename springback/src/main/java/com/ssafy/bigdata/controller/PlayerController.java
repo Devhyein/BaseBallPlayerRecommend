@@ -66,9 +66,9 @@ public class PlayerController {
         System.out.println("POSITION : "+position);
         try {
             if(position.equals("투수")){
-                res.put("five_tool", playerService.getPlayerStatsPitcher(num));
+                res.put("five_tool", playerService.getPlayerToolsPitcher(num));
             } else {
-                res.put("five_tool", playerService.getPlayerStatsHitter(num));
+                res.put("five_tool", playerService.getPlayerToolsHitter(num));
             }
      
         } catch (Exception e) {

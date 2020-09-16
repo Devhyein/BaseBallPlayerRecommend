@@ -53,7 +53,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public ToolsPitcher getPlayerStatsPitcher(int num) throws Exception{
+    public ToolsPitcher getPlayerToolsPitcher(int num) throws Exception{
         
         RecordPitcher record = playerDao.getPlayerStatsPitcher(num);
         // 5 tool
@@ -100,7 +100,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public ToolsHitter getPlayerStatsHitter(int num) throws Exception{
+    public ToolsHitter getPlayerToolsHitter(int num) throws Exception{
       
         RecordHitter recordHitter = playerDao.getPlayerStatsHitter(num);
         RecordFielder recordFielder = playerDao.getPlayerStatsFielder(num);
