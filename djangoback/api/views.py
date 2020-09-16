@@ -171,8 +171,6 @@ def getRecords_crawling(type, year, start):
     elif type==2:
         records = df.drop(columns=['player_name', 'birth', 'team', 'position', 'WAAwithADJ*'])
 
-    ## 플레이어 ID 해시로 생성
-
     engine = create_engine(database_url, echo=False)
 
     # ValueError: Cannot assign "1": "Player.player_position" must be a "Position" instance 에러: 외래키 제약조건 관련
