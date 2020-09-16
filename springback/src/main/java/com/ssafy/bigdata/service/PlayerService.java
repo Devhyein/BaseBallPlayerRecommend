@@ -16,13 +16,13 @@ public interface PlayerService {
 
 	public String findPlayerPosition(int num);
 
-	public List<Object> getPlayerStacksPitcher(int num);
+	public ToolsPitcher getPlayerStacksPitcher(int num) throws Exception;
 
-	public List<Object> getPlayerStacksHitter(int num);
+	public ToolsHitter getPlayerStacksHitter(int num) throws Exception;
 
-	public ToolsPitcher calculateToolsPitcher(RecordPitcher record);
+	public ToolsPitcher calculateToolsPitcher(RecordPitcher record) throws Exception;
 
-	public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder);
+	public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) throws Exception;
 
     
 }

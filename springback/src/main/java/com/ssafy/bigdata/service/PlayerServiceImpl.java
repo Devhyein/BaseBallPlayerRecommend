@@ -53,18 +53,13 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Object> getPlayerStacksPitcher(int num) {
-        List<Object> res = new ArrayList<Object>();
-        try {
-            RecordPitcher record = playerDao.getPlayerStacksPitcher(num);
-            // 5 tool
-            ToolsPitcher five_tool = calculateToolsPitcher(record);
-            res.add(five_tool);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return res;
+    public ToolsPitcher getPlayerStacksPitcher(int num) throws Exception{
+        
+        RecordPitcher record = playerDao.getPlayerStacksPitcher(num);
+        // 5 tool
+        ToolsPitcher five_tool = calculateToolsPitcher(record);
+        
+        return five_tool;
     }
 
     // 투수의 5툴 계산하는 메소드
@@ -75,49 +70,44 @@ public class PlayerServiceImpl implements PlayerService {
      * 안정성: 폭투, 보크 (낮을수록 좋음)
      * 장타 억제력?: 홈런 (낮을수록 좋음)
      */
-    public ToolsPitcher calculateToolsPitcher(RecordPitcher record) {
+    public ToolsPitcher calculateToolsPitcher(RecordPitcher record) throws Exception{
         ToolsPitcher tools = new ToolsPitcher();
         
-        tools.setEra((float) (record.getPitcher_era_plus() / 370.4));
+        tools.setEra((float) (Math.round((record.getPitcher_era_plus() / 370.4) * 100) / 100.0));
 
         int game = record.getPitcher_g() * 9;
         float inning = record.getPitcher_ip();
         if (game != 0)
-            tools.setHealth((float) ((inning / game) / 67.68));
+            tools.setHealth((float) (Math.round(((inning / game) / 67.68) * 100) / 100.));
         else
             tools.setHealth(0);
 
         if (record.getPitcher_bb() != 0) {
             float controll = record.getPitcher_so() / (record.getPitcher_bb());
-            tools.setControll(controll / 12);
+            tools.setControll((float) (Math.round((controll / 12) * 100) / 100.0));
         } else {
             tools.setControll(0);
         }
 
         float stab = record.getPitcher_bk() + record.getPitcher_wp();
-        tools.setStability(1 - stab / 20);
+        tools.setStability((float) (Math.round((1 - stab / 20) * 100) / 100.0));
 
         float de = record.getPitcher_homerun();
-        tools.setDeterrent(1 - de / 31);
+        tools.setDeterrent((float) (Math.round((1 - de / 31) * 100) / 100.0));
 
         //System.out.println(tools);
         return tools;
     }
 
     @Override
-    public List<Object> getPlayerStacksHitter(int num) {
-        List<Object> res = new ArrayList<Object>();
-        try {
-            RecordHitter recordHitter = playerDao.getPlayerStacksHitter(num);
-            RecordFielder recordFielder = playerDao.getPlayerStackFielder(num);
-            // 5 tool
-            ToolsHitter five_tool = calculateToolsHitter(recordHitter, recordFielder);
-            res.add(five_tool);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return res;
+    public ToolsHitter getPlayerStacksHitter(int num) throws Exception{
+      
+        RecordHitter recordHitter = playerDao.getPlayerStacksHitter(num);
+        RecordFielder recordFielder = playerDao.getPlayerStackFielder(num);
+        // 5 tool
+        ToolsHitter five_tool = calculateToolsHitter(recordHitter, recordFielder);
+       
+        return five_tool;
     }
 
     // 타자 5툴 계산하는 메소드
@@ -127,10 +117,10 @@ public class PlayerServiceImpl implements PlayerService {
      * 컨택: 타율, BB/K 수비: 수비율, RNG 
      * 어깨(송구능력): 보살, ARM (외야수), CS (포수)
      */
-    public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) {
+    public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) throws Exception{
         ToolsHitter res = new ToolsHitter();
 
-        res.setPower((float) ((hitter.getHitter_homerum() + hitter.getHitter_slg()) / 53.714));
+        res.setPower((float) (Math.round(((hitter.getHitter_homerum() + hitter.getHitter_slg()) / 53.714) * 100) / 100.0));
 
         float sp = hitter.getHitter_cs() + hitter.getHitter_sb();
         float speed1 = 0;
@@ -141,16 +131,16 @@ public class PlayerServiceImpl implements PlayerService {
         if (hitter.getHitter_ab() != 0) {
             speed2 = hitter.getHitter_triple() / hitter.getHitter_ab();
         }
-        res.setSpeed((float) ((speed1 + speed2) / 1.1));
+        res.setSpeed((float) (Math.round(((speed1 + speed2) / 1.1) * 100) / 100.0));
 
         float controll = 0;
         if (hitter.getHitter_pa() != 0) {
             controll = (hitter.getHitter_bb() - hitter.getHitter_so()) / hitter.getHitter_pa();
         }
-        res.setContact(hitter.getHitter_ba() + controll);
+        res.setContact((float) (Math.round((hitter.getHitter_ba() + controll) * 100) / 100.0));
 
         float defense = fielder.getFielder_fld() + fielder.getFielder_rng();
-        res.setDefense((float) (defense / 22.24));
+        res.setDefense((float) (Math.round((defense / 22.24)*100)/100.0));
 
         float shoulder = fielder.getFielder_a()/451;
         // 여기 fielder.getFielder_id -> getPlayer_id 로 수정했어여..
@@ -160,7 +150,7 @@ public class PlayerServiceImpl implements PlayerService {
         } else if (position.equals("좌익수") || position.equals("중견수") || position.equals("우익수")) {
             shoulder += (fielder.getFielder_arm()+6.12)/13.24;
         }
-        res.setShoulder(shoulder);
+        res.setShoulder((float) (Math.round(shoulder * 100) / 100.0));
         //System.out.println(res);
         return res;
     }

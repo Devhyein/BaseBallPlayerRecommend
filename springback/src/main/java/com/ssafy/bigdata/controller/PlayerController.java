@@ -1,6 +1,7 @@
 package com.ssafy.bigdata.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dto.Player;
@@ -59,22 +60,28 @@ public class PlayerController {
         
         // 선수 번호를 가지고 선수의 포지션 알아옴.
         String position = playerService.findPlayerPosition(num);
-        List<Object> res = new ArrayList<Object>();
+        HashMap<String,Object>res = new HashMap<String,Object>();
         // 투수면 ToolsPitcher, 타자면 ToolsHitter 선언
         System.out.println("POSITION : "+position);
-       if(position.equals("투수")){
-           List<Object> pitcher = new ArrayList<Object>();
-           pitcher = playerService.getPlayerStacksPitcher(num);
-           res.add(pitcher);
-       } else {
-            List<Object> hitter = new ArrayList<Object>();
-            hitter = playerService.getPlayerStacksHitter(num);
-            res.add(hitter);
-       }
+        try {
+            if(position.equals("투수")){
+                res.put("five_tool", playerService.getPlayerStacksPitcher(num));
+            } else {
+                res.put("five_tool", playerService.getPlayerStacksHitter(num));
+            }
+     
+        } catch (Exception e) {
+            response.status = false;
+            response.msg = "No data";
+            response.data = null;
+            return response;
+        }
+
+
+
         response.status = true;
         response.msg = "success";
         response.data = res;
-
         return response;
     }
 }
