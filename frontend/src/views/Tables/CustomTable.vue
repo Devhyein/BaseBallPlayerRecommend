@@ -12,6 +12,7 @@
       <base-table thead-classes="thead-light"
                   :data="tableData"
                   type="hover"
+                  :selectedRow="selectedRow"
                   @clickRow="clickRow">
         <template slot="columns">
           <template v-for="(c, idx) in cols">
@@ -43,6 +44,7 @@
       tableTitle: String
       , tableData: Array
       , cols: Array
+      , selectedRow: Number
     },
     methods: {
       clickRow(index) {

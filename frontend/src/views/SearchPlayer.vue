@@ -1,6 +1,6 @@
 <template>
   <div>
-    <base-header type="gradient-default" class="pb-5 pt-5"></base-header>
+    <base-header type="translucent-default" class="pb-5 pt-5"></base-header>
 
     <!--Content-->
     <div class="container-fluid mt-4">

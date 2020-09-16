@@ -1,10 +1,10 @@
 <template>
   <div>
-    <base-header type="gradient-default" class="pb-5 pt-5"></base-header>
+    <base-header type="translucent-default" class="pb-5 pt-5"></base-header>
 
     <div class="container-fluid mt-2 row">
       <div class="col mr-1 ml-1  text-center align-self-center">
-        <!-- 1. 라인업 선택 -->
+        <!-- 라인업 선택 -->
         <base-dropdown>
           <base-button
             slot="title"
@@ -21,6 +21,12 @@
             </span>
           </template>
         </base-dropdown>
+        <!-- 선수 교체 -->
+        <base-button
+          slot="title"
+          type="secondary">
+          선수 교체
+        </base-button>
       </div>
       <div class="col text-center align-self-center">
         <h3>팀 스탯 정보</h3>
@@ -32,7 +38,7 @@
 
     <div class="container-fluid mt-2 row">
       <!-- left -->
-      <div class="col mr-1 ml-1">
+      <div class="col-xl mr-1 ml-1">
         <!-- 선택된 라인업 선수 목록 -->
         <div class="row">
           <custom-table
@@ -40,13 +46,14 @@
             :tableTitle="lineupName"
             :tableData="lineupPlayerTableData"
             :cols="tableColumns"
+            :selectedRow="lineupSel"
             @clickRow="clickLineupPlayer"
           />
         </div>
       </div>
 
       <!-- center -->
-      <div class="col">
+      <div class="col-xl">
         <!-- 1. 팀 스탯 그래프 -->
         <div class="row">
           <custom-radar-chart
@@ -73,7 +80,7 @@
       </div>
 
       <!-- right -->
-      <div class="col mr-1 ml-1">
+      <div class="col-xl mr-1 ml-1">
         <!-- 1. 추천 선수 목록 테이블 -->
         <div class="row">
           <custom-table
@@ -81,6 +88,7 @@
             tableTitle="Recommend Player"
             :tableData="recommendPlayerTableData"
             :cols="tableColumns"
+            :selectedRow="recommendSel"
             @clickRow="clickRecommendPlayer"
           />
         </div>
@@ -216,7 +224,12 @@ export default {
         }
       ],
 
-      // 드롭다운으로 라인업 선택하는 동작을 위한 데이터
+      // 라인업과 추천선수 목록에서
+      // 선택된 행을 기억하는 변수
+      lineupSel: -1,
+      recommendSel: -1,
+
+      // 드롭다운으로 라인업 선택하는 동작을 위한 변수
       lineupName: "라인업 선택",
       lineupId: 0,
 
@@ -227,6 +240,7 @@ export default {
         , "Name"
       ],
 
+      // 선택한 선수의 이름 저장(스탯 보여주기 용)
       playerName: "Select player",
 
       chartType: "secondary"
@@ -300,11 +314,16 @@ export default {
       this.lineupName = name;
     },
     clickLineupPlayer(index) {
-      console.log(this.lineupPlayers[index]);
-      this.playerName = this.lineupPlayers[index].name;
+      if(this.lineupSel != index) {
+        this.playerName = this.lineupPlayers[index].name;
+        this.lineupSel = index;
+      }
     },
     clickRecommendPlayer(index) {
-      console.log(this.recommendPlayers[index]);
+      if(this.recommendSel != index) {
+        this.playerName = this.recommendPlayers[index].name;
+        this.recommendSel = index;
+      }
     }
   }
 };
