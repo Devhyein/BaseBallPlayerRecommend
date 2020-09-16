@@ -1,11 +1,15 @@
 package com.ssafy.bigdata.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.StatForChart;
+import com.ssafy.bigdata.dto.ToolsHitter;
+import com.ssafy.bigdata.dto.ToolsPitcher;
 import com.ssafy.bigdata.service.PlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +50,38 @@ public class PlayerController {
             response.msg = "search player list error";
             response.data = null;
         }
+        return response;
+    }
+
+    @ApiOperation(value = "선수 스탯")
+    @GetMapping("/info/player")
+    // 선수 이름 검색 시 해당 검색어 들어가는 선수 반환
+    public Object playerStat(@RequestParam int num) {
+        final RestResponse response = new RestResponse();
+        
+        // 선수 번호를 가지고 선수의 포지션 알아옴.
+        String position = playerService.findPlayerPosition(num);
+        HashMap<String,Object>res = new HashMap<String,Object>();
+        // 투수면 ToolsPitcher, 타자면 ToolsHitter 선언
+        System.out.println("POSITION : "+position);
+        try {
+            if(position.equals("투수")){
+                res.put("five_tool", playerService.getPlayerToolsPitcher(num));
+            } else {
+                res.put("five_tool", playerService.getPlayerToolsHitter(num));
+            }
+     
+        } catch (Exception e) {
+            response.status = false;
+            response.msg = "No data";
+            response.data = null;
+            return response;
+        }
+
+
+        response.status = true;
+        response.msg = "success";
+        response.data = res;
         return response;
     }
 }

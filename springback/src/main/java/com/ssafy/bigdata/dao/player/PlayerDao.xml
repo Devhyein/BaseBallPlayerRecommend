@@ -14,5 +14,32 @@
         select team_name from team
         where team_id = #{team_id}
     </select>
+
+    <select id="findPlayerPosition" resultType="string" parameterType="int">
+        SELECT position_name FROM player,position 
+        WHERE player_id=#{player_id} 
+        AND player.player_position=position.player_position
+    </select>
+
+    <select id="getPlayerStatsPitcher" resultType="RecordPitcher" parameterType="int">
+        SELECT * FROM player p, record_pitcher r 
+        WHERE p.player_id=r.player_id 
+        And p.player_id=#{player_id}
+        order by pitcher_year desc limit 1
+    </select>
+
+    <select id="getPlayerStatsHitter" resultType="RecordHitter" parameterType="int">
+        SELECT * FROM player p, record_hitter r 
+        WHERE p.player_id=r.player_id 
+        And p.player_id=#{player_id}
+        order by hitter_year desc limit 1
+    </select>
+
+    <select id="getPlayerStatsFielder" resultType="RecordFielder" parameterType="int">
+        SELECT * FROM player p, record_fielder r 
+        WHERE p.player_id=r.player_id 
+        And p.player_id=#{player_id}
+        order by fielder_year desc limit 1
+    </select>
 </mapper>
 
