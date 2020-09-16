@@ -7,8 +7,8 @@
     >
       <template slot="links">
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>
-        <sidebar-item :link="{name: 'Search Player', icon: 'ni ni-planet text-blue', path: '/search/player'}"/>
-        <sidebar-item :link="{name: 'Recommend Player', icon: 'ni ni-planet text-blue', path: '/recommend'}"/>
+        <sidebar-item :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"/>
+        <sidebar-item :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"/>
         
         <!--
         <sidebar-item :link="{name: 'Icons', icon: 'ni ni-planet text-blue', path: '/icons'}"/>

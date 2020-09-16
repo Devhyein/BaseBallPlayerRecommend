@@ -27,8 +27,20 @@
 
       <!--Table-->
       <div class="row mt-5">
-        <div class="col-xl-12 mb-5">
-          <player-list-table :tableData="playerList" @clickRow="playerStat"/>
+        <div class="col mb-5">
+          <custom-table
+            tableTitle="Player List"
+            :tableData="playerListTableData"
+            :cols="playerListTableCols"
+            @clickRow="selectPlayer"
+          />
+          <div>
+            <base-pagination
+              :page-count="pageCount"
+              v-model="pageVal"
+              align="center"
+            />
+          </div>
         </div>
       </div>
       <!--End table-->
@@ -37,7 +49,11 @@
       <div class="row">
         <!-- 5Tool Chart -->
         <div class="col-xl-4 mb-5 mb-xl-0">
-          <player-radar-chart :five_tool="playerStats.five_tool" :type="chartType"></player-radar-chart>
+          <custom-radar-chart
+            title="Player stat"
+            :subTitle="playerName"
+            :data="statRadarData"
+            :type="chartType" />
         </div>
 
         <!--Bar Chart-->
@@ -61,10 +77,10 @@
 <script>
 // Charts
 import PlayerStatChart from "@/components/Player/PlayerStatChart";
-import PlayerRadarChart from "@/components/Player/PlayerRadarChart";
+import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import PlayerListTable from "./Tables/PlayerListTable";
+import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
@@ -73,15 +89,29 @@ import PlayerAPI from "@/api/PlayerAPI"
 export default {
   components: {
     PlayerStatChart,
-    PlayerRadarChart,
+    CustomRadarChart,
 
-    PlayerListTable,
+    CustomTable,
     PlayerStatTable,
   },
   data() {
     return {
       ////////////////////////////////////////////////////////////////////////////
       playerList: [],
+      playerListTableCols: [
+        "Name"
+        , "Team"
+        , "Position"
+        , "Number"
+        , "Age"
+      ],
+
+      playerListShowData: [],
+      pageCount: 1,
+      pageVal: 1,
+      from: 0,
+      total: 0,
+
       playerStats: {
         five_tool: {
           power: 0,
@@ -97,6 +127,8 @@ export default {
 
       searchType: "Name",
       searchVal: "",
+
+      playerName: "Select player",
 
       chartType: "secondary"
     }
@@ -123,6 +155,19 @@ export default {
       }
       return arr;
     },
+    playerListTableData() {
+      let arr = [];
+      for(let player of this.playerListShowData) {
+        arr.push([
+          player.player_name, 
+          player.player_team, 
+          player.position,
+          player.player_num,
+          player.player_age
+        ]);
+      }
+      return arr;
+    },
     statTableData() {
       // data = [[], [], []]
       let arr = [];
@@ -136,6 +181,31 @@ export default {
       arr.push(this.vals);
       return arr;
     },
+    statRadarData() {
+      let obj = {};
+      let label = [];
+      let data = [];
+
+      label = Object.keys(this.playerStats.five_tool);
+      for(let key of label) {
+        data.push(this.playerStats.five_tool[key]);
+      }
+
+      obj.label = label;
+      obj.data = data;
+      return obj;
+    }
+  },
+  watch: {
+    pageVal(newVal) {
+      // 1: 0 to 5
+      // 2: 5 to 10
+      // 3: 10 to 15
+      this.from = (newVal - 1) * 5
+      let to = this.from + 5
+      if(to > this.total) to = this.total;
+      this.playerListShowData = this.playerList.slice(this.from, to);
+    }
   },
   methods: {
     changeSearchType(t) {
@@ -146,14 +216,30 @@ export default {
         this.searchVal,
         res => {
           this.playerList = res;
+          this.resetPlayerListTable();
         },
         err => {
           console.log(err);
         }
       )
     },
-    playerStat(id) {
-      alert(id);
+    resetPlayerListTable() {
+      this.total = this.playerList.length;
+      this.from = 0;
+      let to = 5;
+
+      let v = this.total - 1;
+      if(v < 0) v = 0;
+      this.pageCount = parseInt(v / 5 + 1);
+      this.pageVal = 1;
+
+      if(to > this.total) to = this.total;
+
+      this.playerListShowData = this.playerList.slice(this.from, to);
+    },
+    selectPlayer(index) {
+      console.log(this.playerListShowData[index])
+      this.playerName = this.playerListShowData[index].player_name;
     }
   },
   mounted() {},

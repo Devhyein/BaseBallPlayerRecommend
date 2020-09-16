@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody :class="tbodyClasses">
-      <tr v-for="(item, index) in data" :key="index">
+      <tr v-for="(item, index) in data" :key="index" @click="clickRow(index)">
         <slot :row="item" :index="index">
           <td
             v-for="(column, index) in colsWithValue(item)"
@@ -66,6 +66,9 @@ export default {
     },
     itemValue(item, column) {
       return item[column.toLowerCase()];
+    },
+    clickRow(index) {
+      this.$emit("clickRow", index);
     }
   }
 };
