@@ -6,11 +6,12 @@
       title="Argon"
     >
       <template slot="links">
-        <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-tv-2 text-primary', path: '/dashboard'}"/>
+        <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}"/>
         <sidebar-item :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"/>
         <sidebar-item :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"/>
-        
+
         <!--
+        <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
         <sidebar-item :link="{name: 'Icons', icon: 'ni ni-planet text-blue', path: '/icons'}"/>
         <sidebar-item :link="{name: 'Maps', icon: 'ni ni-pin-3 text-orange', path: '/maps'}"/>
         <sidebar-item :link="{name: 'User Profile', icon: 'ni ni-single-02 text-yellow', path: '/profile'}"/>
