@@ -53,62 +53,62 @@ public class TeamServiceImpl implements TeamService {
             ToolsPitcher toolsPitcher = new ToolsPitcher();
             // 레코드 가져와서 5툴 계산
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter1())
-                , playerDao.getPlayerStackFielder(lineup.getHitter1())));
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter1())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter1())));
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter2())
-                , playerDao.getPlayerStackFielder(lineup.getHitter2())));
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter2())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter2())));
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter3())
-                , playerDao.getPlayerStackFielder(lineup.getHitter3()))); 
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter3())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter3()))); 
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter4())
-                , playerDao.getPlayerStackFielder(lineup.getHitter4()))); 
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter4())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter4()))); 
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter5())
-                , playerDao.getPlayerStackFielder(lineup.getHitter5()))); 
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter5())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter5()))); 
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter6())
-                , playerDao.getPlayerStackFielder(lineup.getHitter6()))); 
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter6())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter6()))); 
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter7())
-                , playerDao.getPlayerStackFielder(lineup.getHitter7()))); 
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter7())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter7()))); 
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter8())
-                , playerDao.getPlayerStackFielder(lineup.getHitter8())));   
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter8())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter8())));   
             } catch(Exception e){
                 e.printStackTrace();
             }
             try {
-                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStacksHitter(lineup.getHitter9())
-                , playerDao.getPlayerStackFielder(lineup.getHitter9())));  
+                toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter9())
+                , playerDao.getPlayerStatsFielder(lineup.getHitter9())));  
             } catch(Exception e){
                 e.printStackTrace();
             }
 
             try {
-                toolsPitcher = playerService.calculateToolsPitcher(playerDao.getPlayerStacksPitcher(lineup.getPitcher()));
+                toolsPitcher = playerService.calculateToolsPitcher(playerDao.getPlayerStatsPitcher(lineup.getPitcher()));
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -142,7 +142,7 @@ public class TeamServiceImpl implements TeamService {
             object.put("shoulder", shoulder);
             object.put("era", toolsPitcher.getEra());
             object.put("health", toolsPitcher.getHealth());
-            object.put("control", toolsPitcher.getControll());
+            object.put("control", toolsPitcher.getControl());
             object.put("stability", toolsPitcher.getStability());
             object.put("deterrent", toolsPitcher.getDeterrent());
 
