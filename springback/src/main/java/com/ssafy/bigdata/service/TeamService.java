@@ -6,6 +6,6 @@ import com.ssafy.bigdata.dto.StatForChart;
 
 public interface TeamService {
 
-	public List<StatForChart> analyzeStat(int num);
+	public Object analyzeStat(int num);
     
 }
