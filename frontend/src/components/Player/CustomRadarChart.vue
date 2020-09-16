@@ -2,8 +2,8 @@
   <card :type="type" header-classes="bg-transparent">
     <div slot="header" class="row align-items-center">
       <div class="col">
-        <h6 class="text-uppercase text-muted ls-1 mb-1">Stat graph</h6>
-        <h5 class="h3 mb-0 text-default">Player 5-Tools</h5>
+        <h6 class="text-uppercase text-muted ls-1 mb-1">{{title}}</h6>
+        <h5 class="h3 mb-0 text-default">{{subTitle}}</h5>
       </div>
     </div>
 
@@ -35,31 +35,23 @@ export default {
     };
   },
   props: {
-    five_tool: Object,
+    title: String,
+    subTitle: String,
+    data: Object,
     type: String
   },
   computed: {
     chartData() {
-      let five_tools = [
-        this.five_tool.power,
-        this.five_tool.speed,
-        this.five_tool.contact,
-        this.five_tool.defense,
-        this.five_tool.shoulder,
-      ];
-
       let cData = {
-        labels: ["power", "speed", "contact", "defense", "shoulder"],
+        labels: this.data.label,
         datasets: [{
-          data: five_tools,
+          data: this.data.data,
         }],
       };
-      console.log(five_tools);
 
       return cData;
     },
   },
-  methods: {},
 };
 </script>
 <style></style>

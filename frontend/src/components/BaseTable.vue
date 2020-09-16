@@ -8,7 +8,13 @@
       </tr>
     </thead>
     <tbody :class="tbodyClasses">
-      <tr v-for="(item, index) in data" :key="index">
+      <tr
+        v-for="(item, index) in data"
+        :key="index"
+        :class="{'bg-translucent-warning': index == selectedRow,
+                 'text-white': index == selectedRow}"
+        @click="clickRow(index)">
+        
         <slot :row="item" :index="index">
           <td
             v-for="(column, index) in colsWithValue(item)"
@@ -16,6 +22,7 @@
             {{ itemValue(item, column) }}
           </td>
         </slot>
+
       </tr>
     </tbody>
   </table>
@@ -48,6 +55,11 @@ export default {
       type: String,
       default: '',
       description: '<tbody> css classes'
+    },
+    selectedRow: {
+      type: Number,
+      default: -1,
+      description: 'Selected Row index'
     }
   },
   computed: {
@@ -66,6 +78,9 @@ export default {
     },
     itemValue(item, column) {
       return item[column.toLowerCase()];
+    },
+    clickRow(index) {
+      this.$emit("clickRow", index);
     }
   }
 };
