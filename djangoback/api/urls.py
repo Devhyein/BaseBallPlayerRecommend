@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 from api import views
+from api import views2
+from api import views3
 
 # 요청 라우팅을 위해 default 라우터 가져옴
 # trailing_slash : url 끝에 / 를 붙일지 말지 결정
@@ -21,5 +23,7 @@ router = DefaultRouter(trailing_slash=False)
 urlpatterns = [
     url(r'hitterdata', views.getHittersRecords),
     url(r'pitcherdata', views.getPitchersRecords),
-    url(r'fielderdata', views.getFieldersRecords)
+    url(r'fielderdata', views.getFieldersRecords),
+    url(r'defaultlineup', views2.getLineup),
+    url(r'recommend1', views3.recommend_player_method1)
 ]

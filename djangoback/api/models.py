@@ -87,13 +87,13 @@ class RecordHitter(models.Model):
     hitter_hit = models.IntegerField(blank=True, null=True)
     hitter_double = models.IntegerField(blank=True, null=True)
     hitter_triple = models.IntegerField(blank=True, null=True)
-    hitter_homerum = models.IntegerField(blank=True, null=True)
+    hitter_homerun = models.IntegerField(blank=True, null=True)
     hitter_tb = models.IntegerField(blank=True, null=True)
     hitter_rbi = models.IntegerField(blank=True, null=True)
     hitter_sb = models.IntegerField(blank=True, null=True)
     hitter_cs = models.IntegerField(blank=True, null=True)
-    hitter_bob = models.IntegerField(blank=True, null=True)
     hitter_bb = models.IntegerField(blank=True, null=True)
+    hitter_hbp = models.IntegerField(blank=True, null=True)
     hitter_ibb = models.IntegerField(blank=True, null=True)
     hitter_so = models.IntegerField(blank=True, null=True)
     hitter_gdp = models.IntegerField(blank=True, null=True)
@@ -111,6 +111,7 @@ class RecordHitter(models.Model):
     class Meta:
         managed = False
         db_table = 'record_hitter'
+
 
 
 class RecordPitcher(models.Model):
@@ -168,3 +169,22 @@ class Team(models.Model):
     class Meta:
         managed = False
         db_table = 'team'
+
+
+class Lineup(models.Model):
+    lineup_id = models.AutoField(primary_key=True)
+    team = models.ForeignKey('Team', models.DO_NOTHING)
+    hitter1 = models.IntegerField(blank=True, null=True)
+    hitter2 = models.IntegerField(blank=True, null=True)
+    hitter3 = models.IntegerField(blank=True, null=True)
+    hitter4 = models.IntegerField(blank=True, null=True)
+    hitter5 = models.IntegerField(blank=True, null=True)
+    hitter6 = models.IntegerField(blank=True, null=True)
+    hitter7 = models.IntegerField(blank=True, null=True)
+    hitter8 = models.IntegerField(blank=True, null=True)
+    hitter9 = models.IntegerField(blank=True, null=True)
+    pitcher = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'lineup'
