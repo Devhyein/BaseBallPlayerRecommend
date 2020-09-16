@@ -10,9 +10,14 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'dashboard',
+      redirect: 'main',
       component: DashboardLayout,
       children: [
+        {
+          path: '/main',
+          name: 'main',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Main.vue')
+        },
         {
           path: '/dashboard',
           name: 'dashboard',
