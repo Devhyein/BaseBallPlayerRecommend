@@ -1,7 +1,9 @@
 package com.ssafy.bigdata.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
 import com.ssafy.bigdata.dao.team.TeamDao;
@@ -35,8 +37,9 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<StatForChart> analyzeStat(int num) {
+    public Map<String,Object> analyzeStat(int num) {
             
+        Map<String, Object> object = new HashMap<>();
         // 1. 이 팀의 최신 라인업 불러오기
         try {            
             Lineup lineup = teamDao.getLineupByTeamId(num);
@@ -131,8 +134,19 @@ public class TeamServiceImpl implements TeamService {
             power = power/toolsHitter.size();
             shoulder = shoulder/toolsHitter.size();
 
-            System.out.println("speed: "+speed+" contact: "+contact+" defense: "+defense+" power: "+power+" shoulder: "+shoulder);
-                
+            object.put("team_id", num);
+            object.put("speed", speed);
+            object.put("contact", contact);
+            object.put("defense", defense);
+            object.put("power", power);
+            object.put("shoulder", shoulder);
+            object.put("era", toolsPitcher.getEra());
+            object.put("health", toolsPitcher.getHealth());
+            object.put("control", toolsPitcher.getControll());
+            object.put("stability", toolsPitcher.getStability());
+            object.put("deterrent", toolsPitcher.getDeterrent());
+
+            return object;
             // 4. 팀 전체의 평균 스탯 분석
 
         } catch(Exception e) {
@@ -140,8 +154,6 @@ public class TeamServiceImpl implements TeamService {
             return null;
         }
 
-
-        return null;
     }
 
         
