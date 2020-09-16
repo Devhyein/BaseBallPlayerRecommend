@@ -1,6 +1,7 @@
 package com.ssafy.bigdata.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
@@ -31,14 +32,24 @@ public class PlayerServiceImpl implements PlayerService {
             if (playerlist.size() > 0) {
                 for (Player p : playerlist) {
                     p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
+                    p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
+                    p.setPlayer_age(getAgeWithBirth(p.getPlayer_birth()));
                 }
             }
-            System.out.println(playerlist.get(0).toString());
             return playerlist;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public int getAgeWithBirth(String birth){
+        int age = 0;
+        String[] ymd = birth.split("-");
+        int year = Integer.parseInt(ymd[0]);
+        age = Calendar.getInstance().get(Calendar.YEAR)-year+1;
+        return age;
     }
 
     @Override
@@ -672,7 +683,6 @@ public class PlayerServiceImpl implements PlayerService {
         float std = record/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
-        System.out.println(stat+" "+min+" "+max+" "+std);
         return std;
     }
 

@@ -14,6 +14,8 @@ public interface PlayerService {
 
 	public List<Player> searchPlayerList(String search);
 
+	public int getAgeWithBirth(String birth);
+
 	public String findPlayerPosition(int num);
 
 	public ToolsPitcher getPlayerToolsPitcher(int num) throws Exception;
