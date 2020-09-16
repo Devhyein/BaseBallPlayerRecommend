@@ -27,5 +27,17 @@ public interface PlayerDao {
 	public RecordHitter getPlayerStatsHitter(int num);
 
 	public RecordFielder getPlayerStatsFielder(int num);
+
+	public float getMaxValuePitcher(String stat);
+
+	public float getMinValuePitcher(String stat);
+
+	public float getMaxValueHitter(String stat);
+
+	public float getMinValueHitter(String stat);
+
+	public float getMaxValueFielder(String stat);
+
+	public float getMinValueFielder(String stat);
     
 }

@@ -62,23 +62,26 @@ public class PlayerController {
         // 선수 번호를 가지고 선수의 포지션 알아옴.
         String position = playerService.findPlayerPosition(num);
         HashMap<String,Object>res = new HashMap<String,Object>();
+        List<StatForChart> statList = new ArrayList<StatForChart>();
         // 투수면 ToolsPitcher, 타자면 ToolsHitter 선언
         System.out.println("POSITION : "+position);
         try {
             if(position.equals("투수")){
                 res.put("five_tool", playerService.getPlayerToolsPitcher(num));
+                res.put("stats", playerService.getPlayerStatsPitcher(num));
             } else {
                 res.put("five_tool", playerService.getPlayerToolsHitter(num));
-            }
-     
+                statList = playerService.getPlayerStatsHitter(num);
+                statList.addAll(playerService.getPlayerStatsFielder(num));
+    
+                res.put("stats", statList);
+            }   
         } catch (Exception e) {
             response.status = false;
             response.msg = "No data";
             response.data = null;
             return response;
         }
-
-
         response.status = true;
         response.msg = "success";
         response.data = res;

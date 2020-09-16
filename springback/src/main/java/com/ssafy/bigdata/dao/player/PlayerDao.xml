@@ -41,5 +41,35 @@
         And p.player_id=#{player_id}
         order by fielder_year desc limit 1
     </select>
+
+    <select id = "getMaxValuePitcher" resultType = "float" parameterType="string">
+        SELECT MAX(${stat})
+        FROM record_pitcher;
+    </select>
+
+    <select id = "getMinValuePitcher" resultType = "float" parameterType="string">
+        SELECT MIN(${stat})
+        FROM record_pitcher;
+    </select>
+
+     <select id = "getMaxValueHitter" resultType = "float" parameterType="string">
+        SELECT MAX(${stat})
+        FROM record_hitter;
+    </select>
+
+    <select id = "getMinValueHitter" resultType = "float" parameterType="string">
+        SELECT MIN(${stat})
+        FROM record_hitter;
+    </select>
+
+     <select id = "getMaxValueFielder" resultType = "float" parameterType="string">
+        SELECT MAX(${stat})
+        FROM record_fielder;
+    </select>
+
+    <select id = "getMinValueFielder" resultType = "float" parameterType="string">
+        SELECT MIN(${stat})
+        FROM record_fielder;
+    </select>
 </mapper>
 

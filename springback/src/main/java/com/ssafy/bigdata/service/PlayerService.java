@@ -24,5 +24,15 @@ public interface PlayerService {
 
 	public ToolsHitter calculateToolsHitter(RecordHitter hitter, RecordFielder fielder) throws Exception;
 
-    
+	public List<StatForChart> getPlayerStatsPitcher(int num) throws Exception;
+
+	public float calculateStatsPitcher(String stat, float record) throws Exception;
+
+	public List<StatForChart> getPlayerStatsHitter(int num) throws Exception;
+
+	public float calculateStatsHitter(String stat, float record) throws Exception;
+
+	public List<StatForChart> getPlayerStatsFielder(int num) throws Exception;
+
+	public float calculateStatsFielder(String stat, float record) throws Exception;
 }
