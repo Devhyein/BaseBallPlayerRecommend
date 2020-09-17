@@ -37,7 +37,7 @@
         <div v-if="addonRightIcon || $slots.addonRight" class="input-group-append">
           <span class="input-group-text">
               <slot name="addonRight">
-                  <i :class="addonRightIcon"></i>
+                  <i :class="addonRightIcon" @click="clickIcon"></i>
               </slot>
           </span>
         </div>
@@ -134,6 +134,9 @@ export default {
     onBlur(value) {
       this.focused = false;
       this.$emit("blur", value);
+    },
+    clickIcon() {
+      this.$emit("clickIcon")
     }
   }
 };

@@ -82,13 +82,27 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
+# MariaDB 데이터베이스와 연동: pip install mysqlclient
+DATABASES = {
+  'default': {
+  'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'legend',
+    'HOST': 'j3a110.p.ssafy.io',
+    'PORT': '3306',
+    'USER': 'legend',
+    'PASSWORD': 'legend!',
+    'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True }
+  }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
