@@ -77,7 +77,7 @@
             class="custom-table"
             tableTitle="추천 선수"
             :tableData="recommendPlayerTableData"
-            :cols="tableColumns"
+            :cols="tableColumnsForRecommendAndRemoved"
             :selectedRow="recommendSel"
             @clickRow="clickRecommendPlayer"
           />
@@ -88,7 +88,7 @@
             class="custom-table"
             tableTitle="제외된 선수"
             :tableData="removedPlayerTableData"
-            :cols="tableColumns"
+            :cols="tableColumnsForRecommendAndRemoved"
             :selectedRow="removedSel"
             @clickRow="clickRemovedPlayer"
           />
@@ -118,31 +118,20 @@ export default {
     return {
       // 팀 스탯
       teamStats: {
-        era: 0.4
-        , health: 0.6
+        era: 0
+        , health: 0
         , control: 0
-        , stability: 1
-        , deterrent: 1
-        , power: 1
-        , speed: 0.3
-        , contact: 0.6
-        , defense: 0.3
-        , shoulder: 0.6
+        , stability: 0
+        , deterrent: 0
+        , power: 0
+        , speed: 0
+        , contact: 0
+        , defense: 0
+        , shoulder: 0
       },
 
       // 수정된 팀 스탯
-      modifiedTeamStat: {
-        era: 0.6
-        , health: 1
-        , control: 1
-        , stability: 1
-        , deterrent: 1
-        , power: 1
-        , speed: 0.5
-        , contact: 0.1
-        , defense: 1
-        , shoulder: 1
-      },
+      modifiedTeamStat: {},
       isModifiedTeamStat: false,
 
       // 플레이어 스탯
@@ -158,90 +147,13 @@ export default {
       },
 
       // 라인업 리스트
-      lineupList: [
-        {
-          id: 1,
-          name: "당근 라인업"
-        },
-        {
-          id: 2,
-          name: "빠따 라인업"
-        },
-        {
-          id: 3,
-          name: "노빠구 라인업"
-        },
-      ],
+      lineupList: [],
 
       // 라인업 선수 목록
-      lineupPlayers: [
-        { id: 1234
-          , order: 1
-          , position: '우익수'
-          , name: '김타자'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 456
-          , order: 2
-          , position: '좌익수'
-          , name: '최홈런'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 112
-          , order: 4
-          , position: '포수'
-          , name: '우사인볼트'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 142
-          , order: 0
-          , position: '투수'
-          , name: '김잘던짐'
-          , player_num: 12
-          , age: 30
-        }
-      ],
+      lineupPlayers: [],
 
       // 추천 선수 목록
-      recommendPlayers: [
-        { id: 3333
-          , order: 1
-          , position: '우익수'
-          , name: '나를써요'
-          , player_num: 21
-          , age: 72
-        },
-        {
-          id: 4444
-          , order: 2
-          , position: '좌익수'
-          , name: '홍길동'
-          , player_num: 1
-          , age: 320
-        },
-        {
-          id: 5555
-          , order: 4
-          , position: '포수'
-          , name: '이번타자'
-          , player_num: 3
-          , age: 24
-        },
-        {
-          id: 6666
-          , order: 0
-          , position: '투수'
-          , name: '손미끄러짐'
-          , player_num: 29
-          , age: 19
-        }
-      ],
+      recommendPlayers: [],
 
       // 선수 목록에서 제외된 선수 목록
       removedPlayers: [],
@@ -256,10 +168,16 @@ export default {
       lineupName: "라인업 선택",
       lineupId: 0,
 
-      // 추천선수, 라인업 선수 테이블 컬럼들
+      // 라인업 선수 테이블 컬럼들
       tableColumns: [
         "At bat"
         , "Position"
+        , "Name"
+      ],
+
+      // 추천선수, 제외된 선수 테이블 컬럼들
+      tableColumnsForRecommendAndRemoved: [
+        "Position"
         , "Name"
       ],
 
@@ -289,20 +207,23 @@ export default {
         console.log(err);
       }
     );
+
+    this.teamStatData = this.computeTeamStatData();
+    this.playerStatData = this.computePlayerStatData();
   },
   methods: {
     computeLineupPlayerTableData() {
       let arr = [];
       for(let player of this.lineupPlayers) {
-        let atBat = player.order + '번 타자';
-        if(player.order == 0) {
+        let atBat = player.player_position + '번 타자';
+        if(player.player_position == 10) {
           atBat = '투수';
         }
 
         arr.push([
           atBat, 
           player.position, 
-          player.name
+          player.player_name
         ]);
       }
       return arr;
@@ -310,15 +231,9 @@ export default {
     computeRecommendPlayerTableData() {
       let arr = [];
       for(let player of this.recommendPlayers) {
-        let atBat = player.order + '번 타자';
-        if(player.order == 0) {
-          atBat = '투수';
-        }
-
         arr.push([
-          atBat, 
           player.position, 
-          player.name
+          player.player_name
         ]);
       }
       return arr;
@@ -326,15 +241,9 @@ export default {
     computeRemovedPlayerTableData() {
       let arr = [];
       for(let player of this.removedPlayers) {
-        let atBat = player.order + '번 타자';
-        if(player.order == 0) {
-          atBat = '투수';
-        }
-
         arr.push([
-          atBat, 
           player.position, 
-          player.name
+          player.player_name
         ]);
       }
       return arr;
@@ -408,22 +317,28 @@ export default {
           this.lineupPlayers = res.playerList;
           this.recommendPlayers = res.recommendList;
           this.teamStats = res.teamStat;
+
+          // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
+          delete this.teamStats.team_id;
+
+          this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+          this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
+          this.teamStatData = this.computeTeamStatData();
+
+          console.log(res);
         },
         err => {
           console.log(err);
         }
       );
-
-      this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-      this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
-      this.teamStatData = this.computeTeamStatData();
     },
     getPlayerStat(id) {
       PlayerAPI.getPlayerStat(
-        id,
+        'num=' + id,
         res => {
           console.log(res);
           this.playerStats = res;
+          this.playerStatData = this.computePlayerStatData();
         },
         err => {
           console.log(err);
@@ -435,8 +350,8 @@ export default {
         this.playerName = this.lineupPlayers[index].name;
         this.lineupSel = index;
         
-        this.getPlayerStat(this.lineupPlayers[index].id);
-        this.computePlayerStatData();
+        this.getPlayerStat(this.lineupPlayers[index].player_id);
+        this.playerName = this.lineupPlayers[index].player_name;
       }
     },
     clickRecommendPlayer(index) {
@@ -445,8 +360,8 @@ export default {
         this.recommendSel = index;
         this.removedSel = -1;
 
-        this.getPlayerStat(this.recommendPlayers[index].id);
-        this.computePlayerStatData();
+        this.getPlayerStat(this.recommendPlayers[index].player_id);
+        this.playerName = this.recommendPlayers[index].player_name;
       }
     },
     clickRemovedPlayer(index) {
@@ -455,8 +370,8 @@ export default {
         this.removedSel = index;
         this.recommendSel = -1;
 
-        this.getPlayerStat(this.removedPlayers[index].id);
-        this.computePlayerStatData();
+        this.getPlayerStat(this.removedPlayers[index].player_id);
+        this.playerName = this.removedPlayers[index].player_name;
       }
     },
     changePlayer() {
@@ -471,13 +386,29 @@ export default {
 
       // 1. recommend 와 교환
       if(this.recommendSel != -1) {
+        // 양쪽의 포지션이 다르면 교환 안함
+        if(temp.position != this.recommendPlayers[this.recommendSel].position) {
+          alert('포지션이 다르면 교환이 안됩니다!');
+          return;
+        }
+
+        this.recommendPlayers[this.recommendSel].player_position = temp.player_position;
         this.lineupPlayers[this.lineupSel] = this.recommendPlayers[this.recommendSel];
         this.recommendPlayers.splice(this.recommendSel, 1);
+        this.recommendSel = -1;
       }
       // 2. removed 와 교환
       else if(this.removedSel != -1) {
+        // 양쪽의 포지션이 다르면 교환 안함
+        if(temp.position != this.removedPlayers[this.removedSel].position) {
+          alert('포지션이 다르면 교환이 안됩니다!');
+          return;
+        }
+
+        this.removedPlayers[this.removedSel].player_position = temp.player_position;
         this.lineupPlayers[this.lineupSel] = this.removedPlayers[this.removedSel];
         this.removedPlayers.splice(this.removedSel, 1);
+        this.removedSel = -1;
       }
       
       // 선수목록에서 빠진건 무조건 removedPlayers 로 가기
@@ -495,7 +426,7 @@ export default {
         idList.push(player.player_id);
       }
       PlayerAPI.getTeamStat(
-        idList,
+        {playerList: idList},
         res => {
           this.modifiedTeamStat = res;
           this.isModifiedTeamStat = true;
