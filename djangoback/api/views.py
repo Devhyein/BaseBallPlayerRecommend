@@ -47,21 +47,21 @@ positions = {'P': 1, 'C': 2, '1B': 3, '2B': 4, '3B': 5, 'SS': 6, 'LF': 7, 'CF': 
 # 수비기록: 몇몇 빼곤 아예 없음
 
 def getPitchersRecords(request):
-    for year in range(2019, 2014, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
+    for year in range(2020, 2019, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(1, year, start)
             if (inserted == 0): # 페이지에 선수정보가 더이상 안뜨면 다음년도로 넘어감 
                 break
 
 def getHittersRecords(request):
-    for year in range(2019, 2014, -1):
+    for year in range(2020, 2019, -1):
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(0, year, start)
             if (inserted == 0): 
                 break
 
 def getFieldersRecords(request):
-    for year in range(2019, 2014, -1):
+    for year in range(2020, 2019, -1):
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(2, year, start)
             if (inserted == 0): 
