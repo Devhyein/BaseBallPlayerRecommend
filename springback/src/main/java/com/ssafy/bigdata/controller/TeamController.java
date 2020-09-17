@@ -220,11 +220,14 @@ public class TeamController {
     @PostMapping("/recommend1/change")
     public Object search_player(@RequestBody final Map<String, Object> request) {
         final RestResponse response = new RestResponse();
+        /*
         List<Integer> playerList = new ArrayList<>();
         List<String> obj = (List<String>) request.get("playerList");
         for(String s : obj){
             playerList.add(Integer.parseInt(s));
         }
+        */
+        List<Integer> playerList = (List<Integer>) request.get("playerList");
         TeamStat data = new TeamStat();
         // 팀 분석 하기 위한 서비스 호출
         try{
