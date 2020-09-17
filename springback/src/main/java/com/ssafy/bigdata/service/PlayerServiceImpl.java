@@ -351,10 +351,7 @@ public class PlayerServiceImpl implements PlayerService {
         float max = playerDao.getMaxValuePitcher(stat);
         float min = playerDao.getMinValuePitcher(stat);
         
-        if(record <0)
-        record = Math.abs(min-record);
-        
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
@@ -534,11 +531,8 @@ public class PlayerServiceImpl implements PlayerService {
     public float calculateStatsHitter(String stat, float record) throws Exception{
         float max = playerDao.getMaxValueHitter(stat);
         float min = playerDao.getMinValueHitter(stat);
-
-        if(record <0)
-        record = Math.abs(min-record);
         
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
@@ -676,11 +670,8 @@ public class PlayerServiceImpl implements PlayerService {
     public float calculateStatsFielder(String stat, float record) throws Exception{
         float max = playerDao.getMaxValueFielder(stat);
         float min = playerDao.getMinValueFielder(stat);
-
-        if(record <0)
-        record = Math.abs(min-record);
         
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
