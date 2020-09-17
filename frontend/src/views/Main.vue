@@ -11,7 +11,7 @@
               title="Team analysis"
               type="gradient-orange"
               sub-title="10개의 구단"
-              icon="img/icons/KBO.png"
+              icon="ni ni-trophy"
               class="mb-4 mb-xl-0"
             >
               <template slot="footer">
@@ -28,7 +28,7 @@
               title="Player Recommendation"
               type="gradient-red"
               sub-title="35,390명의 선수"
-              icon="img/icons/Player.png"
+              icon="ni ni-user-run"
               class="mb-4 mb-xl-0"
             >
               <template slot="footer">
@@ -45,7 +45,7 @@
               title="Lineup service"
               type="gradient-green"
               sub-title="비교할 수 있는 라인업"
-              icon="img/icons/LineUp.jpg"
+              icon="ni ni-align-left-2"
               class="mb-4 mb-xl-0"
             >
               <template slot="footer">
@@ -62,7 +62,7 @@
               title="Custom service"
               type="gradient-info"
               sub-title="당신이 찾는 그 선수"
-              icon="img/icons/report.png"
+              icon="ni ni-circle-08"
               class="mb-4 mb-xl-0"
             >
               <template slot="footer">

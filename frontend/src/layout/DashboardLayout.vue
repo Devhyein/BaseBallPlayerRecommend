@@ -1,16 +1,16 @@
 <template>
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
-    <side-bar
-      :background-color="sidebarBackground"
-      short-title="Argon"
-      title="Argon"
-    >
+    <side-bar :background-color="sidebarBackground" short-title="Argon" title="Argon">
       <template slot="links">
-        <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}"/>
-        <sidebar-item :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"/>
-        <sidebar-item :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"/>
-        <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
-
+        <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}" />
+        <sidebar-item
+          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"
+        />
+        <sidebar-item
+          :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
+        />
+        <!--<sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
+        -->
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
         <sidebar-item :link="{name: 'Icons', icon: 'ni ni-planet text-blue', path: '/icons'}"/>
@@ -20,7 +20,6 @@
         <sidebar-item :link="{name: 'Login', icon: 'ni ni-key-25 text-info', path: '/login'}"/>
         <sidebar-item :link="{name: 'Register', icon: 'ni ni-circle-08 text-pink', path: '/register'}"/>
         -->
-
       </template>
     </side-bar>
     <div class="main-content" :data="sidebarBackground">
@@ -37,29 +36,29 @@
   </div>
 </template>
 <script>
-  import DashboardNavbar from './DashboardNavbar.vue';
-  import ContentFooter from './ContentFooter.vue';
-  import { FadeTransition } from 'vue2-transitions';
+import DashboardNavbar from "./DashboardNavbar.vue";
+import ContentFooter from "./ContentFooter.vue";
+import { FadeTransition } from "vue2-transitions";
 
-  export default {
-    components: {
-      DashboardNavbar,
-      ContentFooter,
-      FadeTransition
-    },
-    data() {
-      return {
-        sidebarBackground: 'vue' //vue|blue|orange|green|red|primary
-      };
-    },
-    methods: {
-      toggleSidebar() {
-        if (this.$sidebar.showSidebar) {
-          this.$sidebar.displaySidebar(false);
-        }
+export default {
+  components: {
+    DashboardNavbar,
+    ContentFooter,
+    FadeTransition,
+  },
+  data() {
+    return {
+      sidebarBackground: "vue", //vue|blue|orange|green|red|primary
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      if (this.$sidebar.showSidebar) {
+        this.$sidebar.displaySidebar(false);
       }
-    }
-  };
+    },
+  },
+};
 </script>
 <style lang="scss">
 </style>

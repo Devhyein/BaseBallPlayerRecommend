@@ -14,9 +14,7 @@
             class="icon icon-shape text-white rounded-circle shadow"
             :class="[`bg-${type}`, iconClasses]"
           >
-            <i>
-              <img :src="icon" />
-            </i>
+            <i :class="icon"></i>
           </div>
         </slot>
       </div>
