@@ -136,6 +136,8 @@ export default {
   computed: {
     cols() {
       let arr = [];
+
+      arr.push("항목");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_name);
       }
@@ -143,6 +145,8 @@ export default {
     },
     vals() {
       let arr = [];
+
+      arr.push("상대 값(0 ~ 1)");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_std);
       }
@@ -150,6 +154,8 @@ export default {
     },
     originVals() {
       let arr = [];
+
+      arr.push("값");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_value);
       }
@@ -173,6 +179,7 @@ export default {
       let arr = [];
       let mean_arr = [];
 
+      mean_arr.push("평균");
       for (let stat of this.playerStats.stats) {
         mean_arr.push(stat.stat_mean);
       }
