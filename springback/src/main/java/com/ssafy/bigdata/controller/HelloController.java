@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ssafy.bigdata.dto.RestResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/spring")
 public class HelloController {
+
+    @Value("${spring.datasource.url}")
+    private String dbURL;
     
     @ApiOperation(value = "테스트에여")
     @GetMapping("/hello")
@@ -27,7 +31,7 @@ public class HelloController {
         list.add("하세오");
 
         response.status = true;
-        response.msg = "안녕하세요!";
+        response.msg = dbURL;
         response.data = list;
 
         return response;

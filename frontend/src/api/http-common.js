@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost:8902"
+    baseURL: process.env.VUE_APP_SPRING_ADDR
 });

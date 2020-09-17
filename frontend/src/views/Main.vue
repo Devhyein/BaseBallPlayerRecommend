@@ -79,6 +79,9 @@
 <script>
 import MainCarousel from "@/components/Main/MainCarousel";
 export default {
+  created() {
+    console.log("Spring URL: " + process.env.VUE_APP_SPRING_ADDR);
+  },
   mounted() {},
   components: {
     MainCarousel,
