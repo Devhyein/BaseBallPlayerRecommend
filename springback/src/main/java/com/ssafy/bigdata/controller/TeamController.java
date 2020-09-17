@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,7 @@ public class TeamController {
                 // HashMap<String,Object>res = new HashMap<String,Object>();
                 for(int player_num : dat){
                     // 각 선수의 번호, 이름, 나이, 포지션, 팀
+                    System.out.println("**  "+player_num);
                     try {
                         recommendlist.add(playerDao.searchPlayerById(player_num));
                         if (recommendlist.size() > 0) {
@@ -187,22 +189,26 @@ public class TeamController {
         // 파이썬으로 부터 리턴
         if(responseCode == 200) {
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            List<Integer> recom_player = new ArrayList<Integer>();
-            // while()
-
-            // 여기서 부터 데이터 받아서 recom_player에 추가하는 작업
-            
-            // 임시 데이터
-            recom_player.add(4107594);
-            recom_player.add(45076805);
-            recom_player.add(8151975);
-            recom_player.add(67440725);
-            recom_player.add(66368441);
+            String st = br.readLine();
+            List<Integer> list = new ArrayList<Integer>();  
+            System.out.println("** "+st);
+            String line = "";          
+            String digit = "";
+            while (st.length()>0) {
+                String ch = st.substring(0, 1);
+                st = st.substring(1);
+                if(Character.isDigit(ch.charAt(0))){
+                    digit += ch.charAt(0);
+                } else if(ch.charAt(0)==',' || ch.charAt(0)==']'){
+                    list.add(Integer.parseInt(digit));
+                    digit = "";
+                }
+                line+=ch;
+            }
 
             result.status = true;
             result.msg = "success";
-            result.data = recom_player;
+            result.data = list;
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             result.status = false;
