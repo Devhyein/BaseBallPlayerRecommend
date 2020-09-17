@@ -18,17 +18,17 @@
           {
             img: true,
             src:
-              "https://mdbootstrap.com/img/Photos/Slides/img%20(15).jpg"
+              "/img/news1.jpg"
           },
           {
             img: true,
             src:
-              "https://mdbootstrap.com/img/Photos/Slides/img%20(16).jpg"
+              "/img/news2.jpg"
           },
           {
             img: true,
             src:
-              "https://mdbootstrap.com/img/Photos/Slides/img%20(17).jpg"
+              "/img/news3.jpg"
           }
         ]
       };
