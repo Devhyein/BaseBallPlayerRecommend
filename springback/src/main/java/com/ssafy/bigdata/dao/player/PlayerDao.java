@@ -18,6 +18,8 @@ public interface PlayerDao {
 
 	public List<Player> searchPlayerList(String search);
 
+	public Player searchPlayerById(int player_id);
+
 	public String findTeamName(int team_id);
 
 	public String findPlayerPosition(int num);
