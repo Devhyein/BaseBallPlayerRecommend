@@ -43,8 +43,8 @@ public class TeamServiceImpl implements TeamService {
         TeamStat stat = new TeamStat();
         // 1. 이 팀의 최신 라인업 불러오기
         try {            
-            Lineup lineup = teamDao.getLineupByTeamId(num);
-            
+            Lineup lineup = teamDao.getPlayerListByLineup(num);
+            System.out.println("LINEUP : "+lineup);
             // 2. 라인업의 플레이어들을 검색해서 record기록 가져오기
             // 이 레코드는 5개만
             // 타자의 5개 + 투수의 5개 해서 10개 데이터
@@ -208,9 +208,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Integer> getPlayerListByLineup(int lineup) throws Exception{
         List<Integer> res = new ArrayList<>();
-        System.out.println("-----------------------------");
         Lineup line=teamDao.getPlayerListByLineup(lineup);
-        System.out.println(line);
         res.add(line.getHitter1());        
         res.add(line.getHitter2());
         res.add(line.getHitter3());

@@ -101,18 +101,17 @@ public class TeamController {
         // 라인업의 선수 반환
         try {
             List<Integer> list = teamService.getPlayerListByLineup(lineup);
-            System.out.println("================");
-            System.out.println(list.get(0));
                 // 각 선수의 번호, 이름, 나이, 포지션, 팀
             for(int player_num : list){
-                // 각 선수의 번호, 이름, 나이, 포지션, 팀
                 try {
                     playerlist.add(playerDao.searchPlayerById(player_num));
+                    int index = 1; //타순 
                     if (playerlist.size() > 0) {
                         for (Player p : playerlist) {
                             p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
                             p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                             p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
+                            p.setPlayer_position(index++);
                         }
                     }
                 } catch (Exception e) {
@@ -128,14 +127,13 @@ public class TeamController {
         try{
             data = teamService.analyzeStat(lineup);
        
-            System.out.println("###    "+data);
+            System.out.println("TEAM STAT : "+data);
             // 여기서 분석한 데이터 -> 파이썬으로 전송
             try {
                 List<Integer> dat = (List<Integer>) sendToPython(data).getBody().data;
                 // HashMap<String,Object>res = new HashMap<String,Object>();
                 for(int player_num : dat){
                     // 각 선수의 번호, 이름, 나이, 포지션, 팀
-                    System.out.println("**  "+player_num);
                     try {
                         recommendlist.add(playerDao.searchPlayerById(player_num));
                         if (recommendlist.size() > 0) {
