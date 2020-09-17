@@ -23,7 +23,7 @@ export default {
       extraOptions: {
           maintainAspectRatio: false,
           legend: {
-            display: false
+            display: true
           },
           responsive: true,
           scale: {
@@ -42,11 +42,16 @@ export default {
   },
   computed: {
     chartData() {
+      let dataset = [];
+      dataset.push(this.data.data);
+
+      if(this.data.data2) {
+        dataset.push(this.data.data2);
+      }
+
       let cData = {
         labels: this.data.label,
-        datasets: [{
-          data: this.data.data,
-        }],
+        datasets: dataset,
       };
 
       return cData;

@@ -106,6 +106,9 @@ import CustomRadarChart from "@/components/Player/CustomRadarChart";
 // Tables
 import CustomTable from "@/views/Tables/CustomTable";
 
+// API
+import PlayerAPI from "@/api/PlayerAPI";
+
 export default {
   components: {
     CustomRadarChart,
@@ -126,6 +129,21 @@ export default {
         , defense: 0.3
         , shoulder: 0.6
       },
+
+      // 수정된 팀 스탯
+      modifiedTeamStat: {
+        era: 0.6
+        , health: 1
+        , control: 1
+        , stability: 1
+        , deterrent: 1
+        , power: 1
+        , speed: 0.5
+        , contact: 0.1
+        , defense: 1
+        , shoulder: 1
+      },
+      isModifiedTeamStat: false,
 
       // 플레이어 스탯
       playerStats: {
@@ -262,10 +280,15 @@ export default {
     }
   },
   created() {
-    this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-    this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
-    this.teamStatData = this.computeTeamStatData();
-    this.playerStatData = this.computePlayerStatData();
+    PlayerAPI.getLineupList(
+      "none=none",
+      res => {
+        this.lineupList = res;
+      },
+      err => {
+        console.log(err);
+      }
+    );
   },
   methods: {
     computeLineupPlayerTableData() {
@@ -322,12 +345,35 @@ export default {
       let data = [];
 
       label = Object.keys(this.teamStats);
+      obj.label = label;
+      
       for(let key of label) {
         data.push(this.teamStats[key]);
       }
+      obj.data = {
+        label: '수정 전',
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data
+      };
 
-      obj.label = label;
-      obj.data = data;
+      if(this.isModifiedTeamStat) {
+        let data2 = [];
+        for(let key of label) {
+          data2.push(this.modifiedTeamStat[key]);
+        }
+        obj.data2 = {
+          label: '수정 후',
+          backgroundColor: "rgba(100, 100, 255, 0.2)",
+          borderColor: "rgb(100, 100, 255)",
+          borderWidth: 1,
+          pointBackgroundColor: "rgb(100, 100, 255)",
+          data: data2
+        };
+      }
+
       return obj;
     },
     computePlayerStatData() {
@@ -336,22 +382,61 @@ export default {
       let data = [];
 
       label = Object.keys(this.playerStats.five_tool);
+      obj.label = label;
+      
       for(let key of label) {
         data.push(this.playerStats.five_tool[key]);
       }
+      obj.data = {
+        label: 'Player stat',
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data
+      };
 
-      obj.label = label;
-      obj.data = data;
       return obj;
     },
     changeLineup(id, name) {
       this.lineupId = id;
       this.lineupName = name;
+
+      PlayerAPI.getTeamStatWithRecommend(
+        "lineup=" + id,
+        res => {
+          this.lineupPlayers = res.playerList;
+          this.recommendPlayers = res.recommendList;
+          this.teamStats = res.teamStat;
+        },
+        err => {
+          console.log(err);
+        }
+      );
+
+      this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+      this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
+      this.teamStatData = this.computeTeamStatData();
+    },
+    getPlayerStat(id) {
+      PlayerAPI.getPlayerStat(
+        id,
+        res => {
+          console.log(res);
+          this.playerStats = res;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     },
     clickLineupPlayer(index) {
       if(this.lineupSel != index) {
         this.playerName = this.lineupPlayers[index].name;
         this.lineupSel = index;
+        
+        this.getPlayerStat(this.lineupPlayers[index].id);
+        this.computePlayerStatData();
       }
     },
     clickRecommendPlayer(index) {
@@ -359,6 +444,9 @@ export default {
         this.playerName = this.recommendPlayers[index].name;
         this.recommendSel = index;
         this.removedSel = -1;
+
+        this.getPlayerStat(this.recommendPlayers[index].id);
+        this.computePlayerStatData();
       }
     },
     clickRemovedPlayer(index) {
@@ -366,6 +454,9 @@ export default {
         this.playerName = this.removedPlayers[index].name;
         this.removedSel = index;
         this.recommendSel = -1;
+
+        this.getPlayerStat(this.removedPlayers[index].id);
+        this.computePlayerStatData();
       }
     },
     changePlayer() {
@@ -395,6 +486,25 @@ export default {
       this.lineupPlayerTableData = this.computeLineupPlayerTableData();
       this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
       this.removedPlayerTableData = this.computeRemovedPlayerTableData();
+
+      // 선수 교체가 일어났으므로
+      // 바뀐 팀 스탯도 보여주기
+      // 데이터는 라인업 선수들의 id 리스트
+      let idList = [];
+      for(let player of this.lineupPlayers) {
+        idList.push(player.player_id);
+      }
+      PlayerAPI.getTeamStat(
+        idList,
+        res => {
+          this.modifiedTeamStat = res;
+          this.isModifiedTeamStat = true;
+          this.teamStatData = this.computeTeamStatData();
+        },
+        err => {
+          console.log(err);
+        }
+      )
     }
   }
 };

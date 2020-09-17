@@ -84,7 +84,7 @@ import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
-import PlayerAPI from "@/api/PlayerAPI"
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   components: {
@@ -187,12 +187,20 @@ export default {
       let data = [];
 
       label = Object.keys(this.playerStats.five_tool);
+      obj.label = label;
+      
       for(let key of label) {
         data.push(this.playerStats.five_tool[key]);
       }
+      obj.data = {
+        label: 'Player stat',
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data
+      };
 
-      obj.label = label;
-      obj.data = data;
       return obj;
     }
   },
@@ -213,7 +221,7 @@ export default {
     },
     search() {
       PlayerAPI.getPlayerList(
-        this.searchVal,
+        'search=' + this.searchVal,
         res => {
           this.playerList = res;
           this.resetPlayerListTable();
@@ -242,9 +250,22 @@ export default {
       this.playerName = this.playerListShowData[index].player_name;
 
       PlayerAPI.getPlayerStat(
-        this.playerListShowData[index].player_id,
+        'num=' + this.playerListShowData[index].player_id,
         res => {
-          console.log(res);
+          if(res == null) {
+            alert("선수의 스탯 정보가 없습니다!");
+            res = {
+              five_tool: {
+                power: 0,
+                speed: 0,
+                contact: 0,
+                defense: 0,
+                shoulder: 0,
+              },
+              stats: [],
+            };
+          }
+
           this.playerStats = res;
         },
         err => {
