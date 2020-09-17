@@ -26,10 +26,12 @@ pwd
 # Remove current image
 docker rmi -f $SPRING_IMG || true
 docker rmi -f $FRONT_IMG || true
+docker rmi -f $DJANGO_IMG || true
 
 # Remove and force stop current running container
 docker rm -f $SPRING_DOCKER || true
 docker rm -f $FRONT_DOCKER || true
+docker rm -f $DJANGO_DOCKER || true
 
 ################################################
 ##  Step 3 : Build and Deploy spring project  ##
@@ -66,3 +68,11 @@ docker run --name $FRONT_DOCKER -p 8901:8901 -d $FRONT_IMG
 ################################################
 ##  Step 5 : Build and Deploy Django project  ##
 ################################################
+cd ../djangoback
+pwd
+
+# Make docker image
+docker build -t $DJANGO_IMG .
+
+# Create docker container and run
+docker run --name $DJANGO_DOCKER --network="host" -d $DJANGO_IMG
