@@ -85,12 +85,12 @@ public class PlayerServiceImpl implements PlayerService {
     public ToolsPitcher calculateToolsPitcher(RecordPitcher record) throws Exception{
         ToolsPitcher tools = new ToolsPitcher();
         
-        tools.setEra((float) (Math.round((record.getPitcher_era_plus() / 370.4) * 100) / 100.0));
+        tools.setEra((float) (Math.round((record.getPitcher_era_plus() / 651.9) * 100) / 100.0));
 
         int game = record.getPitcher_g() * 9;
         float inning = record.getPitcher_ip();
         if (game != 0)
-            tools.setHealth((float) (Math.round(((inning / game) / 67.68) * 100) / 100.));
+            tools.setHealth((float) (Math.round(((inning / game) / 0.84) * 100) / 100.));
         else
             tools.setHealth(0);
 
@@ -351,10 +351,7 @@ public class PlayerServiceImpl implements PlayerService {
         float max = playerDao.getMaxValuePitcher(stat);
         float min = playerDao.getMinValuePitcher(stat);
         
-        if(record <0)
-        record = Math.abs(min-record);
-        
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
@@ -534,11 +531,8 @@ public class PlayerServiceImpl implements PlayerService {
     public float calculateStatsHitter(String stat, float record) throws Exception{
         float max = playerDao.getMaxValueHitter(stat);
         float min = playerDao.getMinValueHitter(stat);
-
-        if(record <0)
-        record = Math.abs(min-record);
         
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
@@ -676,11 +670,8 @@ public class PlayerServiceImpl implements PlayerService {
     public float calculateStatsFielder(String stat, float record) throws Exception{
         float max = playerDao.getMaxValueFielder(stat);
         float min = playerDao.getMinValueFielder(stat);
-
-        if(record <0)
-        record = Math.abs(min-record);
         
-        float std = record/(max-min);
+        float std = (record-min)/(max-min);
         std = (float) (Math.round(std * 100) / 100.0);
         
         return std;
