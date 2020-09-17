@@ -1,6 +1,6 @@
 <template>
   <div>
-    <base-header type="gradient-success" class="pb-6 pb-6 pt-5 pt-md-6">
+    <base-header type="translucent-default" class="pb-6 pb-6 pt-5 pt-md-6">
       <main-carousel></main-carousel>
     </base-header>
     <br>
