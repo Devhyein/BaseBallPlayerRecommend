@@ -9,6 +9,7 @@
         <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}"/>
         <sidebar-item :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"/>
         <sidebar-item :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"/>
+        <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
 
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>

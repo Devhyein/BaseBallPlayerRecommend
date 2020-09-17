@@ -35,13 +35,18 @@ export default new Router({
           path: '/recommend',
           name: 'recommend',
           component: () => import('./views/RecommendPlayer.vue')
+        },{
+          path: '/comparisonTeam',
+          name: 'comparisonTeam',
+          component: () => import('./views/comparisonTeam.vue')
         },
-        /*
+        
         {
           path: '/icons',
           name: 'icons',
           component: () => import('./views/Icons.vue')
         },
+        /*
         {
           path: '/profile',
           name: 'profile',
