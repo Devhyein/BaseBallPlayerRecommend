@@ -6,8 +6,10 @@ public class Player {
     private String player_name;
     private int player_num;
     private int player_age;
+    private String player_birth;
     private int player_position;
     private String player_team;
+    private String position;
 
     public int getPlayer_id() {
         return player_id;
@@ -65,22 +67,43 @@ public class Player {
         this.player_team = player_team;
     }
 
-    @Override
-    public String toString() {
-        return "Player [player_age=" + player_age + ", player_id=" + player_id + ", player_name=" + player_name
-                + ", player_num=" + player_num + ", player_position=" + player_position + ", team_id=" + player_team + "]";
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getPlayer_birth() {
+        return player_birth;
+    }
+
+    public void setPlayer_birth(String player_birth) {
+        this.player_birth = player_birth;
     }
 
     public Player() {
     }
 
-    public Player(int player_id, int team_id, String player_name, int player_num, int player_age, int player_position) {
+    public Player(int player_id, int team_id, String player_name, int player_num, int player_age, String player_birth,
+            int player_position, String player_team, String position) {
         this.player_id = player_id;
         this.team_id = team_id;
         this.player_name = player_name;
         this.player_num = player_num;
         this.player_age = player_age;
+        this.player_birth = player_birth;
         this.player_position = player_position;
+        this.player_team = player_team;
+        this.position = position;
     }
 
+    @Override
+    public String toString() {
+        return "Player [player_age=" + player_age + ", player_birth=" + player_birth + ", player_id=" + player_id
+                + ", player_name=" + player_name + ", player_num=" + player_num + ", player_position=" + player_position
+                + ", player_team=" + player_team + ", position=" + position + ", team_id=" + team_id + "]";
+    }
+    
 }
