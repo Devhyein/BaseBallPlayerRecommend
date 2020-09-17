@@ -7,7 +7,7 @@
 <mapper namespace="com.ssafy.bigdata.dao.team.TeamDao">
 
     <select id="getLineupByTeamId" resultType="Lineup" parameterType="int">
-        select * from user_lineup where team_id=#{team_id} 
+        select * from lineup where team_id=#{team_id} 
         order by lineup_id desc limit 1
     </select>
 
