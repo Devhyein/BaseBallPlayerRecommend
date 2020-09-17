@@ -10,9 +10,14 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: 'dashboard',
+      redirect: 'main',
       component: DashboardLayout,
       children: [
+        {
+          path: '/main',
+          name: 'main',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Main.vue')
+        },
         {
           path: '/dashboard',
           name: 'dashboard',
@@ -27,25 +32,37 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/SearchPlayer.vue')
         },
         {
+          path: '/recommend',
+          name: 'recommend',
+          component: () => import('./views/RecommendPlayer.vue')
+        },{
+          path: '/comparisonTeam',
+          name: 'comparisonTeam',
+          component: () => import('./views/comparisonTeam.vue')
+        },
+        
+        {
           path: '/icons',
           name: 'icons',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Icons.vue')
+          component: () => import('./views/Icons.vue')
         },
+        /*
         {
           path: '/profile',
           name: 'profile',
-          component: () => import(/* webpackChunkName: "demo" */ './views/UserProfile.vue')
+          component: () => import('./views/UserProfile.vue')
         },
         {
           path: '/maps',
           name: 'maps',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Maps.vue')
+          component: () => import('./views/Maps.vue')
         },
         {
           path: '/tables',
           name: 'tables',
-          component: () => import(/* webpackChunkName: "demo" */ './views/Tables.vue')
+          component: () => import('./views/Tables.vue')
         }
+        */
       ]
     },
     {

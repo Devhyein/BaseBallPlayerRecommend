@@ -1,32 +1,46 @@
 <template>
   <div>
-    <base-header type="gradient-success" class="pb-6 pb-8 pt-5 pt-md-8"></base-header>
+    <base-header type="translucent-default" class="pb-5 pt-5"></base-header>
 
-    <!--Charts-->
-    <div class="container-fluid mt--7">
+    <!--Content-->
+    <div class="container-fluid mt-4">
       <!--Search form-->
-      <div class="row">
-        <base-dropdown class="col-lg-2 mb-2">
-          <base-button slot="title" type="secondary" class="dropdown-toggle">{{searchType}}</base-button>
-          <span class="dropdown-item" @click="changeSearchType('Name')">Name</span>
-          <span class="dropdown-item" @click="changeSearchType('Team')">Team</span>
-          <span class="dropdown-item" @click="changeSearchType('Position')">Position</span>
-        </base-dropdown>
-        <base-input
-          placeholder="Search"
-          class="input-group-alternative col-lg-10"
-          alternative
-          addon-right-icon="fas fa-search"
-          v-model="searchVal"
-          @clickIcon="search"
-        ></base-input>
-      </div>
+        <form class="navbar-search form-inline">
+            <base-dropdown class="text-center">
+              <base-button slot="title" type="secondary" class="dropdown-toggle">{{searchType}}</base-button>
+              <span class="dropdown-item" @click="changeSearchType('Name')">Name</span>
+              <span class="dropdown-item" @click="changeSearchType('Team')">Team</span>
+              <span class="dropdown-item" @click="changeSearchType('Position')">Position</span>
+            </base-dropdown>
+            <div class="form-group mb-0">
+                <base-input
+                  placeholder="Search"
+                  class="input-group-alternative"
+                  alternative
+                  addon-right-icon="fas fa-search"
+                  v-model="searchVal"
+                  @clickIcon="search"
+                ></base-input>
+            </div>
+        </form>
       <!--End search form-->
 
       <!--Table-->
       <div class="row mt-5">
-        <div class="col-xl-12 mb-5">
-          <player-list-table :tableData="playerList" :clickRow="playerStat"/>
+        <div class="col mb-5">
+          <custom-table
+            tableTitle="Player List"
+            :tableData="playerListTableData"
+            :cols="playerListTableCols"
+            @clickRow="selectPlayer"
+          />
+          <div>
+            <base-pagination
+              :page-count="pageCount"
+              v-model="pageVal"
+              align="center"
+            />
+          </div>
         </div>
       </div>
       <!--End table-->
@@ -35,12 +49,16 @@
       <div class="row">
         <!-- 5Tool Chart -->
         <div class="col-xl-4 mb-5 mb-xl-0">
-          <player-radar-chart :five_tool="playerStats.five_tool"></player-radar-chart>
+          <custom-radar-chart
+            title="Player stat"
+            :subTitle="playerName"
+            :data="statRadarData"
+            :type="chartType" />
         </div>
 
         <!--Bar Chart-->
         <div class="col-xl-8">
-          <player-stat-chart :cols="cols" :vals="vals" :originVals="originVals" />
+          <player-stat-chart :cols="cols" :vals="vals" :originVals="originVals" :type="chartType"/>
         </div>
       </div>
       <!-- End charts-->
@@ -59,27 +77,41 @@
 <script>
 // Charts
 import PlayerStatChart from "@/components/Player/PlayerStatChart";
-import PlayerRadarChart from "@/components/Player/PlayerRadarChart";
+import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import PlayerListTable from "./Tables/PlayerListTable";
+import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
-import PlayerAPI from "@/api/PlayerAPI"
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   components: {
     PlayerStatChart,
-    PlayerRadarChart,
+    CustomRadarChart,
 
-    PlayerListTable,
+    CustomTable,
     PlayerStatTable,
   },
   data() {
     return {
       ////////////////////////////////////////////////////////////////////////////
       playerList: [],
+      playerListTableCols: [
+        "Name"
+        , "Team"
+        , "Position"
+        , "Number"
+        , "Age"
+      ],
+
+      playerListShowData: [],
+      pageCount: 1,
+      pageVal: 1,
+      from: 0,
+      total: 0,
+
       playerStats: {
         five_tool: {
           power: 0,
@@ -95,7 +127,11 @@ export default {
 
       searchType: "Name",
       searchVal: "",
-    };
+
+      playerName: "Select player",
+
+      chartType: "secondary"
+    }
   },
   computed: {
     cols() {
@@ -119,6 +155,19 @@ export default {
       }
       return arr;
     },
+    playerListTableData() {
+      let arr = [];
+      for(let player of this.playerListShowData) {
+        arr.push([
+          player.player_name, 
+          player.player_team, 
+          player.position,
+          player.player_num,
+          player.player_age
+        ]);
+      }
+      return arr;
+    },
     statTableData() {
       // data = [[], [], []]
       let arr = [];
@@ -132,6 +181,39 @@ export default {
       arr.push(this.vals);
       return arr;
     },
+    statRadarData() {
+      let obj = {};
+      let label = [];
+      let data = [];
+
+      label = Object.keys(this.playerStats.five_tool);
+      obj.label = label;
+      
+      for(let key of label) {
+        data.push(this.playerStats.five_tool[key]);
+      }
+      obj.data = {
+        label: 'Player stat',
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data
+      };
+
+      return obj;
+    }
+  },
+  watch: {
+    pageVal(newVal) {
+      // 1: 0 to 5
+      // 2: 5 to 10
+      // 3: 10 to 15
+      this.from = (newVal - 1) * 5
+      let to = this.from + 5
+      if(to > this.total) to = this.total;
+      this.playerListShowData = this.playerList.slice(this.from, to);
+    }
   },
   methods: {
     changeSearchType(t) {
@@ -139,17 +221,57 @@ export default {
     },
     search() {
       PlayerAPI.getPlayerList(
-        this.searchVal,
+        'search=' + this.searchVal,
         res => {
           this.playerList = res;
+          this.resetPlayerListTable();
         },
         err => {
           console.log(err);
         }
       )
     },
-    playerStat(id) {
-      alert(id);
+    resetPlayerListTable() {
+      this.total = this.playerList.length;
+      this.from = 0;
+      let to = 5;
+
+      let v = this.total - 1;
+      if(v < 0) v = 0;
+      this.pageCount = parseInt(v / 5 + 1);
+      this.pageVal = 1;
+
+      if(to > this.total) to = this.total;
+
+      this.playerListShowData = this.playerList.slice(this.from, to);
+    },
+    selectPlayer(index) {
+      console.log(this.playerListShowData[index])
+      this.playerName = this.playerListShowData[index].player_name;
+
+      PlayerAPI.getPlayerStat(
+        'num=' + this.playerListShowData[index].player_id,
+        res => {
+          if(res == null) {
+            alert("선수의 스탯 정보가 없습니다!");
+            res = {
+              five_tool: {
+                power: 0,
+                speed: 0,
+                contact: 0,
+                defense: 0,
+                shoulder: 0,
+              },
+              stats: [],
+            };
+          }
+
+          this.playerStats = res;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     }
   },
   mounted() {},

@@ -1,9 +1,9 @@
 <template>
-  <card type="default" header-classes="bg-transparent">
+  <card :type="type" header-classes="bg-transparent">
     <div slot="header" class="row align-items-center">
       <div class="col">
         <h6 class="text-uppercase text-muted ls-1 mb-1">Stat graph</h6>
-        <h5 class="h3 mb-0 text-secondary">All Stats</h5>
+        <h5 class="h3 mb-0 text-default">All Stats</h5>
       </div>
     </div>
 
@@ -48,6 +48,7 @@
       cols: Array
       , vals: Array
       , originVals: Array
+      , type: String
     },
     computed: {
       chartData() {
