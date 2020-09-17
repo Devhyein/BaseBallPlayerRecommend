@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
+import com.ssafy.bigdata.dto.Lineup;
+import com.ssafy.bigdata.dto.LineupList;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.StatForChart;
+import com.ssafy.bigdata.dto.TeamStat;
 import com.ssafy.bigdata.dto.ToolsHitter;
 import com.ssafy.bigdata.dto.ToolsPitcher;
 import com.ssafy.bigdata.service.PlayerService;
@@ -30,6 +33,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,21 +65,45 @@ public class TeamController {
     public void setPlayerServiceImpl(PlayerServiceImpl playerServiceImpl) {
         this.playerServiceImpl = playerServiceImpl;
     }
-
-    @ApiOperation(value = "팀 분석")
-    @GetMapping("/info/team/defaultstat")
-    public Object search_player(@RequestParam int num) {
+    
+    // 우선 2개만
+    @ApiOperation(value = "라인업 목록")
+    @GetMapping("/team/lineup")
+    public Object get_lineupList() {
         final RestResponse response = new RestResponse();
+        List<LineupList>res = new ArrayList<LineupList>();
 
-        // 팀 분석 하기 위한 서비스 호출
-        Map<String,Object> data = teamService.analyzeStat(num);
+        List<Lineup> lineupList = teamService.getLineupList();
+
+        for(Lineup list : lineupList){
+            LineupList lineup = new LineupList();
+            lineup.setId(list.getLineup_id());
+            lineup.setName(playerDao.findTeamName(list.getTeam_id()));
+            res.add(lineup);
+        }
+
+        response.status = true;
+        response.msg = "success";
+        response.data = res;
+        return response;
+    }
+
+
+    @ApiOperation(value = "선수 리스트, 팀 스탯, 추천 선수")
+    @GetMapping("/recommend1")
+    public Object search_player(@RequestParam int lineup) {
+        final RestResponse response = new RestResponse();
+        HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
+        List<Player> recommendlist = new ArrayList<Player>();
 
-        // 여기서 분석한 데이터 -> 파이썬으로 전송
+        // 라인업의 선수 반환
         try {
-            List<Integer> dat = (List<Integer>) sendToPython(data).getBody().data;
-            // HashMap<String,Object>res = new HashMap<String,Object>();
-            for(int player_num : dat){
+            List<Integer> list = teamService.getPlayerListByLineup(lineup);
+            System.out.println("================");
+            System.out.println(list.get(0));
+                // 각 선수의 번호, 이름, 나이, 포지션, 팀
+            for(int player_num : list){
                 // 각 선수의 번호, 이름, 나이, 포지션, 팀
                 try {
                     playerlist.add(playerDao.searchPlayerById(player_num));
@@ -89,27 +118,65 @@ public class TeamController {
                     e.printStackTrace();
                 }
             }
-        } catch (IOException e) {
+
+        } catch(Exception e) {
             e.printStackTrace();
-            response.status = false;
-            response.msg = "connection error";
-            response.data = null;
         }
+        TeamStat data = new TeamStat();
+        // 팀 분석 하기 위한 서비스 호출
+        try{
+            data = teamService.analyzeStat(lineup);
+       
+            System.out.println("###    "+data);
+            // 여기서 분석한 데이터 -> 파이썬으로 전송
+            try {
+                List<Integer> dat = (List<Integer>) sendToPython(data).getBody().data;
+                // HashMap<String,Object>res = new HashMap<String,Object>();
+                for(int player_num : dat){
+                    // 각 선수의 번호, 이름, 나이, 포지션, 팀
+                    try {
+                        recommendlist.add(playerDao.searchPlayerById(player_num));
+                        if (recommendlist.size() > 0) {
+                            for (Player p : recommendlist) {
+                                p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
+                                p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
+                                p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                response.status = false;
+                response.msg = "connection error";
+                response.data = null;
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        res.put("playerList", playerlist);
+        res.put("teamStat", data);
+        res.put("recommendList", recommendlist);
+
+
         response.status = true;
         response.msg = "success";
-        response.data = playerlist;
+        response.data = res;
         return response;
     }
 
     // 파이썬에 팀 스탯 보내는 메소드
-    private ResponseEntity<RestResponse> sendToPython(Map<String,Object> data) throws IOException {
+    private ResponseEntity<RestResponse> sendToPython(TeamStat data) throws IOException {
         final RestResponse result = new RestResponse();
 
         // 파이썬에 데이터 전송
-        URL url = new URL("http://127.0.0.1:8000/api/recommend1?team_id=" + data.get("team_id") +"&power=" + data.get("power")+ "&speed=" + data.get("speed")
-            + "&contact=" + data.get("contact") + "&defense=" + data.get("defense") + "&shoulder=" + data.get("shoulder")
-            + "&era=" + data.get("era") + "&health=" + data.get("health") + "&control=" + data.get("control")
-            + "&stability=" + data.get("stability") + "&deterrent=" + data.get("deterrent"));
+        URL url = new URL("http://127.0.0.1:8000/api/recommend1?team_id=" + data.getTeam_id() +"&power=" + data.getPower()+ "&speed=" + data.getSpeed()
+            + "&contact=" + data.getContact() + "&defense=" + data.getDefense() + "&shoulder=" + data.getShoulder()
+            + "&era=" + data.getEra() + "&health=" + data.getHealth() + "&control=" + data.getControl()
+            + "&stability=" + data.getStability() + "&deterrent=" + data.getDeterrent());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
@@ -143,5 +210,30 @@ public class TeamController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
 
+    }
+
+    @ApiOperation(value = "선수 리스트로 팀 스탯 반환")
+    @PostMapping("/recommend1/change")
+    public Object search_player(@RequestBody final Map<String, Object> request) {
+        final RestResponse response = new RestResponse();
+        List<Integer> playerList = new ArrayList<>();
+        List<String> obj = (List<String>) request.get("playerList");
+        for(String s : obj){
+            playerList.add(Integer.parseInt(s));
+        }
+        TeamStat data = new TeamStat();
+        // 팀 분석 하기 위한 서비스 호출
+        try{
+            data = teamService.analyzeStatByPlayerList(playerList);
+        } catch (Exception e){
+            e.printStackTrace();
+            response.status = false;
+            response.msg = "failed";
+            response.data = null;
+        }
+        response.status = true;
+        response.msg = "success";
+        response.data = data;
+        return response;
     }
 }

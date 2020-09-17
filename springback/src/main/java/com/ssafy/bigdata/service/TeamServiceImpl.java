@@ -8,7 +8,9 @@ import java.util.Map;
 import com.ssafy.bigdata.dao.player.PlayerDao;
 import com.ssafy.bigdata.dao.team.TeamDao;
 import com.ssafy.bigdata.dto.Lineup;
+import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.StatForChart;
+import com.ssafy.bigdata.dto.TeamStat;
 import com.ssafy.bigdata.dto.ToolsHitter;
 import com.ssafy.bigdata.dto.ToolsPitcher;
 
@@ -37,9 +39,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Map<String,Object> analyzeStat(int num) {
-            
-        Map<String, Object> object = new HashMap<>();
+    public TeamStat analyzeStat(int num) {
+        TeamStat stat = new TeamStat();
         // 1. 이 팀의 최신 라인업 불러오기
         try {            
             Lineup lineup = teamDao.getLineupByTeamId(num);
@@ -56,61 +57,52 @@ public class TeamServiceImpl implements TeamService {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter1())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter1())));
             } catch(Exception e){
-                e.printStackTrace();
+                // System.out.println("no data");
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter2())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter2())));
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter3())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter3()))); 
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter4())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter4()))); 
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter5())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter5()))); 
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter6())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter6()))); 
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter7())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter7()))); 
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter8())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter8())));   
             } catch(Exception e){
-                e.printStackTrace();
             }
             try {
                 toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(lineup.getHitter9())
                 , playerDao.getPlayerStatsFielder(lineup.getHitter9())));  
             } catch(Exception e){
-                e.printStackTrace();
             }
 
             try {
                 toolsPitcher = playerService.calculateToolsPitcher(playerDao.getPlayerStatsPitcher(lineup.getPitcher()));
             } catch(Exception e){
-                e.printStackTrace();
             }
             
             // 3. record 표준화
@@ -127,26 +119,21 @@ public class TeamServiceImpl implements TeamService {
                 power += hitter.getPower();
                 shoulder += hitter.getShoulder();
             }
+            stat.setTeam_id(num);
+            stat.setSpeed(speed/toolsHitter.size());
+            stat.setContact(contact/toolsHitter.size());
+            stat.setDefense(defense/toolsHitter.size());
+            stat.setPower(power/toolsHitter.size());
+            stat.setShoulder(shoulder/toolsHitter.size());
 
-            speed = speed/toolsHitter.size();
-            contact = contact/toolsHitter.size();
-            defense = defense/toolsHitter.size();
-            power = power/toolsHitter.size();
-            shoulder = shoulder/toolsHitter.size();
+    
+            stat.setEra(toolsPitcher.getEra());
+            stat.setHealth(toolsPitcher.getHealth());
+            stat.setControl(toolsPitcher.getControl());
+            stat.setStability(toolsPitcher.getStability());
+            stat.setDeterrent(toolsPitcher.getDeterrent());
 
-            object.put("team_id", num);
-            object.put("speed", speed);
-            object.put("contact", contact);
-            object.put("defense", defense);
-            object.put("power", power);
-            object.put("shoulder", shoulder);
-            object.put("era", toolsPitcher.getEra());
-            object.put("health", toolsPitcher.getHealth());
-            object.put("control", toolsPitcher.getControl());
-            object.put("stability", toolsPitcher.getStability());
-            object.put("deterrent", toolsPitcher.getDeterrent());
-
-            return object;
+            return stat;
             // 4. 팀 전체의 평균 스탯 분석
 
         } catch(Exception e) {
@@ -154,6 +141,94 @@ public class TeamServiceImpl implements TeamService {
             return null;
         }
 
+    }
+
+    @Override
+    public TeamStat analyzeStatByPlayerList(List<Integer> playerList) {
+        TeamStat stat = new TeamStat();
+        // 1. 이 팀의 최신 라인업 불러오기
+        try {            
+            List<ToolsHitter> toolsHitter = new ArrayList<ToolsHitter>();
+            ToolsPitcher toolsPitcher = new ToolsPitcher();
+
+            for(int player : playerList){
+                System.out.println("# "+player);
+                System.out.println(playerDao.findPlayerPosition(player));
+                if(playerDao.findPlayerPosition(player).equals("투수")){
+                    try {
+                        toolsPitcher = playerService.calculateToolsPitcher(playerDao.getPlayerStatsPitcher(player));
+                    } catch(Exception e){
+                    }
+                } else {
+                    try{
+                        toolsHitter.add(playerService.calculateToolsHitter(playerDao.getPlayerStatsHitter(player)
+                        , playerDao.getPlayerStatsFielder(player)));
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+            // 3. record 표준화
+            // 타자 5툴 각각 for문 돌면서 각각 다 더한 후 나눠주기 -> 평균
+            float speed = 0;
+            float contact = 0;
+            float defense = 0;
+            float power = 0;
+            float shoulder = 0;
+            for (ToolsHitter hitter : toolsHitter){
+                speed += hitter.getSpeed();
+                contact += hitter.getContact();
+                defense += hitter.getDefense();
+                power += hitter.getPower();
+                shoulder += hitter.getShoulder();
+            }
+            stat.setSpeed(speed/toolsHitter.size());
+            stat.setContact(contact/toolsHitter.size());
+            stat.setDefense(defense/toolsHitter.size());
+            stat.setPower(power/toolsHitter.size());
+            stat.setShoulder(shoulder/toolsHitter.size());
+
+    
+            stat.setEra(toolsPitcher.getEra());
+            stat.setHealth(toolsPitcher.getHealth());
+            stat.setControl(toolsPitcher.getControl());
+            stat.setStability(toolsPitcher.getStability());
+            stat.setDeterrent(toolsPitcher.getDeterrent());
+
+            return stat;
+            // 4. 팀 전체의 평균 스탯 분석
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<Integer> getPlayerListByLineup(int lineup) throws Exception{
+        List<Integer> res = new ArrayList<>();
+        System.out.println("-----------------------------");
+        Lineup line=teamDao.getPlayerListByLineup(lineup);
+        System.out.println(line);
+        res.add(line.getHitter1());        
+        res.add(line.getHitter2());
+        res.add(line.getHitter3());
+        res.add(line.getHitter4());
+        res.add(line.getHitter5());
+        res.add(line.getHitter6());
+        res.add(line.getHitter7());
+        res.add(line.getHitter8());
+        res.add(line.getHitter9());
+        res.add(line.getPitcher());
+        return res;
+    }
+
+    @Override
+    public List<Lineup> getLineupList() {
+        List<Lineup> lineup = teamDao.getLineup();
+        
+        return lineup;
     }
 
         
