@@ -84,7 +84,7 @@ import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
-import PlayerAPI from "@/api/PlayerAPI"
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   components: {
@@ -136,6 +136,8 @@ export default {
   computed: {
     cols() {
       let arr = [];
+
+      arr.push("항목");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_name);
       }
@@ -143,6 +145,8 @@ export default {
     },
     vals() {
       let arr = [];
+
+      arr.push("상대 값(0 ~ 1)");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_std);
       }
@@ -150,6 +154,8 @@ export default {
     },
     originVals() {
       let arr = [];
+
+      arr.push("값");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_value);
       }
@@ -173,6 +179,7 @@ export default {
       let arr = [];
       let mean_arr = [];
 
+      mean_arr.push("평균");
       for (let stat of this.playerStats.stats) {
         mean_arr.push(stat.stat_mean);
       }
@@ -187,12 +194,20 @@ export default {
       let data = [];
 
       label = Object.keys(this.playerStats.five_tool);
+      obj.label = label;
+      
       for(let key of label) {
         data.push(this.playerStats.five_tool[key]);
       }
+      obj.data = {
+        label: 'Player stat',
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data
+      };
 
-      obj.label = label;
-      obj.data = data;
       return obj;
     }
   },
@@ -213,7 +228,7 @@ export default {
     },
     search() {
       PlayerAPI.getPlayerList(
-        this.searchVal,
+        'search=' + this.searchVal,
         res => {
           this.playerList = res;
           this.resetPlayerListTable();
@@ -240,6 +255,30 @@ export default {
     selectPlayer(index) {
       console.log(this.playerListShowData[index])
       this.playerName = this.playerListShowData[index].player_name;
+
+      PlayerAPI.getPlayerStat(
+        'num=' + this.playerListShowData[index].player_id,
+        res => {
+          if(res == null) {
+            alert("선수의 스탯 정보가 없습니다!");
+            res = {
+              five_tool: {
+                power: 0,
+                speed: 0,
+                contact: 0,
+                defense: 0,
+                shoulder: 0,
+              },
+              stats: [],
+            };
+          }
+
+          this.playerStats = res;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     }
   },
   mounted() {},
