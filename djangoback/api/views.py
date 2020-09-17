@@ -10,6 +10,7 @@ import re
 from .models import *
 from django.conf import settings
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
+import hashlib
 
 pitcher_cols = ['player_id', 'birth', 'player_name', 'pitcher_year', 'team', 'WAR*',
             'pitcher_G', 'pitcher_CG', 'pitcher_SHO', 'pitcher_GS', 'pitcher_W', 'pitcher_L', 'pitcher_SV', 
@@ -47,21 +48,21 @@ positions = {'P': 1, 'C': 2, '1B': 3, '2B': 4, '3B': 5, 'SS': 6, 'LF': 7, 'CF': 
 # 수비기록: 몇몇 빼곤 아예 없음
 
 def getPitchersRecords(request):
-    for year in range(2020, 2019, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
+    for year in range(2019, 2014, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(1, year, start)
             if (inserted == 0): # 페이지에 선수정보가 더이상 안뜨면 다음년도로 넘어감 
                 break
 
 def getHittersRecords(request):
-    for year in range(2020, 2019, -1):
+    for year in range(2020, 2014, -1):
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(0, year, start)
             if (inserted == 0): 
                 break
 
 def getFieldersRecords(request):
-    for year in range(2020, 2019, -1):
+    for year in range(2020, 2014, -1):
         for start in range(0, 500, 25):
             inserted = getRecords_crawling(2, year, start)
             if (inserted == 0): 
@@ -182,8 +183,11 @@ def getRecords_crawling(type, year, start):
             
         # player_id: 이름 + 생일 hash로 생성
         hash_string = p.player_name + p.birth
-        pid = abs(hash(hash_string)) % (10 ** 8)
-        
+        #pid = abs(hash(hash_string)) % (10 ** 8)
+        # 위의 해시함수는 파이썬 3.3부터 non-deterministic하게 바뀌었다... 늘 똑같은 결과 원하면 무슨 환경변수 설정해야된다 함
+        # 이 해시함수는 한글 들어있음 인코딩 해줘야 함
+        pid = int(hashlib.sha1(hash_string.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
+
         # insert
         Player(player_id=pid, player_name=p.player_name, team_id=teams[p.team], player_birth=p.birth, player_position=pos).save()
         #player_obj = Player.objects.filter(player_name=p.player_name) # 리스트로 온다. select ~ where 문에 해당하므로
@@ -200,7 +204,7 @@ def getRecords_crawling(type, year, start):
     elif type == 2:
         records.to_sql('record_fielder', con=engine, if_exists='append')
 
-    return len(records)
+    return len(table)
     # select 
     # players_from_db = Player.objects.all()
     # for p in players_from_db:
