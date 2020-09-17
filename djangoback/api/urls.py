@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'hitterdata', views.getHittersRecords),
     url(r'pitcherdata', views.getPitchersRecords),
     url(r'fielderdata', views.getFieldersRecords),
+    url(r'retiredata', views.getEntireRecords),
     url(r'defaultlineup', views2.getLineup),
     url(r'recommend1', views3.recommend_player_method1)
 ]
