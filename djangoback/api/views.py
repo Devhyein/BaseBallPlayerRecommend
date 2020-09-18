@@ -48,22 +48,22 @@ positions = {'P': 1, 'C': 2, '1B': 3, '2B': 4, '3B': 5, 'SS': 6, 'LF': 7, 'CF': 
 # 수비기록: 몇몇 빼곤 아예 없음
 
 def getPitchersRecords(request):
-    for year in range(2019, 2014, -1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
-        for start in range(0, 500, 25):
+    for year in range(2015, 2021, 1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
+        for start in range(0, 500, 20):
             inserted = getRecords_crawling(1, year, start)
             if (inserted == 0): # 페이지에 선수정보가 더이상 안뜨면 다음년도로 넘어감 
                 break
 
 def getHittersRecords(request):
-    for year in range(2020, 2014, -1):
-        for start in range(0, 500, 25):
+    for year in range(2015, 2021, 1):
+        for start in range(0, 500, 20):
             inserted = getRecords_crawling(0, year, start)
             if (inserted == 0): 
                 break
 
 def getFieldersRecords(request):
-    for year in range(2020, 2014, -1):
-        for start in range(0, 500, 25):
+    for year in range(2015, 2021, 1):
+        for start in range(0, 500, 20):
             inserted = getRecords_crawling(2, year, start)
             if (inserted == 0): 
                 break
@@ -85,7 +85,7 @@ def getRecords_crawling(type, year, start):
     )
 
     driver = webdriver.Chrome('chromedriver.exe')
-    url = 'http://www.statiz.co.kr/stat.php?re=' + str(type) + '&lr=0&sn=25&pa=' + str(start) + '&ys=' + str(year) + '&ye=' + str(year)
+    url = 'http://www.statiz.co.kr/stat.php?re=' + str(type) + '&lr=0&sn=20&pa=' + str(start) + '&ys=' + str(year) + '&ye=' + str(year)
     driver.implicitly_wait(20) # 로딩될때까지 대기를 줬는데도?
     driver.get(url)
     page = driver.execute_script('return document.body.innerHTML')
@@ -209,6 +209,49 @@ def getRecords_crawling(type, year, start):
     # players_from_db = Player.objects.all()
     # for p in players_from_db:
     #     print(p.player_name)
+
+def getEntireRecords(request):
+    count = 0
+    for start in range(0, 1200, 20):
+        print(count)
+        driver = webdriver.Chrome('chromedriver.exe')
+        url = 'http://www.statiz.co.kr/stat_at.php?re=2&lr=0&sn=20&pa=' + str(start) + '&ys=2015&ye=2020'
+        driver.implicitly_wait(200) # 로딩될때까지 대기를 줬는데도?
+        driver.get(url)
+        page = driver.execute_script('return document.body.innerHTML')
+        soup = BeautifulSoup(''.join(page), 'html.parser', from_encoding='utf-8')
+        table = soup.select('#mytable tr') # 표
+
+        for row in table: # 각 줄
+            cells = row.select('td')
+            temp_list = []
+            for data in cells: # 각 칸
+                # data의 타입이 string이 아니라는 점에 주의... str 캐스팅을 한번 해줘야 문자열 메서드를 쓸 수 있었다
+                data_str = str(data)
+                if len(temp_list) == 1 and data_str.find("a href") > 0: # 선수이름 링크 보고 생일 뽑아내기
+                    birthday = data_str.split("birth=")[1][:10]
+                    temp_list.append(birthday)
+
+                text = data.get_text()
+                #print(text)
+
+                if text.find('+') >= 0:
+                    hash_string = temp_list[2] + temp_list[1] # 이름+생일
+                    pid = int(hashlib.sha1(hash_string.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
+                    try:
+                        player = Player.objects.get(pk=pid)
+                        player.player_retire = 0
+                        player.save()
+                        count += 1
+                        break
+                    except Player.DoesNotExist:
+                        break
+
+                else:
+                    if text == '  ':
+                        text = '0'
+                    temp_list.append(text)
+
 
 
 # class PlayerViewSet(viewsets.ModelViewSet):

@@ -31,7 +31,8 @@ class Player(models.Model):
     player_num = models.IntegerField(blank=True, null=True)
     player_birth = models.CharField(max_length=20, blank=True, null=True)
     player_position = models.ForeignKey('Position', models.DO_NOTHING, db_column='player_position')
-
+    player_retire = models.IntegerField(blank=True, null=True)
+    
     class Meta:
         managed = False
         db_table = 'player'
