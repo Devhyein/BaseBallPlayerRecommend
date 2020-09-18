@@ -21,17 +21,25 @@ export default {
   data() {
     return {
       extraOptions: {
-          maintainAspectRatio: false,
-          legend: {
-            display: true
-          },
-          responsive: true,
-          scale: {
-            ticks :{
-              display: false,
-            } 
-          }
+        maintainAspectRatio: false,
+        legend: {
+          display: true
         },
+        responsive: true,
+        scale: {
+          ticks :{
+            display: false,
+          },
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              stepSize: 0.2,
+              min: 0,
+              max: 1
+            }
+          }]
+        }
+      },
     };
   },
   props: {
