@@ -16,6 +16,6 @@
     </select>
 
     <select id="getLineup" resultType="Lineup">
-        select * from lineup limit 2
+        select * from lineup
     </select>
 </mapper>
