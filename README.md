@@ -1,4 +1,5 @@
-## 서비스명
+## 당근?빠따!
+![logo](/uploads/cd8b44f7a84c047677f945a4b515c85e/logo.png)
 
 ### [dump.pkl 파일 링크]
 * dump.pkl 파일은 첫 주에 만들었던 dump.pkl 파일 사용하면 됨
