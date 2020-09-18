@@ -47,6 +47,9 @@ def recommend_player_method1(request):
     df_player = df_player[df_player['team_id'] != int(teamid)] 
     print(df_player)
 
+    # 은퇴선수 거르기
+    df_player = df_player[df_player['player_retire'] == 0]
+
     # 팀 스탯 중 약한게 뭔지 뽑아내자.
     res = sorted(team_stats.items(), key=(lambda x: x[1]), reverse = False)
     weak_stat = res[0]
