@@ -66,7 +66,7 @@
       <!--Table-->
       <div class="row mt-5">
         <div class="col-xl-12 mb-5">
-          <player-stat-table :cols="cols" :tableData="statTableData" />
+          <player-stat-table :cols="tableCols" :tableData="statTableData" />
         </div>
       </div>
       <!--End table-->
@@ -137,16 +137,21 @@ export default {
     cols() {
       let arr = [];
 
-      arr.push("항목");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_name);
+      }
+      return arr;
+    },
+    tableCols() {
+      let arr = ['항목'];
+      for(let c of this.cols) {
+        arr.push(c);
       }
       return arr;
     },
     vals() {
       let arr = [];
 
-      arr.push("상대 값(0 ~ 1)");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_std);
       }
@@ -155,7 +160,6 @@ export default {
     originVals() {
       let arr = [];
 
-      arr.push("값");
       for (let stat of this.playerStats.stats) {
         arr.push(stat.stat_value);
       }
@@ -175,28 +179,31 @@ export default {
       return arr;
     },
     statTableData() {
-      // data = [[], [], []]
       let arr = [];
-      let mean_arr = [];
 
-      mean_arr.push("평균");
-      for (let stat of this.playerStats.stats) {
-        mean_arr.push(stat.stat_mean);
+      let arr2 = ['값'];
+      for(let v of this.originVals) {
+        arr2.push(v);
       }
-      arr.push(this.originVals);
-      arr.push(mean_arr);
-      arr.push(this.vals);
+      arr.push(arr2);
+
+      let arr3 = ['상대 값'];
+      for(let v of this.vals) {
+        arr3.push(v);
+      }
+      arr.push(arr3);
+
       return arr;
     },
     statRadarData() {
       let obj = {};
-      let label = [];
+      let labels = [];
       let data = [];
 
-      label = Object.keys(this.playerStats.five_tool);
-      obj.label = label;
+      labels = Object.keys(this.playerStats.five_tool);
+      obj.label = labels;
       
-      for(let key of label) {
+      for(let key of labels) {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
