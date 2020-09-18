@@ -1,5 +1,41 @@
 ## 당근?빠따!
-![logo](/uploads/cd8b44f7a84c047677f945a4b515c85e/logo.png)
+<img src="/uploads/cd8b44f7a84c047677f945a4b515c85e/logo.png" width="500px" >
+
+
+### 기술 스택 && 아키텍처
+ 1. 기술 스택
+ <img src="/uploads/58b9eaed67f4aacb8b7d975ef9fd6103/사용스택.png" width="500px" >
+
+ 2. 아키텍처
+ <img src="/uploads/2dcdb9bd98378257af2b94ac92c5e483/아키텍처.png" width="500px" >
+
+### 화면
+ 1. 선수 검색 결과
+ 
+ <img src="/uploads/5ced4f2df39d9d3d32ca69863f301a39/선수검색1.PNG" width="600px" >
+ 
+ <img src="/uploads/e2b63acdaf5a61ab9f15c7fffe65e82e/선수검색2.PNG" width="600px" >
+ 
+<br/>
+ 
+ 2. 팀 비교 && 추천
+
+ <img src="/uploads/c718cb19477477602c4a44c30cb44610/팀비교1.PNG" width="500px" >
+ 
+ <img src="/uploads/6281b8a2c7d148529116f62d9a76fe2d/팀비교2.PNG" width="500px" >
+
+### 일정
+<img src="/uploads/db3de085287297e6d912c1d7ea052f30/일정.PNG" width="700px" >
+
+### 팀원 소개
+<img src="/uploads/4e520a4bd8d84b32125d8bebd7748efa/팀원소개.png" width="400px" >
+
+
+
+
+
+
+
 
 ### [dump.pkl 파일 링크]
 * dump.pkl 파일은 첫 주에 만들었던 dump.pkl 파일 사용하면 됨
