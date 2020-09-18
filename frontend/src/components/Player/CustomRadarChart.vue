@@ -29,15 +29,9 @@ export default {
         scale: {
           ticks :{
             display: false,
+            min: 0,
+            max: 1
           },
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-              stepSize: 0.2,
-              min: 0,
-              max: 1
-            }
-          }]
         }
       },
     };
