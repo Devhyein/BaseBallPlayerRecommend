@@ -58,7 +58,7 @@
             :data="teamStatData"
             :type="chartType" />
         </div>
-        <!-- 2. 팀 스탯에 대한 설명 -->
+        <!-- 2. 선택된 선수 스탯 그래프 -->
         <div class="row mt-2">
           <custom-radar-chart
             class="col"
