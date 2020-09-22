@@ -1,8 +1,9 @@
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
-from api import views
-from api import views2
-from api import views3
+from api.views import player_crawling
+from api.views import lineup_crawling
+from api.views import recommend1
+from api.views import recommend2_clustering
 
 # 요청 라우팅을 위해 default 라우터 가져옴
 # trailing_slash : url 끝에 / 를 붙일지 말지 결정
@@ -21,10 +22,11 @@ router = DefaultRouter(trailing_slash=False)
 # localhost:8000/api/pitcherdata -> views.py의 getPiterchersRecords() 메서드 호출
 
 urlpatterns = [
-    url(r'hitterdata', views.getHittersRecords),
-    url(r'pitcherdata', views.getPitchersRecords),
-    url(r'fielderdata', views.getFieldersRecords),
-    url(r'retiredata', views.getEntireRecords),
-    url(r'defaultlineup', views2.getLineup),
-    url(r'recommend1', views3.recommend_player_method1)
+    url(r'hitterdata', player_crawling.getHittersRecords),
+    url(r'pitcherdata', player_crawling.getPitchersRecords),
+    url(r'fielderdata', player_crawling.getFieldersRecords),
+    url(r'retiredata', player_crawling.getEntireRecords),
+    url(r'defaultlineup', lineup_crawling.getLineup),
+    url(r'recommend1', recommend1.recommend_player_method1),
+    url(r'recommend2', recommend2_clustering.clustering_test)
 ]
