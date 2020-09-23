@@ -58,6 +58,7 @@
             title="Team Stat"
             :subTitle="lineupName"
             :data="teamStatData"
+            :data2="MyTeamStatData"
             :type="chartType"
           />
         </div>
@@ -161,10 +162,12 @@ export default {
       // 라인업 리스트
       MyLineupList: [],
       lineupList: [],
+      isModifiedMyTeamStat: false,
 
       // 라인업 선수 목록
       MyLineupPlayers: [],
       lineupPlayers: [],
+      isModifiedTeamStat: false,
 
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
@@ -262,13 +265,28 @@ export default {
         data.push(this.teamStats[key]);
       }
       obj.data = {
-        label: "수정 전",
+        label: "상대 팀",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
         pointBackgroundColor: "rgb(255, 0, 0)",
         data: data,
       };
+      if (this.isModifiedMyTeamStat) {
+        let data2 = [];
+        for (let key of label) {
+          data2.push(this.isModifiedMyTeamStat[key]);
+        }
+        obj.data2 = {
+          label: "나의 팀",
+          backgroundColor: "rgba(255, 255, 0, 0.2)",
+          borderColor: "rgb(255, 255, 0)",
+          borderWidth: 1,
+          pointBackgroundColor: "rgb(255, 0, 0)",
+          data: data2,
+        };
+      }
+
       return obj;
     },
     computeMyTeamStatData() {
@@ -276,20 +294,35 @@ export default {
       let label = [];
       let data = [];
 
-      label = Object.keys(this.teamStats);
+      label = Object.keys(this.MyTeamStats);
       obj.label = label;
 
       for (let key of label) {
-        data.push(this.teamStats[key]);
+        data.push(this.MyTeamStats[key]);
       }
       obj.data = {
-        label: "수정 전",
+        label: "나의 팀",
         backgroundColor: "rgba(255, 255, 0, 0.2)",
         borderColor: "rgb(255, 255, 0)",
         borderWidth: 1,
         pointBackgroundColor: "rgb(255, 0, 0)",
         data: data,
       };
+
+      if (this.isModifiedTeamStat) {
+        let data2 = [];
+        for (let key of label) {
+          data2.push(this.modifiedTeamStat[key]);
+        }
+        obj.data2 = {
+          label: "상대 팀",
+          backgroundColor: "rgba(255, 0, 0, 0.2)",
+          borderColor: "rgb(255, 0, 0)",
+          borderWidth: 1,
+          pointBackgroundColor: "rgb(255, 0, 0)",
+          data: data2,
+        };
+      }
       return obj;
     },
     computePlayerStatData() {
@@ -349,10 +382,9 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          this.MyLineupPlayerTableData = this.computeMyLineupPlayerTableData();
-          this.MyteamStatData = this.computeTeamStatData();
           this.lineupPlayerTableData = this.computeLineupPlayerTableData();
           this.teamStatData = this.computeTeamStatData();
+          this.isModifiedTeamStat = true;
 
           console.log(res);
         },
@@ -376,7 +408,7 @@ export default {
 
           this.MyLineupPlayerTableData = this.computeMyLineupPlayerTableData();
           this.MyTeamStatData = this.computeMyTeamStatData();
-
+          this.isModifiedMyTeamStat = true;
           console.log(res);
         },
         (err) => {
@@ -428,39 +460,6 @@ export default {
         this.getPlayerStat(this.MyLineupPlayers[index].player_id);
         this.playerName = this.MyLineupPlayers[index].player_name;
       }
-    },
-
-    changePlayer() {
-      // 양쪽이 모두 선택되지 않은경우 그냥 반환
-      if (
-        this.lineupSel == -1 ||
-        (this.recommendSel == -1 && this.removedSel == -1)
-      ) {
-        return;
-      }
-
-      this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-      this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
-      this.removedPlayerTableData = this.computeRemovedPlayerTableData();
-
-      // 선수 교체가 일어났으므로
-      // 바뀐 팀 스탯도 보여주기
-      // 데이터는 라인업 선수들의 id 리스트
-      let idList = [];
-      for (let player of this.lineupPlayers) {
-        idList.push(player.player_id);
-      }
-      PlayerAPI.getTeamStat(
-        { playerList: idList },
-        (res) => {
-          this.modifiedTeamStat = res;
-          this.isModifiedTeamStat = true;
-          this.teamStatData = this.computeTeamStatData();
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
     },
   },
 };
