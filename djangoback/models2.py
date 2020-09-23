@@ -10,7 +10,8 @@ from django.db import models
 
 class Lineup(models.Model):
     lineup_id = models.AutoField(primary_key=True)
-    team = models.ForeignKey('Team', models.DO_NOTHING)
+    lineup_name = models.CharField(max_length=50)
+    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     hitter1 = models.IntegerField(blank=True, null=True)
     hitter2 = models.IntegerField(blank=True, null=True)
     hitter3 = models.IntegerField(blank=True, null=True)
@@ -174,20 +175,14 @@ class Team(models.Model):
         db_table = 'team'
 
 
-class UserLineup(models.Model):
-    lineup_id = models.AutoField(primary_key=True)
-    team = models.ForeignKey(Team, models.DO_NOTHING)
-    hitter1 = models.IntegerField(blank=True, null=True)
-    hitter2 = models.IntegerField(blank=True, null=True)
-    hitter3 = models.IntegerField(blank=True, null=True)
-    hitter4 = models.IntegerField(blank=True, null=True)
-    hitter5 = models.IntegerField(blank=True, null=True)
-    hitter6 = models.IntegerField(blank=True, null=True)
-    hitter7 = models.IntegerField(blank=True, null=True)
-    hitter8 = models.IntegerField(blank=True, null=True)
-    hitter9 = models.IntegerField(blank=True, null=True)
-    pitcher = models.IntegerField(blank=True, null=True)
+class User(models.Model):
+    user_id = models.AutoField(primary_key=True)
+    email = models.CharField(max_length=200, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    picture = models.CharField(max_length=200, blank=True, null=True)
+    role = models.CharField(max_length=200, blank=True, null=True)
+    team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'user_lineup'
+        db_table = 'user'
