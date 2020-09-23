@@ -202,6 +202,7 @@ export default {
       "none=none",
       res => {
         this.lineupList = res;
+        console.log(res);
       },
       err => {
         console.log(err);
