@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayerDao {
 
-	public List<Player> searchPlayerList(String search);
+	public List<Player> searchPlayerList(String positions, String teams, String searchText);
+
+	public List<Player> searchAllPlayerList(String positions, String teams);
 
 	public Player searchPlayerById(int player_id);
 
