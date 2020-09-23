@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface TeamDao {
-    public Lineup getLineupByTeamId(int num);
-
 	public Lineup getPlayerListByLineup(int lineup);
 
 	public List<Lineup> getLineup();

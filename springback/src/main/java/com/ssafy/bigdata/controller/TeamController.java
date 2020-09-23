@@ -56,7 +56,6 @@ public class TeamController {
         this.playerServiceImpl = playerServiceImpl;
     }
     
-    // 우선 2개만
     @ApiOperation(value = "라인업 목록")
     @GetMapping("/team/lineup")
     public Object get_lineupList() {
