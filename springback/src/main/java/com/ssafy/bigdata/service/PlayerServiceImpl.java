@@ -677,4 +677,14 @@ public class PlayerServiceImpl implements PlayerService {
         return std;
     }
 
+    @Override
+    public String findTeamName(int team_id) {
+        return playerDao.findTeamName(team_id);
+    }
+
+    @Override
+    public Player searchPlayerById(int player_id) {
+        return playerDao.searchPlayerById(player_id);
+    }
+
 }
