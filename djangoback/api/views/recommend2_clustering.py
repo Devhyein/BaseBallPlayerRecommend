@@ -83,7 +83,74 @@ def clustering_test(request):
     # print(predict)
 
 def hitter_clustering(pid):
-    pass
+    queryset = RecordHitter.objects.all()
+    query, params = queryset.query.sql_with_params()
+    df_hitter = pd.read_sql_query(query, connections['default'], params = params)
+
+    # 기록 데이터 정제
+    # 최근 3년 데이터만, 규정이닝 걸러서 가져오기
+    df_hitter = df_hitter.loc[df_hitter.hitter_year >= 18]
+    df_hitter = df_hitter.loc[((df_hitter.hitter_year==20) & (df_hitter.hitter_pa>=100*3.1)) | ((df_hitter.hitter_year!=20) & (df_hitter.hitter_pa>=144*3.1))]
+
+    # 타, 출, 장 세개로 일단
+    df_hitter = df_hitter[['player_id', 'hitter_ba', 'hitter_obp', 'hitter_slg']]    
+
+    # 선수별로 그룹핑
+    df_grouped = df_hitter.groupby("player_id")
+    df_grouped_mean = df_grouped.mean()
+    print(df_grouped_mean)
+
+    # 표준화
+    x = df_grouped_mean.values #returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    df_normalized = pd.DataFrame(x_scaled)
+
+    print(df_normalized)
+
+    model = KMeans(n_clusters=5,algorithm='auto')
+    model.fit(df_normalized)
+    predict = pd.DataFrame(model.predict(df_normalized))
+    predict.columns=['predict']
+    print(predict)
+
+
+
+    r = pd.concat([predict, df_normalized],axis=1)
+    r.columns = ['predict', 'ba', 'obp', 'slg']
+    print(r)
+
+    plt.rcParams["figure.figsize"] = (6, 6)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+
+    ax.scatter(r['ba'],r['obp'], r['slg'], c=r['predict'],alpha=0.5)
+    centers = pd.DataFrame(model.cluster_centers_,columns=['ba', 'obp', 'slg'])
+    center_x = centers['ba']
+    center_y = centers['obp']
+    center_z = centers['slg']
+    ax.scatter(center_x,center_y,center_z,s=50,marker='D',c='r')
+    plt.show()
+
+
+
+
+
+    predict['player_id'] = df_grouped_mean.reset_index()['player_id']
+    print(predict)
+
+    df_q = predict.query("player_id == " + str(pid)) # 데이터 찾기
+    print(df_q)
+    target_c = df_q.iloc[0]['predict'] # 특정 셀의 데이터 가져오기: iloc
+
+    result_list = []
+    for player in predict.iterrows():
+        if player[1].predict == target_c and int(player[1].player_id) != int(pid):
+            result_list.append(int(player[1].player_id)) # int로 변환안해주면 JSON serializer가 numpy.int64를 못알아먹어서 에러뜸
+
+    return result_list
+
+
 
 def pitcher_clustering(pid):
     queryset = RecordPitcher.objects.all()
