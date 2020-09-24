@@ -105,20 +105,22 @@ export default {
         .then(GoogleUser => {
           let profile = GoogleUser.getBasicProfile();
 
-          let email= profile.getEmail()
-          let name= profile.getName()
-          console.log(profile);
+          let email= profile.getEmail();
+          let name= profile.getName();
+          let image = profile.getImageUrl();
 
-          this.login(email, name);
+          this.login(email, name, image);
         })
         .catch(error => {
           console.log('구글 signIn() 실패', error);
         });
     },
-    login(email, name) {
+    login(email, name, image) {
       // 콘솔에 찍어보기
       // 나중엔 여기서 백에 요청 보내줘야함
-      console.log(email, name);
+      console.log(email);
+      console.log(name);
+      console.log(image);
     }
   },
   computed: {
