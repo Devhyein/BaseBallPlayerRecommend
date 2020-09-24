@@ -13,6 +13,10 @@ from .models import *
 from django.db import connections
 from django.http import JsonResponse # http 응답을 위함
 
+from rest_framework.decorators import api_view, parser_classes
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 # 1. Player ID를 받는다
 # 2. Player 테이블에서 해당 선수를 찾아 포지션이 뭔지 알아낸다.
 # 3. 투수면 투수기록 테이블, 타자면 타자기록 테이블을 가져온다
@@ -20,7 +24,20 @@ from django.http import JsonResponse # http 응답을 위함
 # 5. 기록을 최근 3년 평균, 표준화한 데이터로 정제
 # 6. 클러스터링 알고리즘을 돌려 클러스터를 추출
 # 7. 클러스터 내에서 거리 가까운 순으로? 혹은 같은 클러스터 중에서 성적 좋은 순으로? TOP n명의 선수 ID 리턴
+
+param1 = openapi.Parameter('player_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, required=True)
+@swagger_auto_schema(
+    method='get',
+    manual_parameters = [param1]
+)
+
+@api_view(["GET"])
 def clustering_test(request):
+    """
+    1명의 player id를 받아 그 선수와 유사한 (같은 클러스터의) 선수들을 추천해준다
+    - parameters: player_id (int)
+    - returns: recommended 리스트 (같은 클러스터로 분류된 선수들의 player_id)
+    """
     pid = request.GET.get('player_id',  '')
 
     player = Player.objects.get(player_id=pid)
