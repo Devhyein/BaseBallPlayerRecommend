@@ -18,6 +18,10 @@ public interface PlayerService {
 
 	public String findPlayerPosition(int num);
 
+	public String findTeamName(int team_id);
+	
+	public Player searchPlayerById(int player_id);
+
 	public ToolsPitcher getPlayerToolsPitcher(int num) throws Exception;
 
 	public ToolsHitter getPlayerToolsHitter(int num) throws Exception;
@@ -37,4 +41,5 @@ public interface PlayerService {
 	public List<StatForChart> getPlayerStatsFielder(int num) throws Exception;
 
 	public float calculateStatsFielder(String stat, float record) throws Exception;
+
 }

@@ -2,7 +2,8 @@ package com.ssafy.bigdata.dto;
 
 public class Lineup {
     private int lineup_id;
-    private int team_id;
+    private String lineup_name;
+    private int user_id;
     private int hitter1;
     private int hitter2;
     private int hitter3;
@@ -17,10 +18,11 @@ public class Lineup {
     public Lineup() {
     }
 
-    public Lineup(int lineup_id, int team_id, int hitter1, int hitter2, int hitter3, int hitter4, int hitter5,
-            int hitter6, int hitter7, int hitter8, int hitter9, int pitcher) {
+    public Lineup(int lineup_id, String lineup_name, int user_id, int hitter1, int hitter2, int hitter3, int hitter4,
+            int hitter5, int hitter6, int hitter7, int hitter8, int hitter9, int pitcher) {
         this.lineup_id = lineup_id;
-        this.team_id = team_id;
+        this.lineup_name = lineup_name;
+        this.user_id = user_id;
         this.hitter1 = hitter1;
         this.hitter2 = hitter2;
         this.hitter3 = hitter3;
@@ -41,14 +43,22 @@ public class Lineup {
         this.lineup_id = lineup_id;
     }
 
-    public int getTeam_id() {
-        return team_id;
+    public String getLineup_name() {
+        return lineup_name;
     }
 
-    public void setTeam_id(int team_id) {
-        this.team_id = team_id;
+    public void setLineup_name(String lineup_name) {
+        this.lineup_name = lineup_name;
     }
 
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+    
     public int getHitter1() {
         return hitter1;
     }
@@ -133,10 +143,8 @@ public class Lineup {
     public String toString() {
         return "Lineup [hitter1=" + hitter1 + ", hitter2=" + hitter2 + ", hitter3=" + hitter3 + ", hitter4=" + hitter4
                 + ", hitter5=" + hitter5 + ", hitter6=" + hitter6 + ", hitter7=" + hitter7 + ", hitter8=" + hitter8
-                + ", hitter9=" + hitter9 + ", lineup_id=" + lineup_id + ", pitcher=" + pitcher + ", team_id=" + team_id
-                + "]";
+                + ", hitter9=" + hitter9 + ", lineup_id=" + lineup_id + ", lineup_name=" + lineup_name + ", pitcher="
+                + pitcher + ", user_id=" + user_id + "]";
     }
-
-    
     
 }
