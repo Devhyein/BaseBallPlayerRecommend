@@ -1,4 +1,5 @@
-from api import models, serializers
+from api import serializers
+from api.views import models
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from bs4 import BeautifulSoup
@@ -11,9 +12,9 @@ from django.conf import settings
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
 import hashlib
 
-teams = {'KIA': 1, '해태': 2, '삼성': 3, '두산': 4, 'OB': 5, 'SK': 6, '현대': 7, '태평양': 8, '청보': 9, 
-        'LG': 11, 'MBC': 12, '롯데': 13, '한화': 14, '빙그레': 15, 'NC': 16, '히어로즈': 17, 
-        '넥센': 18, '키움': 19, '쌍방울': 20, 'KT': 21}
+# teams = {'KIA': 1, '해태': 2, '삼성': 3, '두산': 4, 'OB': 5, 'SK': 6, '현대': 7, '태평양': 8, '청보': 9, 
+#         'LG': 11, 'MBC': 12, '롯데': 13, '한화': 14, '빙그레': 15, 'NC': 16, '히어로즈': 17, 
+#         '넥센': 18, '키움': 19, '쌍방울': 20, 'KT': 21}
 
 lineup_cols = ['team_id', 'hitter1', 'hitter2',
 'hitter3','hitter4','hitter5','hitter6','hitter7','hitter8','hitter9','pitcher']
@@ -63,7 +64,9 @@ def save_lineup(team, lineup):
         pid = int(hashlib.sha1(hash_string.encode('utf-8')).hexdigest(), 16) % (10 ** 8)
         temp_arr.append(pid)
 
-    Lineup(team_id=teams[temp_arr[0]], hitter1=temp_arr[1], hitter2=temp_arr[2],
+    lineup_name = temp_arr[0] + "(기본)"
+
+    Lineup(lineup_name=lineup_name, hitter1=temp_arr[1], hitter2=temp_arr[2],
             hitter3=temp_arr[3], hitter4=temp_arr[4],
             hitter5=temp_arr[5], hitter6=temp_arr[6],
             hitter7=temp_arr[7], hitter8=temp_arr[8],

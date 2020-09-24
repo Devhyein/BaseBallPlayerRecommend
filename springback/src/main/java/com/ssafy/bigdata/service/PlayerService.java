@@ -6,17 +6,22 @@ import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RecordFielder;
 import com.ssafy.bigdata.dto.RecordHitter;
 import com.ssafy.bigdata.dto.RecordPitcher;
+import com.ssafy.bigdata.dto.SearchRequest;
 import com.ssafy.bigdata.dto.StatForChart;
 import com.ssafy.bigdata.dto.ToolsHitter;
 import com.ssafy.bigdata.dto.ToolsPitcher;
 
 public interface PlayerService {
 
-	public List<Player> searchPlayerList(String search);
+	public List<Player> searchPlayerList(SearchRequest search);
 
 	public int getAgeWithBirth(String birth);
 
 	public String findPlayerPosition(int num);
+
+	public String findTeamName(int team_id);
+	
+	public Player searchPlayerById(int player_id);
 
 	public ToolsPitcher getPlayerToolsPitcher(int num) throws Exception;
 
@@ -37,4 +42,5 @@ public interface PlayerService {
 	public List<StatForChart> getPlayerStatsFielder(int num) throws Exception;
 
 	public float calculateStatsFielder(String stat, float record) throws Exception;
+
 }

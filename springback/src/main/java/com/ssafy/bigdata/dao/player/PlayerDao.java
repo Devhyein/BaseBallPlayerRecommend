@@ -6,8 +6,6 @@ import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RecordFielder;
 import com.ssafy.bigdata.dto.RecordHitter;
 import com.ssafy.bigdata.dto.RecordPitcher;
-import com.ssafy.bigdata.dto.StatForChart;
-import com.ssafy.bigdata.dto.ToolsPitcher;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -16,7 +14,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayerDao {
 
-	public List<Player> searchPlayerList(String search);
+	public List<Player> searchPlayerList(String positions, String teams, String searchText);
+
+	public List<Player> searchAllPlayerList(String positions, String teams);
 
 	public Player searchPlayerById(int player_id);
 
