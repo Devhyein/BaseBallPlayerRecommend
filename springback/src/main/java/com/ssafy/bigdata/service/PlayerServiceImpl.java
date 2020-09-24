@@ -9,6 +9,7 @@ import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RecordFielder;
 import com.ssafy.bigdata.dto.RecordHitter;
 import com.ssafy.bigdata.dto.RecordPitcher;
+import com.ssafy.bigdata.dto.SearchRequest;
 import com.ssafy.bigdata.dto.StatForChart;
 import com.ssafy.bigdata.dto.ToolsHitter;
 import com.ssafy.bigdata.dto.ToolsPitcher;
@@ -26,17 +27,34 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Player> searchPlayerList(String search) {
+    public List<Player> searchPlayerList(SearchRequest search) {
         try {
-            List<Player> playerlist = playerDao.searchPlayerList(search);
-            if (playerlist.size() > 0) {
-                for (Player p : playerlist) {
-                    p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
-                    p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
-                    p.setPlayer_age(getAgeWithBirth(p.getPlayer_birth()));
+            String teams = search.getTeams();
+            String positions = search.getPositions();
+            String searchText = search.getSearchText();
+
+            if(searchText != null){
+                List<Player> playerlist = playerDao.searchPlayerList(positions, teams, searchText);
+                if (playerlist.size() > 0) {
+                    for (Player p : playerlist) {
+                        p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
+                        p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
+                        p.setPlayer_age(getAgeWithBirth(p.getPlayer_birth()));
+                    }
                 }
+                return playerlist;
+            }else{
+                List<Player> playerlist = playerDao.searchAllPlayerList(positions, teams);
+                if (playerlist.size() > 0) {
+                    for (Player p : playerlist) {
+                        p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
+                        p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
+                        p.setPlayer_age(getAgeWithBirth(p.getPlayer_birth()));
+                    }
+                }
+                return playerlist;
             }
-            return playerlist;
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
