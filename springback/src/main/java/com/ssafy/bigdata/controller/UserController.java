@@ -1,6 +1,8 @@
 package com.ssafy.bigdata.controller;
 
+import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.LoginRequest;
+import com.ssafy.bigdata.dto.LoginResponse;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.service.UserService;
 
@@ -20,6 +22,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private UserDao userDao;
+
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
@@ -34,9 +39,11 @@ public class UserController {
 
         try {
             String email = userService.login(request);
+            LoginResponse res = new LoginResponse(userDao.findByEmail(email).getUser_id(), email);
+            System.out.println(res.toString());
             response.status = true;
             response.msg = "success";
-            response.data = email;
+            response.data = res;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
