@@ -57,7 +57,7 @@
             class="col"
             title="Team Stat"
             :subTitle="lineupName"
-            :data="MyTeamStatData"
+            :data="CommonTeamStatData"
             :type="chartType"
           />
         </div>
@@ -199,6 +199,7 @@ export default {
       MyPlayerStatData: {},
       teamStatData: {},
       playerStatData: {},
+      CommonTeamStatData :{},
     };
   },
   created() {
@@ -274,14 +275,14 @@ export default {
       if (this.isModifiedMyTeamStat) {
         let data2 = [];
         for (let key of label) {
-          data2.push(this.isModifiedMyTeamStat[key]);
+          data2.push(this.MyTeamStats[key]);
         }
         obj.data2 = {
           label: "나의 팀",
-          backgroundColor: "rgba(255, 255, 0, 0.2)",
-          borderColor: "rgb(255, 255, 0)",
+          backgroundColor: "rgba(100, 100, 255, 0.2)",
+          borderColor: "rgb(100, 100, 255)",
           borderWidth: 1,
-          pointBackgroundColor: "rgb(255, 0, 0)",
+          pointBackgroundColor: "rgb(100, 100, 255)",
           data: data2,
         };
       }
@@ -301,17 +302,17 @@ export default {
       }
       obj.data = {
         label: "나의 팀",
-        backgroundColor: "rgba(255, 255, 0, 0.2)",
-        borderColor: "rgb(255, 255, 0)",
+        backgroundColor: "rgba(100, 100, 255, 0.2)",
+        borderColor: "rgb(100, 100, 255)",
         borderWidth: 1,
-        pointBackgroundColor: "rgb(255, 255, 0)",
+        pointBackgroundColor: "rgb(100, 100, 255)",
         data: data,
       };
 
       if (this.isModifiedTeamStat) {
         let data2 = [];
         for (let key of label) {
-          data2.push(this.modifiedTeamStat[key]);
+          data2.push(this.teamStats[key]);
         }
         obj.data2 = {
           label: "상대 팀",
@@ -382,7 +383,7 @@ export default {
           delete this.teamStats.team_id;
 
           this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-          this.teamStatData = this.computeTeamStatData();
+          this.CommonTeamStatData = this.computeTeamStatData();
           this.isModifiedTeamStat = true;
 
           console.log(res);
@@ -406,7 +407,7 @@ export default {
           delete this.MyTeamStats.team_id;
 
           this.MyLineupPlayerTableData = this.computeMyLineupPlayerTableData();
-          this.MyTeamStatData = this.computeMyTeamStatData();
+          this.CommonTeamStatData = this.computeMyTeamStatData();
           this.isModifiedMyTeamStat = true;
           console.log(res);
         },
