@@ -3,45 +3,31 @@
     <base-header type="translucent-default" class="pb-5 pt-5"></base-header>
 
     <div class="container-fluid mt-2 row">
-      <div class="col mr-1 ml-1  text-center align-self-center">
+      <div class="col mr-1 ml-1 text-center align-self-center">
         <!-- 상대 구단 라인업 -->
         <base-dropdown>
-          <base-button
-            slot="title"
-            type="secondary"
-            class="dropdown-toggle">
-            {{lineup}}
-          </base-button>
+          <base-button slot="title" type="secondary" class="dropdown-toggle">{{lineup}}</base-button>
           <template v-for="lineup in lineupList">
             <span
               :key="lineup.id"
               class="dropdown-item"
-              @click="changeLineup(lineup.id, lineup.name)">
-              {{lineup.name}}
-            </span>
+              @click="changeLineup(lineup.id, lineup.name)"
+            >{{lineup.name}}</span>
           </template>
         </base-dropdown>
-        
       </div>
       <div class="col text-center align-self-center">
         <h3>팀 스탯 정보</h3>
       </div>
       <div class="col mr-1 ml-1 text-center align-self-center">
-         <!-- 나만의 라인업 -->
         <base-dropdown>
-          <base-button
-            slot="title"
-            type="secondary"
-            class="dropdown-toggle">
-            {{userLineup}}
-          </base-button>
-          <template v-for="lineup in lineupList">
+          <base-button slot="title" type="secondary" class="dropdown-toggle">{{userLineup}}</base-button>
+          <template v-for="MyLineup in MyLineupList">
             <span
-              :key="lineup.id"
+              :key="MyLineup.id"
               class="dropdown-item"
-              @click="changeLineup(lineup.id, lineup.name)">
-              {{lineup.name}}
-            </span>
+              @click="changeMyLineup(MyLineup.id, MyLineup.name)"
+            >{{MyLineup.name}}</span>
           </template>
         </base-dropdown>
       </div>
@@ -65,37 +51,39 @@
 
       <!-- center -->
       <div class="col-xl">
-        <!-- 상대팀 스탯 그래프 -->
+        <!-- 구단 스탯 그래프 -->
         <div class="row">
           <custom-radar-chart
             class="col"
             title="Team Stat"
             :subTitle="lineupName"
-            :data="teamStatData"
-            :type="chartType" />
+            :data="CommonTeamStatData"
+            :type="chartType"
+          />
         </div>
-        <!-- 상대팀 스탯에 대한 설명 -->
+        <!-- 구단에 대한 설명 -->
         <div class="row mt-2">
-         
+          <div class="col">
+            <team-comparison-table title="구단 특징"></team-comparison-table>
+          </div>
         </div>
       </div>
 
       <!-- right -->
       <div class="col-xl mr-1 ml-1">
-        <!-- 1. 추천 선수 목록 테이블 -->
+        <!-- 선택된 라인업 선수 목록 -->
         <div class="row">
           <custom-table
             class="custom-table"
-            tableTitle="Recommend Player"
-            :tableData="recommendPlayerTableData"
+            :tableTitle="MyLineupName"
+            :tableData="MyLineupPlayerTableData"
             :cols="tableColumns"
-            :selectedRow="recommendSel"
-            @clickRow="clickRecommendPlayer"
+            :selectedRow="MyLineupSel"
+            @clickRow="clickMyLineupPlayer"
           />
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -105,26 +93,57 @@ import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
 import CustomTable from "@/views/Tables/CustomTable";
+import TeamComparisonTable from "@/views/Tables/TeamComparisonTable";
+
+// API
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   components: {
     CustomRadarChart,
-    CustomTable
+    CustomTable,
+    TeamComparisonTable,
   },
   data() {
     return {
+      // 나의팀 스탯
+      MyTeamStats: {
+        era: 0,
+        health: 0,
+        control: 0,
+        stability: 0,
+        deterrent: 0,
+        power: 0,
+        speed: 0,
+        contact: 0,
+        defense: 0,
+        shoulder: 0,
+      },
+
       // 팀 스탯
       teamStats: {
-        era: 0.4
-        , health: 0.6
-        , control: 0
-        , stability: 1
-        , deterrent: 1
-        , power: 1
-        , speed: 0.3
-        , contact: 0.6
-        , defense: 0.3
-        , shoulder: 0.6
+        era: 0,
+        health: 0,
+        control: 0,
+        stability: 0,
+        deterrent: 0,
+        power: 0,
+        speed: 0,
+        contact: 0,
+        defense: 0,
+        shoulder: 0,
+      },
+
+      // 나의 플레이어 스탯
+      MyPlayerStats: {
+        five_tool: {
+          power: 0,
+          speed: 0,
+          contact: 0,
+          defense: 0,
+          shoulder: 0,
+        },
+        stats: [],
       },
 
       // 플레이어 스탯
@@ -140,194 +159,309 @@ export default {
       },
 
       // 라인업 리스트
-      lineupList: [
-        {
-          id: 1,
-          name: "당근 라인업"
-        },
-        {
-          id: 2,
-          name: "빠따 라인업"
-        },
-        {
-          id: 3,
-          name: "노빠구 라인업"
-        },
-      ],
+      MyLineupList: [],
+      lineupList: [],
+      isModifiedMyTeamStat: false,
 
       // 라인업 선수 목록
-      lineupPlayers: [
-        { id: 1234
-          , order: 1
-          , position: '우익수'
-          , name: '김타자'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 456
-          , order: 2
-          , position: '좌익수'
-          , name: '최홈런'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 112
-          , order: 4
-          , position: '포수'
-          , name: '우사인볼트'
-          , player_num: 12
-          , age: 30
-        },
-        {
-          id: 142
-          , order: 0
-          , position: '투수'
-          , name: '김잘던짐'
-          , player_num: 12
-          , age: 30
-        }
-      ],
-
-      // 추천 선수 목록
-      recommendPlayers: [
-        { id: 3333
-          , order: 1
-          , position: '우익수'
-          , name: '나를써요'
-          , player_num: 21
-          , age: 72
-        },
-        {
-          id: 4444
-          , order: 2
-          , position: '좌익수'
-          , name: '홍길동'
-          , player_num: 1
-          , age: 320
-        },
-        {
-          id: 5555
-          , order: 4
-          , position: '포수'
-          , name: '이번타자'
-          , player_num: 3
-          , age: 24
-        },
-        {
-          id: 6666
-          , order: 0
-          , position: '투수'
-          , name: '손미끄러짐'
-          , player_num: 29
-          , age: 19
-        }
-      ],
+      MyLineupPlayers: [],
+      lineupPlayers: [],
+      isModifiedTeamStat: false,
 
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
+      MyLineupSel: -1,
       lineupSel: -1,
-      recommendSel: -1,
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
-      lineup: "상대 구단 라인업",
+      MyLineupName: "나의 라인업 선택",
+      MyLineupId: 0,
+      lineupName: "상대 라인업 선택",
       lineupId: 0,
 
-      // 드롭다운으로 라인업 선택하는 동작을 위한 변수
-      userLineup: "나만의 라인업",
-      userLineupId: 0,
-      
+      // 라인업 선수 테이블 컬럼들
+      tableColumns: ["At bat", "Position", "Name"],
+      MytableColumns: ["At bat", "Position", "Name"],
 
-      // 추천선수, 라인업 선수 테이블 컬럼들
-      tableColumns: [
-        "At bat"
-        , "Position"
-        , "Name"
-      ],
+      // 선택한 선수의 이름 저장(스탯 보여주기 용)
+      playerName: "Select player",
+      MyplayerName: "Select player",
 
-    }
+      // 그래프 타입(배경 색)
+      chartType: "secondary",
+
+      // 테이블을 위한 데이터
+      lineupPlayerTableData: [],
+      MyLineupPlayerTableData: [],
+
+      // 차트를 위한 데이터
+      MyTeamStatData: {},
+      MyPlayerStatData: {},
+      teamStatData: {},
+      playerStatData: {},
+      CommonTeamStatData :{},
+    };
   },
-  computed: {
-    lineupPlayerTableData() {
+  created() {
+    PlayerAPI.getLineupList(
+      "none=none",
+      (res) => {
+        this.lineupList = res;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    PlayerAPI.getMyLineupList(
+      "none=none",
+      (res) => {
+        this.MyLineupList = res;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    this.MyTeamStatData = this.computeMyTeamStatData();
+    this.MyPlayerStatData = this.computeMyPlayerStatData();
+    this.teamStatData = this.computeTeamStatData();
+    this.playerStatData = this.computePlayerStatData();
+  },
+  methods: {
+    computeLineupPlayerTableData() {
       let arr = [];
-      for(let player of this.lineupPlayers) {
-        let atBat = player.order + '번 타자';
-        if(player.order == 0) {
-          atBat = '투수';
+      for (let player of this.lineupPlayers) {
+        let atBat = player.player_position + "번 타자";
+        if (player.player_position == 10) {
+          atBat = "투수";
         }
 
-        arr.push([
-          atBat, 
-          player.position, 
-          player.name
-        ]);
+        arr.push([atBat, player.position, player.player_name]);
       }
       return arr;
     },
-    recommendPlayerTableData() {
+    computeMyLineupPlayerTableData() {
       let arr = [];
-      for(let player of this.recommendPlayers) {
-        let atBat = player.order + '번 타자';
-        if(player.order == 0) {
-          atBat = '투수';
+      for (let player of this.MyLineupPlayers) {
+        let atBat = player.player_position + "번 타자";
+        if (player.player_position == 10) {
+          atBat = "투수";
         }
 
-        arr.push([
-          atBat, 
-          player.position, 
-          player.name
-        ]);
+        arr.push([atBat, player.position, player.player_name]);
       }
       return arr;
     },
-    teamStatData() {
+    computeTeamStatData() {
       let obj = {};
       let label = [];
       let data = [];
 
       label = Object.keys(this.teamStats);
-      for(let key of label) {
+      obj.label = label;
+
+      for (let key of label) {
         data.push(this.teamStats[key]);
       }
+      obj.data = {
+        label: "상대 팀",
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data,
+      };
+      if (this.isModifiedMyTeamStat) {
+        let data2 = [];
+        for (let key of label) {
+          data2.push(this.MyTeamStats[key]);
+        }
+        obj.data2 = {
+          label: "나의 팀",
+          backgroundColor: "rgba(100, 100, 255, 0.2)",
+          borderColor: "rgb(100, 100, 255)",
+          borderWidth: 1,
+          pointBackgroundColor: "rgb(100, 100, 255)",
+          data: data2,
+        };
+      }
 
-      obj.label = label;
-      obj.data = data;
       return obj;
     },
-    playerStatData() {
+    computeMyTeamStatData() {
+      let obj = {};
+      let label = [];
+      let data = [];
+
+      label = Object.keys(this.MyTeamStats);
+      obj.label = label;
+
+      for (let key of label) {
+        data.push(this.MyTeamStats[key]);
+      }
+      obj.data = {
+        label: "나의 팀",
+        backgroundColor: "rgba(100, 100, 255, 0.2)",
+        borderColor: "rgb(100, 100, 255)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(100, 100, 255)",
+        data: data,
+      };
+
+      if (this.isModifiedTeamStat) {
+        let data2 = [];
+        for (let key of label) {
+          data2.push(this.teamStats[key]);
+        }
+        obj.data2 = {
+          label: "상대 팀",
+          backgroundColor: "rgba(255, 0, 0, 0.2)",
+          borderColor: "rgb(255, 0, 0)",
+          borderWidth: 1,
+          pointBackgroundColor: "rgb(255, 0, 0)",
+          data: data2,
+        };
+      }
+      return obj;
+    },
+    computePlayerStatData() {
       let obj = {};
       let label = [];
       let data = [];
 
       label = Object.keys(this.playerStats.five_tool);
-      for(let key of label) {
+      obj.label = label;
+
+      for (let key of label) {
         data.push(this.playerStats.five_tool[key]);
       }
+      obj.data = {
+        label: "Player stat",
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data,
+      };
 
-      obj.label = label;
-      obj.data = data;
       return obj;
-    }
-  },
-  methods: {
+    },
+    computeMyPlayerStatData() {
+      let obj = {};
+      let label = [];
+      let data = [];
+
+      label = Object.keys(this.MyPlayerStats.five_tool);
+      obj.label = label;
+
+      for (let key of label) {
+        data.push(this.MyPlayerStats.five_tool[key]);
+      }
+      obj.data = {
+        label: "MyPlayer stat",
+        backgroundColor: "rgba(255, 0, 0, 0.2)",
+        borderColor: "rgb(255, 0, 0)",
+        borderWidth: 1,
+        pointBackgroundColor: "rgb(255, 0, 0)",
+        data: data,
+      };
+
+      return obj;
+    },
     changeLineup(id, name) {
       this.lineupId = id;
       this.lineupName = name;
+
+      PlayerAPI.getTeamStatWithRecommend(
+        "lineup=" + id,
+        (res) => {
+          this.lineupPlayers = res.playerList;
+          this.teamStats = res.teamStat;
+
+          // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
+          delete this.teamStats.team_id;
+
+          this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+          this.CommonTeamStatData = this.computeTeamStatData();
+          this.isModifiedTeamStat = true;
+
+          console.log(res);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    },
+    changeMyLineup(id, name) {
+      this.MyLineupId = id;
+      this.MyLineupName = name;
+
+      PlayerAPI.getTeamStatWithRecommend(
+        "lineup=" + id,
+        (res) => {
+          this.MyLineupPlayers = res.playerList;
+          this.MyTeamStats = res.teamStat;
+
+          // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
+          delete this.MyTeamStats.team_id;
+
+          this.MyLineupPlayerTableData = this.computeMyLineupPlayerTableData();
+          this.CommonTeamStatData = this.computeMyTeamStatData();
+          this.isModifiedMyTeamStat = true;
+          console.log(res);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    },
+    getPlayerStat(id) {
+      PlayerAPI.getPlayerStat(
+        "num=" + id,
+        (res) => {
+          console.log(res);
+          this.playerStats = res;
+          this.playerStatData = this.computePlayerStatData();
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    },
+    getMyPlayerStat(id) {
+      PlayerAPI.getPlayerStat(
+        "num=" + id,
+        (res) => {
+          console.log(res);
+          this.MyplayerStats = res;
+          this.MyPlayerStatData = this.computeMyPlayerStatData();
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
     },
     clickLineupPlayer(index) {
-      if(this.lineupSel != index) {
+      if (this.lineupSel != index) {
         this.playerName = this.lineupPlayers[index].name;
         this.lineupSel = index;
+
+        this.getPlayerStat(this.lineupPlayers[index].player_id);
+        this.playerName = this.lineupPlayers[index].player_name;
       }
     },
-    clickRecommendPlayer(index) {
-      if(this.recommendSel != index) {
-        this.playerName = this.recommendPlayers[index].name;
-        this.recommendSel = index;
+
+    clickMyLineupPlayer(index) {
+      if (this.MyLineupSel != index) {
+        this.MyPlayerName = this.MyLineupPlayers[index].name;
+        this.MyLineupSel = index;
+
+        this.getPlayerStat(this.MyLineupPlayers[index].player_id);
+        this.playerName = this.MyLineupPlayers[index].player_name;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

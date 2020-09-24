@@ -1,4 +1,5 @@
-from api import models, serializers
+from api import serializers
+from api.views import models
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from bs4 import BeautifulSoup

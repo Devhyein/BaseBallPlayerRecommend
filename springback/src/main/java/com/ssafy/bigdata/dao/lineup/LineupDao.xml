@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.bigdata.dao.lineup.LineupDao">
+
+    <select id="getPlayerListByLineup" resultType="Lineup" parameterType="int">
+        select * from lineup where lineup_id=#{lineup_id}
+    </select>
+
+    <select id="getLineup" resultType="Lineup">
+        select * from lineup
+    </select>
+
+    <insert id = "insertLineup">
+        INSERT INTO lineup(lineup_name, user_id, hitter1, hitter2, hitter3, hitter4, hitter5, hitter6, hitter7, hitter8, hitter9, pitcher)
+        VALUES (#{lineup_name}, #{user_id}, #{hitter1}, #{hitter2}, #{hitter3}, #{hitter4}, #{hitter5}, #{hitter6}, #{hitter7}, #{hitter8}, #{hitter9}, #{pitcher})
+    </insert>
+
+    <update id = "updateLineup">
+        UPDATE lineup
+        SET lineup_name = #{lineup_name}, hitter1 = #{hitter1}, hitter2 =#{hitter2}, hitter3 = #{hitter3}, hitter4 = #{hitter4}, hitter5 = #{hitter5}, hitter6 = #{hitter6}, hitter7 = #{hitter7}, hitter8 = #{hitter8}, hitter9 = #{hitter9}, pitcher = #{pitcher}
+        WHERE lineup_id = #{lineup_id}
+    </update>
+
+    <delete id = "deleteLineup">
+        DELETE 
+        FROM lineup
+        WHERE lineup_id = #{lineup_id}
+    </delete>
+</mapper>

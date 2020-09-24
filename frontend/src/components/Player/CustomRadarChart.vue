@@ -45,7 +45,10 @@ export default {
   computed: {
     chartData() {
       let dataset = [];
-      dataset.push(this.data.data);
+
+      if(this.data.data) {
+        dataset.push(this.data.data);
+      }
 
       if(this.data.data2) {
         dataset.push(this.data.data2);

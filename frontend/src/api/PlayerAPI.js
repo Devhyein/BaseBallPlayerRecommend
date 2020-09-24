@@ -128,12 +128,15 @@ const deleteApi = (url, data, callback, errorCallback) => {
 */
 
 const PlayerAPI = {
-    getPlayerList:(data,callback,errorCallback)=>getApi('/spring/info/playerlist',data,callback,errorCallback),
+    getPlayerList:(data,callback,errorCallback)=>postApi('/spring/info/playerlist',data,callback,errorCallback),
     getPlayerStat:(data,callback,errorCallback)=>getApi('/spring/info/player',data,callback,errorCallback),
 
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
+    getMyLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
+
+    getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
 }
 
 export default PlayerAPI
