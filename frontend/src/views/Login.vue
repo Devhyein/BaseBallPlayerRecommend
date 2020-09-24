@@ -15,11 +15,11 @@
                                     <span class="btn-inner--icon"><img src="img/icons/common/github.svg"></span>
                                     <span class="btn-inner--text">Github</span>
                 </a>-->
-                <span class="btn btn-neutral btn-icon">
-                <span class="btn-inner--icon">
-                    <img src="img/icons/common/google.svg" />
-                </span>
-                <span class="btn-inner--text">Google</span>
+                <span class="btn btn-neutral btn-icon" @click="googleLogin">
+                  <span class="btn-inner--icon">
+                      <img src="img/icons/common/google.svg" />
+                  </span>
+                  <span class="btn-inner--text">Google</span>
                 </span>
             </div>
             </div>
