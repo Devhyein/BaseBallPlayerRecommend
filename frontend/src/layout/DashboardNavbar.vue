@@ -24,7 +24,7 @@
               <div class="dropdown-divider"></div>
               <router-link to="/profile" class="dropdown-item">
                 <i class="ni ni-user-run"></i>
-                <span>Logout</span>
+                <span @click="logout">Logout</span>
               </router-link>
             </template>
           </base-dropdown>
@@ -62,6 +62,7 @@
 <script>
 // Alert
 import swal from 'sweetalert';
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   data() {
@@ -117,10 +118,28 @@ export default {
     },
     login(email, name, image) {
       // 콘솔에 찍어보기
-      // 나중엔 여기서 백에 요청 보내줘야함
       console.log(email);
       console.log(name);
       console.log(image);
+
+      PlayerAPI.googleLogin(
+        {
+          email: email,
+          name: name,
+          picture: image
+        },
+        res => {
+          console.log(res);
+          this.$store.commit('addUserInfo', {email: res});
+        },
+        err => {
+          console.log(err);
+          swal("실패", "구글 로그인 실패", "error");
+        }
+      );
+    },
+    logout() {
+      this.$store.commit('deleteUserInfo');
     }
   },
   computed: {
