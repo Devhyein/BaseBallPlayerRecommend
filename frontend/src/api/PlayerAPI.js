@@ -132,6 +132,7 @@ const PlayerAPI = {
     getPlayerStat:(data,callback,errorCallback)=>getApi('/spring/info/player',data,callback,errorCallback),
 
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
+    getMyLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
 }

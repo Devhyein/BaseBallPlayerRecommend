@@ -63,12 +63,12 @@ export default new Router({
           name: 'maps',
           component: () => import('./views/Maps.vue')
         },
+        */
         {
           path: '/tables',
           name: 'tables',
           component: () => import('./views/Tables.vue')
         }
-        */
       ]
     },
     {

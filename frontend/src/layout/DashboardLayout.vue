@@ -12,8 +12,8 @@
         <sidebar-item
           :link="{name: 'Lineup', icon: 'fa fa-thumbs-up text-red', path: '/lineup'}"
         />
-        <!--<sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
-        -->
+        <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
+
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
         <sidebar-item :link="{name: 'Icons', icon: 'ni ni-planet text-blue', path: '/icons'}"/>
