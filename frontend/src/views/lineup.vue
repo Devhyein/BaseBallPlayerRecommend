@@ -189,7 +189,7 @@ import CustomTable from "@/views/Tables/CustomTable";
 import swal from 'sweetalert';
 
 // API
-// import PlayerAPI from "@/api/PlayerAPI";
+import PlayerAPI from "@/api/PlayerAPI";
 
 export default {
   components: {
@@ -229,140 +229,24 @@ export default {
       },
 
       // 라인업 리스트
-      lineupList: [
-        {
-          id: 123,
-          name: '당근 라인업'
-        },
-        {
-          id: 456,
-          name: '빠따 라인업'
-        }
-      ],
+      lineupList: [],
 
       // 라인업 선수 목록
       lineupPlayers: [
-        {
-          player_id: 1,
-          player_name: '김선수',
-          player_position: 1,
-          position: '유격수'
-        },
-        {
-          player_id: 2,
-          player_name: '이선수',
-          player_position: 2,
-          position: '좌익수'
-        },
-        {
-          player_id: 3,
-          player_name: '최선수',
-          player_position: 3,
-          position: '우익수'
-        },
-        {
-          player_id: 4,
-          player_name: '한선수',
-          player_position: 4,
-          position: '1루수'
-        },
-        {
-          player_id: 5,
-          player_name: '강선수',
-          player_position: 5,
-          position: '2루수'
-        },
-        {
-          player_id: 6,
-          player_name: '전선수',
-          player_position: 6,
-          position: '3루수'
-        },
-        {
-          player_id: 7,
-          player_name: '유선수',
-          player_position: 7,
-          position: '포수'
-        },
-        {
-          player_id: 8,
-          player_name: '윤선수',
-          player_position: 8,
-          position: '중견수'
-        },
-        {
-          player_id: 9,
-          player_name: '안선수',
-          player_position: 9,
-          position: '또뭐있지'
-        },
-        {
-          player_id: 10,
-          player_name: '임선수',
-          player_position: 10,
-          position: '투수'
-        },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
+        { player_id: -1, position: '포지션', player_name: '이름' },
       ],
 
-      // 추천 선수 목록
-      searchedPlayers: [
-        {
-          player_id: 1,
-          player_name: '김선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 2,
-          player_name: '이선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 3,
-          player_name: '안선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 4,
-          player_name: '손선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 5,
-          player_name: '임선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 6,
-          player_name: '유선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-        {
-          player_id: 7,
-          player_name: '강선수',
-          player_team: '우리팀',
-          position: '유격수',
-          player_num: 0,
-          player_age: 30
-        },
-      ],
+      // 검색된 선수 목록
+      searchedPlayers: [],
 
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
@@ -423,15 +307,15 @@ export default {
     }
   },
   created() {
-    // PlayerAPI.getLineupList(
-    //   "none=none",
-    //   res => {
-    //     this.lineupList = res;
-    //   },
-    //   err => {
-    //     console.log(err);
-    //   }
-    // );
+    PlayerAPI.getLineupList(
+      "none=none",
+      res => {
+        this.lineupList = res;
+      },
+      err => {
+        console.log(err);
+      }
+    );
 
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
@@ -534,26 +418,24 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
-      // PlayerAPI.getTeamStatWithRecommend(
-      //   "lineup=" + id,
-      //   res => {
-      //     this.lineupPlayers = res.playerList;
-      //     this.recommendPlayers = res.recommendList;
-      //     this.teamStats = res.teamStat;
+      PlayerAPI.getLineupPlayerWithTeamStat(
+        "lineup=" + id,
+        res => {
+          this.lineupPlayers = res.playerList;
+          this.teamStats = res.teamStat;
 
-      //     // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
-      //     delete this.teamStats.team_id;
+          // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
+          delete this.teamStats.team_id;
 
-      //     this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-      //     this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
-      //     this.teamStatData = this.computeTeamStatData();
+          this.lineupPlayerTableData = this.computeLineupPlayerTableData();
+          this.teamStatData = this.computeTeamStatData();
 
-      //     console.log(res);
-      //   },
-      //   err => {
-      //     console.log(err);
-      //   }
-      // );
+          console.log(res);
+        },
+        err => {
+          console.log(err);
+        }
+      );
     },
     clickLineupPlayer(index) {
       if(this.lineupSel != index) {
@@ -577,17 +459,19 @@ export default {
     },
     getPlayerStat(id) {
       console.log(id);
-      // PlayerAPI.getPlayerStat(
-      //   'num=' + id,
-      //   res => {
-      //     console.log(res);
-      //     this.playerStats = res;
-      //     this.playerStatData = this.computePlayerStatData();
-      //   },
-      //   err => {
-      //     console.log(err);
-      //   }
-      // )
+      if(id == -1) return;
+      
+      PlayerAPI.getPlayerStat(
+        'num=' + id,
+        res => {
+          console.log(res);
+          this.playerStats = res;
+          this.playerStatData = this.computePlayerStatData();
+        },
+        err => {
+          console.log(err);
+        }
+      )
     },
     resetLineup() {
       console.log("reset");

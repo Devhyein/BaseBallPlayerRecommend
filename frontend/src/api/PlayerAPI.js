@@ -135,6 +135,8 @@ const PlayerAPI = {
     getMyLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
+
+    getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
 }
 
 export default PlayerAPI
