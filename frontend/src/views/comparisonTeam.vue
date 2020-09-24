@@ -57,8 +57,7 @@
             class="col"
             title="Team Stat"
             :subTitle="lineupName"
-            :data="teamStatData"
-            :data2="MyTeamStatData"
+            :data="MyTeamStatData"
             :type="chartType"
           />
         </div>
@@ -305,7 +304,7 @@ export default {
         backgroundColor: "rgba(255, 255, 0, 0.2)",
         borderColor: "rgb(255, 255, 0)",
         borderWidth: 1,
-        pointBackgroundColor: "rgb(255, 0, 0)",
+        pointBackgroundColor: "rgb(255, 255, 0)",
         data: data,
       };
 
