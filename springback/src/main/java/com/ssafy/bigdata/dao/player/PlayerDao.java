@@ -6,8 +6,6 @@ import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RecordFielder;
 import com.ssafy.bigdata.dto.RecordHitter;
 import com.ssafy.bigdata.dto.RecordPitcher;
-import com.ssafy.bigdata.dto.StatForChart;
-import com.ssafy.bigdata.dto.ToolsPitcher;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;

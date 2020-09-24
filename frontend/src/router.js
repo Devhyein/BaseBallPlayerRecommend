@@ -35,10 +35,16 @@ export default new Router({
           path: '/recommend',
           name: 'recommend',
           component: () => import('./views/RecommendPlayer.vue')
-        },{
+        },
+        {
           path: '/comparisonTeam',
           name: 'comparisonTeam',
           component: () => import('./views/comparisonTeam.vue')
+        },
+        {
+          path: '/lineup',
+          name: 'lineup',
+          component: () => import('./views/lineup.vue')
         },
         
         {
@@ -57,12 +63,12 @@ export default new Router({
           name: 'maps',
           component: () => import('./views/Maps.vue')
         },
+        */
         {
           path: '/tables',
           name: 'tables',
           component: () => import('./views/Tables.vue')
         }
-        */
       ]
     },
     {

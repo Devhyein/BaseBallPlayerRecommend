@@ -1,15 +1,11 @@
 package com.ssafy.bigdata.controller;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +15,10 @@ import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
-import com.ssafy.bigdata.dto.StatForChart;
 import com.ssafy.bigdata.dto.TeamStat;
-import com.ssafy.bigdata.dto.ToolsHitter;
-import com.ssafy.bigdata.dto.ToolsPitcher;
-import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.PlayerServiceImpl;
 import com.ssafy.bigdata.service.TeamService;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -67,7 +56,6 @@ public class TeamController {
         this.playerServiceImpl = playerServiceImpl;
     }
     
-    // 우선 2개만
     @ApiOperation(value = "라인업 목록")
     @GetMapping("/team/lineup")
     public Object get_lineupList() {
@@ -79,7 +67,7 @@ public class TeamController {
         for(Lineup list : lineupList){
             LineupList lineup = new LineupList();
             lineup.setId(list.getLineup_id());
-            lineup.setName(playerDao.findTeamName(list.getTeam_id()));
+            lineup.setName(list.getLineup_name());
             res.add(lineup);
         }
 
