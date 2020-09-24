@@ -128,7 +128,7 @@ const deleteApi = (url, data, callback, errorCallback) => {
 */
 
 const PlayerAPI = {
-    getPlayerList:(data,callback,errorCallback)=>getApi('/spring/info/playerlist',data,callback,errorCallback),
+    getPlayerList:(data,callback,errorCallback)=>postApi('/spring/info/playerlist',data,callback,errorCallback),
     getPlayerStat:(data,callback,errorCallback)=>getApi('/spring/info/player',data,callback,errorCallback),
 
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),

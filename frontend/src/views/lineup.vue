@@ -174,6 +174,14 @@
         @clickRow="clickSearchedPlayer"
       />
     </div>
+    <div class="container-fluid mt-1 row">
+      <base-pagination
+        class="col"
+        :page-count="pageCount"
+        v-model="pageVal"
+        align="center"
+      />
+    </div>
 
   </div>
 </template>
@@ -248,6 +256,13 @@ export default {
       // 검색된 선수 목록
       searchedPlayers: [],
 
+      // 검색된 선수 페이지네이션을 위한 것
+      searchedPlayerListShowData: [],
+      pageCount: 1,
+      pageVal: 1,
+      from: 0,
+      total: 0,
+
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
       lineupSel: -1,
@@ -306,6 +321,19 @@ export default {
         false],
     }
   },
+  watch: {
+    pageVal(newVal) {
+      // 1: 0 to 5
+      // 2: 5 to 10
+      // 3: 10 to 15
+      this.from = (newVal - 1) * 5
+      let to = this.from + 5
+      if(to > this.total) to = this.total;
+      this.searchedPlayerListShowData = this.searchedPlayers.slice(this.from, to);
+
+      this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
+    }
+  },
   created() {
     PlayerAPI.getLineupList(
       "none=none",
@@ -344,7 +372,7 @@ export default {
     },
     computeSearchedPlayerTableData() {
       let arr = [];
-      for(let player of this.searchedPlayers) {
+      for(let player of this.searchedPlayerListShowData) {
         arr.push([
           player.player_name, 
           player.player_team, 
@@ -439,7 +467,6 @@ export default {
     },
     clickLineupPlayer(index) {
       if(this.lineupSel != index) {
-        this.playerName = this.lineupPlayers[index].name;
         this.lineupSel = index;
         this.searchedSel = -1;
         
@@ -448,19 +475,18 @@ export default {
       }
     },
     clickSearchedPlayer(index) {
-      if(this.recommendSel != index) {
-        this.playerName = this.searchedPlayers[index].name;
+      if(this.searchedSel != index) {
         this.searchedSel = index;
         this.lineupSel = -1;
 
-        this.getPlayerStat(this.searchedPlayers[index].player_id);
-        this.playerName = this.searchedPlayers[index].player_name;
+        this.getPlayerStat(this.searchedPlayerListShowData[index].player_id);
+        this.playerName = this.searchedPlayerListShowData[index].player_name;
       }
     },
     getPlayerStat(id) {
       console.log(id);
       if(id == -1) return;
-      
+
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
@@ -504,7 +530,77 @@ export default {
       });
     },
     search() {
-      console.log(this.searchVal);
+      // 검색할 선수 이름의 일부
+      let searchText = this.searchVal;
+      if(this.searchVal.length == 0) {
+        searchText = null
+      }
+      console.log(searchText);
+
+      // 포지션 필터링
+      let cnt = 0;
+      let positions = '';
+      for(let i in this.positionFilter) {
+        let v = this.positionFilter[i];
+        if(!v) {
+          positions += (i + ",");
+          cnt += 1;
+        }
+      }
+      if(cnt == 0) {
+        swal("검색 오류!", "적어도 하나의 포지션은 선택되어야 합니다!", "warning");
+        return;
+      }
+      positions = positions.slice(0, -1);
+      console.log(positions);
+
+      // 팀
+      cnt = 0;
+      let teams = '';
+      for(let i in this.teamFilter) {
+        let v = this.teamFilter[i];
+        if(!v) {
+          teams += (i + ",");
+          cnt += 1;
+        }
+      }
+      if(cnt == 0) {
+        swal("검색 오류!", "적어도 하나의 팀은 선택되어야 합니다!", "warning");
+        return;
+      }
+      teams = teams.slice(0, -1);
+      console.log(teams);
+
+      PlayerAPI.getPlayerList(
+        {
+          searchText: searchText,
+          teams: teams,
+          positions: positions
+        },
+        res => {
+          this.searchedPlayers = res;
+          this.resetSearchedPlayerTableData();
+        },
+        err => {
+          console.log(err);
+        }
+      );
+    },
+    resetSearchedPlayerTableData() {
+      this.total = this.searchedPlayers.length;
+      this.from = 0;
+      let to = 5;
+
+      let v = this.total - 1;
+      if(v < 0) v = 0;
+      this.pageCount = parseInt(v / 5 + 1);
+      this.pageVal = 1;
+
+      if(to > this.total) to = this.total;
+
+      this.searchedPlayerListShowData = this.searchedPlayers.slice(this.from, to);
+
+      this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
     },
     // 버튼 누르면 바로 반영되게 하기 위한 편법
     changePositionFilter(idx) {
