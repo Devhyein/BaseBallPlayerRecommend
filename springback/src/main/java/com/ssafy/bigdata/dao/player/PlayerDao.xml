@@ -7,7 +7,12 @@
 <mapper namespace="com.ssafy.bigdata.dao.player.PlayerDao">
     <select id="searchPlayerList" resultType="Player" parameterType="string">
         select * from player
-        where player_name like concat('%',#{player_name},'%')
+        where player_name like concat('%',#{searchText},'%') AND team_id IN (${teams}) AND player_position IN (${positions})
+    </select>
+
+    <select id="searchAllPlayerList" resultType="Player" parameterType="string">
+        select * from player
+        where team_id IN (${teams}) AND player_position IN (${positions})
     </select>
 
     <select id="searchPlayerById" resultType="Player" parameterType="int">
