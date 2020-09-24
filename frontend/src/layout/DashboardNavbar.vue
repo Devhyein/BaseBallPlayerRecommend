@@ -9,7 +9,7 @@
                 <img alt="Image placeholder" src="img/theme/team-4-800x800.jpg" />
               </span>
               <div class="media-body ml-2 d-none d-lg-block">
-                <span class="mb-0 text-sm font-weight-bold">유저 닉네임</span>
+                <span class="mb-0 text-sm font-weight-bold">{{userName}}</span>
               </div>
             </div>
 
@@ -17,20 +17,20 @@
               <div class="dropdown-header noti-title">
                 <h6 class="text-overflow m-0">Welcome!</h6>
               </div>
-              <router-link to="/profile" class="dropdown-item">
+              <!-- <router-link to="/profile" class="dropdown-item">
                 <i class="ni ni-single-02"></i>
                 <span>My profile</span>
               </router-link>
-              <div class="dropdown-divider"></div>
-              <router-link to="/profile" class="dropdown-item">
+              <div class="dropdown-divider"></div> -->
+              <div class="dropdown-item">
                 <i class="ni ni-user-run"></i>
                 <span @click="logout">Logout</span>
-              </router-link>
+              </div>
             </template>
           </base-dropdown>
         </template>
         <template v-else>
-          <base-button block type="secondary"  @click="showModal = true">
+          <base-button block type="secondary"  @click="goLogin">
               Login
           </base-button>
 
@@ -60,10 +60,6 @@
   </base-nav>
 </template>
 <script>
-// Alert
-import swal from 'sweetalert';
-import PlayerAPI from "@/api/PlayerAPI";
-
 export default {
   data() {
     return {
@@ -72,18 +68,7 @@ export default {
       searchQuery: "",
 
       showModal: false,
-
-      isInit: false,
     };
-  },
-  mounted() {
-    // 구글 로그인이 준비가 되었는지 1초 간격으로 확인
-    let that = this;
-    let checkGauthLoad = setInterval(function(){
-      that.isInit = that.$gAuth.isInit
-      // 준비 되었으면 확인 그만하기
-      if(that.isInit) clearInterval(checkGauthLoad)
-    }, 1000);
   },
   methods: {
     toggleSidebar() {
@@ -95,48 +80,8 @@ export default {
     toggleMenu() {
       this.showMenu = !this.showMenu;
     },
-    googleLogin() {
-      if(!this.isInit) {
-        swal("경고", "구글 로그인이 아직 준비되지 않았습니다.", "warning");
-        return;
-      }
-
-      // 구글 로그인 동작
-      this.$gAuth.signIn()
-        .then(GoogleUser => {
-          let profile = GoogleUser.getBasicProfile();
-
-          let email= profile.getEmail();
-          let name= profile.getName();
-          let image = profile.getImageUrl();
-
-          this.login(email, name, image);
-        })
-        .catch(error => {
-          console.log('구글 signIn() 실패', error);
-        });
-    },
-    login(email, name, image) {
-      // 콘솔에 찍어보기
-      console.log(email);
-      console.log(name);
-      console.log(image);
-
-      PlayerAPI.googleLogin(
-        {
-          email: email,
-          name: name,
-          picture: image
-        },
-        res => {
-          console.log(res);
-          this.$store.commit('addUserInfo', {email: res});
-        },
-        err => {
-          console.log(err);
-          swal("실패", "구글 로그인 실패", "error");
-        }
-      );
+    goLogin() {
+      this.$router.push({name: "Login"});
     },
     logout() {
       this.$store.commit('deleteUserInfo');
@@ -145,6 +90,9 @@ export default {
   computed: {
     isLogin() {
       return (this.$store.state.userInfo.email != undefined);
+    },
+    userName() {
+      return this.$store.state.userInfo.email;
     }
   },
 };

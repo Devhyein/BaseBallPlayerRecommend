@@ -46,6 +46,11 @@ export default new Router({
           name: 'lineup',
           component: () => import('./views/lineup.vue')
         },
+        {
+          path: '/login',
+          name: 'Login',
+          component: () => import('./views/Login.vue')
+        },
         
         {
           path: '/icons',
