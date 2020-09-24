@@ -1,33 +1,28 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
+# Create your models here.
 
-class Lineup(models.Model):
-    lineup_id = models.AutoField(primary_key=True)
-    lineup_name = models.CharField(max_length=50)
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+# 1주차 명세서에 했던 Store 모델 정의
+class Store(models.Model):
+    id = models.IntegerField(primary_key=True)
+    store_name = models.CharField(max_length=50)
+    branch = models.CharField(max_length=20, null=True)
+    area = models.CharField(max_length=50, null=True)
+    tel = models.CharField(max_length=20, null=True)
+    address = models.CharField(max_length=200, null=True)
+    latitude = models.FloatField(max_length=10, null=True)
+    longitude = models.FloatField(max_length=10, null=True)
+    category = models.CharField(max_length=200, null=True)
 
-    hitter1 = models.IntegerField(blank=True, null=True)
-    hitter2 = models.IntegerField(blank=True, null=True)
-    hitter3 = models.IntegerField(blank=True, null=True)
-    hitter4 = models.IntegerField(blank=True, null=True)
-    hitter5 = models.IntegerField(blank=True, null=True)
-    hitter6 = models.IntegerField(blank=True, null=True)
-    hitter7 = models.IntegerField(blank=True, null=True)
-    hitter8 = models.IntegerField(blank=True, null=True)
-    hitter9 = models.IntegerField(blank=True, null=True)
-    pitcher = models.IntegerField(blank=True, null=True)
+    # 이건 category_list 에 대해 정의하는데
+    # category_list 는 category 문자열을 '|' 기준으로
+    # 나눈 문자열 리스트를 반환한다
+    # 이때 카테고리가 없는경우 빈 리스트를 반환한다
+    @property
+    def category_list(self):
+        return self.category.split("|") if self.category else []
 
-    class Meta:
-        managed = False
-        db_table = 'lineup'
-
+# python manage.py inspectdb > models.py 로 뽑아낸다
 
 class Player(models.Model):
     player_id = models.AutoField(primary_key=True)
@@ -37,7 +32,7 @@ class Player(models.Model):
     player_birth = models.CharField(max_length=20, blank=True, null=True)
     player_position = models.ForeignKey('Position', models.DO_NOTHING, db_column='player_position')
     player_retire = models.IntegerField(blank=True, null=True)
-
+    
     class Meta:
         managed = False
         db_table = 'player'
@@ -119,6 +114,7 @@ class RecordHitter(models.Model):
         db_table = 'record_hitter'
 
 
+
 class RecordPitcher(models.Model):
     pitcher_id = models.AutoField(primary_key=True)
     player = models.ForeignKey(Player, models.DO_NOTHING)
@@ -175,14 +171,21 @@ class Team(models.Model):
         managed = False
         db_table = 'team'
 
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    email = models.CharField(max_length=200, blank=True, null=True)
-    name = models.CharField(max_length=200, blank=True, null=True)
-    picture = models.CharField(max_length=200, blank=True, null=True)
-    role = models.CharField(max_length=200, blank=True, null=True)
-    team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
+
+class Lineup(models.Model):
+    lineup_id = models.AutoField(primary_key=True)
+    team = models.ForeignKey('Team', models.DO_NOTHING)
+    hitter1 = models.IntegerField(blank=True, null=True)
+    hitter2 = models.IntegerField(blank=True, null=True)
+    hitter3 = models.IntegerField(blank=True, null=True)
+    hitter4 = models.IntegerField(blank=True, null=True)
+    hitter5 = models.IntegerField(blank=True, null=True)
+    hitter6 = models.IntegerField(blank=True, null=True)
+    hitter7 = models.IntegerField(blank=True, null=True)
+    hitter8 = models.IntegerField(blank=True, null=True)
+    hitter9 = models.IntegerField(blank=True, null=True)
+    pitcher = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'user'
+        db_table = 'lineup'
