@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     # django-admin startapp api 명령어를 통해
     # api 앱을 만들었음 이거 포함
     "api",
+
+    # Swagger
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
