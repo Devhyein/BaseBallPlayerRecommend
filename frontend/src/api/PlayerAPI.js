@@ -63,7 +63,6 @@ const postApi = (url, data, callback, errorCallback) => {
         });
 }
 
-/*
 const putApi = (url, data, callback, errorCallback) => {
     http.get(url, data, header())
         .then(res => {
@@ -95,6 +94,7 @@ const putApi = (url, data, callback, errorCallback) => {
         });
 }
 
+/*
 const deleteApi = (url, data, callback, errorCallback) => {
     http.get(url, data, header())
         .then(res => {
@@ -132,12 +132,13 @@ const PlayerAPI = {
     getPlayerStat:(data,callback,errorCallback)=>getApi('/spring/info/player',data,callback,errorCallback),
 
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
-    getMyLineupList:(data,callback,errorCallback)=>getApi('/spring/team/lineup',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
 
     getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
-    
+    addLineup:(data,callback,errorCallback)=>postApi('/spring/lineup/insert',data,callback,errorCallback),
+    modifyLineup:(data,callback,errorCallback)=>putApi('/spring/lineup/update',data,callback,errorCallback),
+
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
 }
 
