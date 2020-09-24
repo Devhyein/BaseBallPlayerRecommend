@@ -11,6 +11,7 @@ from .models import *
 from django.conf import settings
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
 import hashlib
+from rest_framework.decorators import api_view, parser_classes
 
 # teams = {'KIA': 1, '해태': 2, '삼성': 3, '두산': 4, 'OB': 5, 'SK': 6, '현대': 7, '태평양': 8, '청보': 9, 
 #         'LG': 11, 'MBC': 12, '롯데': 13, '한화': 14, '빙그레': 15, 'NC': 16, '히어로즈': 17, 
@@ -19,7 +20,11 @@ import hashlib
 lineup_cols = ['team_id', 'hitter1', 'hitter2',
 'hitter3','hitter4','hitter5','hitter6','hitter7','hitter8','hitter9','pitcher']
 
+@api_view(["GET"])
 def getLineup(request):
+    """
+    2020년 개막전 (5월 5일) 의 라인업을 기반으로 각 팀별 기본 라인업을 크롤링하여 lineup 테이블에 삽입
+    """
 
     urls = ["http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88%ED%8C%8C%ED%81%AC&hour=14",
             "http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EC%9D%B8%EC%B2%9C%EB%AC%B8%ED%95%99&hour=14",

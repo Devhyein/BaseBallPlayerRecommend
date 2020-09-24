@@ -12,12 +12,41 @@ from django.conf import settings
 from django.db import connections
 from django.http import JsonResponse # http 응답을 위함
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
+# swagger
+from rest_framework.decorators import api_view, parser_classes
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 pitcher_stat = ['era', 'health', 'control', 'stability', 'deterrent']
 hitter_stat = ['power', 'speed', 'contact']
 fielder_stat = ['defense', 'shoulder']
 
+# openapi.IN_QUERY: query string으로 값들을 받는다는 뜻. path나 body로 하면 그에 걸맞는 정의가 있어야 한다
+param1 = openapi.Parameter('team_id', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, required=True)
+param2 = openapi.Parameter('deterrent', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param3 = openapi.Parameter('defense', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param4 = openapi.Parameter('era', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param5 = openapi.Parameter('contact', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param6 = openapi.Parameter('health', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param7 = openapi.Parameter('control', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param8 = openapi.Parameter('power', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param9 = openapi.Parameter('shoulder', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param10 = openapi.Parameter('speed', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+param11 = openapi.Parameter('stability', openapi.IN_QUERY, type=openapi.TYPE_NUMBER, required=True)
+
+@swagger_auto_schema(
+    method='get',
+    manual_parameters = [param1, param2, param3, param4,  param5, param6, param7,
+                         param8, param9, param10, param11]
+)
+
+@api_view(["GET"])
 def recommend_player_method1(request):
+    """
+    팀 스탯을 받아 가장 약한 부분을 찾아내어, 해당 부분을 채워줄 수 있는 선수를 추천해준다
+    - parameters: team_id (int), 0~1 사이 값으로 표준화된 팀 스탯 10개 (float)
+    - returns: recommended 리스트 (추천 선수 10명의 player_id)
+    """
 
     team_stats = {}
     # django에서 GET request를 받는 방법
