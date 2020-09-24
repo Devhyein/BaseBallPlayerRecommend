@@ -133,9 +133,6 @@ public class TeamServiceImpl implements TeamService {
                 stat.setShoulder((float) 0.0);
             }
 
-
-
-    
             stat.setEra(toolsPitcher.getEra());
             stat.setHealth(toolsPitcher.getHealth());
             stat.setControl(toolsPitcher.getControl());
