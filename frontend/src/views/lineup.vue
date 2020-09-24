@@ -385,8 +385,15 @@ export default {
     }
   },
   created() {
+    if(this.$store.state.userInfo.id == undefined) {
+      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+      this.$router.push({name: "Login"});
+      return;
+    }
+
+    // 라인업 리스트 가져오기
     PlayerAPI.getLineupList(
-      "none=none",
+      "user_id=" + this.$store.state.userInfo.id,
       res => {
         this.lineupList = res;
       },
@@ -550,7 +557,7 @@ export default {
       }
       // 전에 만들어놓았던 라인업 수정 => 저장
       else {
-        swal("저장 완료", "라인업 저장이 완료되었습니다", "success");
+        this.modifyLineup();
       }
     },
     saveAs() {
@@ -569,12 +576,60 @@ export default {
             icon: "error"
           });
         } else {
-          swal({
-            title: "Input Result: ",
-            text: name
-          });
+          this.addLineup(name);
         }
       });
+    },
+    addLineup(name) {
+      let arr = [];
+      arr.push(name);
+
+      for(let item of this.lineupPlayers) {
+        arr.push(item.player_id);
+      }
+
+      PlayerAPI.addLineup(
+        {
+          user_id: this.$store.state.userInfo.id,
+          lineup: arr
+        },
+        res => {
+          console.log(res);
+          swal('성공', '라인업 추가 성공!', 'success');
+        },
+        err => {
+          swal('실패', '라인업 추가 실패ㅠ', 'error');
+          console.log(err);
+        }
+      )
+    },
+    modifyLineup() {
+      let data = {};
+      data.lineup_id = this.lineupId;
+      data.user_id = this.$store.state.userInfo.id;
+
+      data.hitter1 = this.lineupPlayers[0].player_id;
+      data.hitter2 = this.lineupPlayers[1].player_id;
+      data.hitter3 = this.lineupPlayers[2].player_id;
+      data.hitter4 = this.lineupPlayers[3].player_id;
+      data.hitter5 = this.lineupPlayers[4].player_id;
+      data.hitter6 = this.lineupPlayers[5].player_id;
+      data.hitter7 = this.lineupPlayers[6].player_id;
+      data.hitter8 = this.lineupPlayers[7].player_id;
+      data.hitter9 = this.lineupPlayers[8].player_id;
+      data.pitcher = this.lineupPlayers[9].player_id;
+
+      PlayerAPI.modifyLineup(
+        data,
+        res => {
+          console.log(res);
+          swal('성공', '라인업 추가 성공!', 'success');
+        },
+        err => {
+          swal('실패', '라인업 저장 실패ㅠ', 'error');
+          console.log(err);
+        }
+      )
     },
     search() {
       // 검색할 선수 이름의 일부

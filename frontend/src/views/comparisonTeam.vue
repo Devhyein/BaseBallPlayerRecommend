@@ -98,6 +98,9 @@ import TeamComparisonTable from "@/views/Tables/TeamComparisonTable";
 // API
 import PlayerAPI from "@/api/PlayerAPI";
 
+// Alert
+import swal from 'sweetalert';
+
 export default {
   components: {
     CustomRadarChart,
@@ -203,19 +206,16 @@ export default {
     };
   },
   created() {
+    if(this.$store.state.userInfo.id == undefined) {
+      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+      this.$router.push({name: "Login"});
+      return;
+    }
+
     PlayerAPI.getLineupList(
-      "none=none",
+      "user_id=" + this.$store.state.userInfo.id,
       (res) => {
         this.lineupList = res;
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-
-    PlayerAPI.getMyLineupList(
-      "none=none",
-      (res) => {
         this.MyLineupList = res;
       },
       (err) => {
