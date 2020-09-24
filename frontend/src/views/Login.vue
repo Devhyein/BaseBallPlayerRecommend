@@ -15,12 +15,12 @@
                                     <span class="btn-inner--icon"><img src="img/icons/common/github.svg"></span>
                                     <span class="btn-inner--text">Github</span>
                 </a>-->
-                <span class="btn btn-neutral btn-icon" @click="googleLogin">
+                <button class="btn btn-neutral btn-icon" @click="googleLogin">
                   <span class="btn-inner--icon">
                       <img src="img/icons/common/google.svg" />
                   </span>
                   <span class="btn-inner--text">Google</span>
-                </span>
+                </button>
             </div>
             </div>
             <!-- <div class="card-body px-lg-5 py-lg-5">
@@ -86,6 +86,7 @@ export default {
   },
   methods: {
     googleLogin() {
+      console.log("Google Login Button Clicked");
       if (!this.isInit) {
         swal("경고", "구글 로그인이 아직 준비되지 않았습니다.", "warning");
         return;

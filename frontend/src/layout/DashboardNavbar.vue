@@ -34,7 +34,7 @@
               Login
           </base-button>
 
-          <modal :show.sync="showModal"
+          <!-- <modal :show.sync="showModal"
                 body-classes="p-0"
                 modal-classes="modal-dialog-centered modal-sm">
               <card type="secondary" shadow
@@ -53,7 +53,7 @@
                       </div>
                   </template>
               </card>
-          </modal>
+          </modal> -->
         </template>
       </li>
     </ul>
