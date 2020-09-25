@@ -122,7 +122,7 @@ export default {
         },
         (res) => {
           console.log(res);
-          this.$store.commit("addUserInfo", { email: res });
+          this.$store.commit("addUserInfo", res);
           this.$router.push({name: "main"});
         },
         (err) => {
