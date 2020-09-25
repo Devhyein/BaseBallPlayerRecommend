@@ -70,7 +70,7 @@
         <!-- 구단에 대한 설명 -->
         <div class="row mt-2">
           <div class="col">
-            <team-comparison-table title="구단 특징" : tableData=""></team-comparison-table>
+            <team-comparison-table title="구단 특징" :tableData="compareTableData"></team-comparison-table>
           </div>
         </div>
       </div>
@@ -188,6 +188,8 @@ export default {
       // 라인업 선수 테이블 컬럼들
       tableColumns: ["At bat", "Position", "Name"],
       MytableColumns: ["At bat", "Position", "Name"],
+
+      compareTableData: [],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
       playerName: "Select player",
