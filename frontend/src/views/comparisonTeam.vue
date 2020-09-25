@@ -7,7 +7,7 @@
         <!-- 상대 구단 라인업 -->
         <base-dropdown>
           <base-button slot="title" type="secondary" class="dropdown-toggle">{{
-            lineup
+            lineupName
           }}</base-button>
           <template v-for="lineup in lineupList">
             <span
@@ -25,7 +25,7 @@
       <div class="col mr-1 ml-1 text-center align-self-center">
         <base-dropdown>
           <base-button slot="title" type="secondary" class="dropdown-toggle">{{
-            userLineup
+            MyLineupName
           }}</base-button>
           <template v-for="MyLineup in MyLineupList">
             <span

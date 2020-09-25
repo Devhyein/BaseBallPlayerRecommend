@@ -10,7 +10,7 @@
           :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
         />
         <sidebar-item
-          :link="{name: 'Lineup', icon: 'fa fa-thumbs-up text-red', path: '/lineup'}"
+          :link="{name: 'Lineup', icon: 'ni ni-cart text-green', path: '/lineup'}"
         />
         <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
 
