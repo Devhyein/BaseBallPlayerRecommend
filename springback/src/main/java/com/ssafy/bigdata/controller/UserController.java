@@ -2,8 +2,8 @@ package com.ssafy.bigdata.controller;
 
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.LoginRequest;
-import com.ssafy.bigdata.dto.LoginResponse;
 import com.ssafy.bigdata.dto.RestResponse;
+import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +39,10 @@ public class UserController {
 
         try {
             String email = userService.login(request);
-            LoginResponse res = new LoginResponse(userDao.findByEmail(email).getUser_id(), email);
-            System.out.println(res.toString());
+            User user = userDao.findByEmail(email);
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = user;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
