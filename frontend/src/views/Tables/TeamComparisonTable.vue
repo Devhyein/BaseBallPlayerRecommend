@@ -34,10 +34,6 @@
             <div class="d-flex align-items-center">
               <span class="completion mr-2">{{row.completion}}%</span>
               <div>
-                <base-progress :type="row.statusType"
-                               :show-percentage="false"
-                               class="pt-0"
-                               :value="row.completion"/>
               </div>
             </div>
           </td>
@@ -63,33 +59,28 @@
       return {
         tableData: [
           {
-            title: 'Argon Design System',
+            title: '상대팀보다 스피드가 매우 뛰어납니다',
             status: 'pending',
-            statusType: 'warning',
             completion: 60
           },
           {
-            title: 'Angular Now UI Kit PRO',
+            title: '상대팀보다 파워가 매우 떨어집니다.',
             status: 'completed',
-            statusType: 'success',
             completion: 100
           },
           {
-            title: 'Black Dashboard',
+            title: '상대팀보다 안타율이 다소 낮습니다.',
             status: 'delayed',
-            statusType: 'danger',
             completion: 72
           },
           {
-            title: 'React Material Dashboard',
+            title: '상대팀보다 장타율이 다소 높습니다.',
             status: 'on schedule',
-            statusType: 'info',
             completion: 90
           },
           {
-            title: 'Vue Paper UI Kit PRO',
+            title: '상대팀보다 수비가 다소 견고합니다.',
             status: 'completed',
-            statusType: 'success',
             completion: 100
           }
         ]
