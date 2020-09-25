@@ -385,7 +385,7 @@ export default {
     }
   },
   created() {
-    if(this.$store.state.userInfo.id == undefined) {
+    if(this.$store.state.userInfo.user_id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({name: "Login"});
       return;
@@ -393,7 +393,7 @@ export default {
 
     // 라인업 리스트 가져오기
     PlayerAPI.getLineupList(
-      "user_id=" + this.$store.state.userInfo.id,
+      "user_id=" + this.$store.state.userInfo.user_id,
       res => {
         this.lineupList = res;
       },
@@ -590,7 +590,7 @@ export default {
 
       PlayerAPI.addLineup(
         {
-          user_id: this.$store.state.userInfo.id,
+          user_id: this.$store.state.userInfo.user_id,
           lineup: arr
         },
         res => {
