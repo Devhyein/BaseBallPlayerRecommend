@@ -4,27 +4,41 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
+import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
+import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.jwt.JwtAuthenticationFilter;
+import com.ssafy.bigdata.jwt.JwtDecoding;
+import com.ssafy.bigdata.jwt.JwtTokenProvider;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.TeamService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
 import io.swagger.annotations.ApiOperation;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 @CrossOrigin(origins = { "*" })
 @RestController
@@ -37,14 +51,58 @@ public class LineupController {
     private PlayerService PlayerService;
     @Autowired
     private TeamService teamService;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    // @Autowired
+    // private JwtAuthenticationFilter jwtFilter;
+    // @ApiOperation(value = "전체 라인업 목록")
+    // @GetMapping("/lineupList")
+    // public Object getLineupList() {
+    // final RestResponse response = new RestResponse();
+    // List<LineupList> res = new ArrayList<LineupList>();
 
-    @ApiOperation(value = "라인업 목록")
+    // List<Lineup> lineupList = lineupService.getLineupList();
+
+    // for (Lineup list : lineupList) {
+    // LineupList lineup = new LineupList();
+    // lineup.setId(list.getLineup_id());
+    // lineup.setName(list.getLineup_name());
+    // res.add(lineup);
+    // }
+
+    // response.status = true;
+    // response.msg = "success";
+    // response.data = res;
+    // return response;
+    // }
+
+    @ApiOperation(value = "유저 & 디폴트 라인업 목록")
     @GetMapping("/lineupList")
-    public Object getLineupList() {
+    public Object getUserLineupList(@RequestHeader final HttpHeaders header) {
         final RestResponse response = new RestResponse();
         List<LineupList> res = new ArrayList<LineupList>();
+        User user = new User();
+        // 토큰 해석
+        String token = header.get("token").get(0);
+        System.out.println("TOKEN : " + header.get("token").get(0));
+     
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("*** "+jwtTokenProvider.getUserPk(token));
+            user = userDao.findByEmail(jwtTokenProvider.getUserPk(token));
+        } else {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "failed";
+            response.data = null;
+            return response;
+        }
 
-        List<Lineup> lineupList = lineupService.getLineupList();
+        List<Lineup> lineupList = lineupService.getUserLineupList(user.getUser_id());
 
         for (Lineup list : lineupList) {
             LineupList lineup = new LineupList();
@@ -109,10 +167,27 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 등록")
     @PostMapping("/lineup/insert")
-    public Object insertLineup(@RequestBody Lineup lineup) {
+    public Object insertLineup(@RequestBody HashMap<String, Object> request) {
         final RestResponse response = new RestResponse();
-
-        int res = lineupService.insertLineup(lineup);
+        int res=0;
+        try{
+            List<Object> up = (List<Object>) request.get("lineup"); 
+            String lineup_name = (String) up.get(0);
+            int hitter1 = (int) up.get(1);
+            int hitter2 = (int) up.get(2);
+            int hitter3 = (int) up.get(3);
+            int hitter4 = (int) up.get(4);
+            int hitter5 = (int) up.get(5);
+            int hitter6 = (int) up.get(6);
+            int hitter7 = (int) up.get(7);
+            int hitter8 = (int) up.get(8);
+            int hitter9 = (int) up.get(9);
+            int pitcher = (int) up.get(10);
+            res = lineupService.insertLineup(lineup_name, hitter1, hitter2, hitter3, hitter4, hitter5, hitter6, hitter7, hitter8, hitter9, pitcher,(int) request.get("user_id"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         if(res!=0){
             response.status = true;
             response.msg = "success";
@@ -122,7 +197,7 @@ public class LineupController {
             response.msg = "fail to insert lineup";
             response.data = res;
         }
-
+        
         return response;
     }
 

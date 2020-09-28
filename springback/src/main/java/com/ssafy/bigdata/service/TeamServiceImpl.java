@@ -103,26 +103,36 @@ public class TeamServiceImpl implements TeamService {
             
             // 3. record 표준화
             // 타자 5툴 각각 for문 돌면서 각각 다 더한 후 나눠주기 -> 평균
-            float speed = 0;
-            float contact = 0;
-            float defense = 0;
-            float power = 0;
-            float shoulder = 0;
-            for (ToolsHitter hitter : toolsHitter){
-                speed += hitter.getSpeed();
-                contact += hitter.getContact();
-                defense += hitter.getDefense();
-                power += hitter.getPower();
-                shoulder += hitter.getShoulder();
-            }
-            stat.setTeam_id(num);
-            stat.setSpeed(speed/toolsHitter.size());
-            stat.setContact(contact/toolsHitter.size());
-            stat.setDefense(defense/toolsHitter.size());
-            stat.setPower(power/toolsHitter.size());
-            stat.setShoulder(shoulder/toolsHitter.size());
+            System.out.println("^^^^^"+toolsHitter.size());
+            if(toolsHitter.size()>0){
+                float speed = 0;
+                float contact = 0;
+                float defense = 0;
+                float power = 0;
+                float shoulder = 0;
+                for (ToolsHitter hitter : toolsHitter){
+                    speed += hitter.getSpeed();
+                    contact += hitter.getContact();
+                    defense += hitter.getDefense();
+                    power += hitter.getPower();
+                    shoulder += hitter.getShoulder();
+                }
+                stat.setTeam_id(num);
 
-    
+
+                stat.setSpeed(speed/toolsHitter.size());
+                stat.setContact(contact/toolsHitter.size());
+                stat.setDefense(defense/toolsHitter.size());
+                stat.setPower(power/toolsHitter.size());
+                stat.setShoulder(shoulder/toolsHitter.size());
+            } else {
+                stat.setSpeed((float) 0.0);
+                stat.setContact((float) 0.0);
+                stat.setDefense((float) 0.0);
+                stat.setPower((float) 0.0);
+                stat.setShoulder((float) 0.0);
+            }
+
             stat.setEra(toolsPitcher.getEra());
             stat.setHealth(toolsPitcher.getHealth());
             stat.setControl(toolsPitcher.getControl());

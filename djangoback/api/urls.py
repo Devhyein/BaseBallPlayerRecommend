@@ -5,6 +5,13 @@ from api.views import lineup_crawling
 from api.views import recommend1
 from api.views import recommend2_clustering
 
+from rest_framework import routers, permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from django.conf import settings
+from django.urls import path, include, re_path
+
+
 # 요청 라우팅을 위해 default 라우터 가져옴
 # trailing_slash : url 끝에 / 를 붙일지 말지 결정
 router = DefaultRouter(trailing_slash=False)
@@ -30,3 +37,20 @@ urlpatterns = [
     url(r'recommend1', recommend1.recommend_player_method1),
     url(r'recommend2', recommend2_clustering.clustering_test)
 ]
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="당근빠따 django API",
+        default_version='v1',
+        description="Test description",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+        re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
+    ]

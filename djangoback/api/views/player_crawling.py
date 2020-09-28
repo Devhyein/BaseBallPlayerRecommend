@@ -12,6 +12,7 @@ from .models import *
 from django.conf import settings
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
 import hashlib
+from rest_framework.decorators import api_view, parser_classes
 
 pitcher_cols = ['player_id', 'birth', 'player_name', 'pitcher_year', 'team', 'WAR*',
             'pitcher_G', 'pitcher_CG', 'pitcher_SHO', 'pitcher_GS', 'pitcher_W', 'pitcher_L', 'pitcher_SV', 
@@ -48,21 +49,33 @@ positions = {'P': 1, 'C': 2, '1B': 3, '2B': 4, '3B': 5, 'SS': 6, 'LF': 7, 'CF': 
 # 투수기록: 2루타, 3루타 맞은 수랑 WPA가 없음
 # 수비기록: 몇몇 빼곤 아예 없음
 
+@api_view(["GET"])
 def getPitchersRecords(request):
+    """
+    2015~2020년의 투수 데이터 크롤링하여 DB에 삽입 (player 테이블 & record_pitcher 테이블)
+    """
     for year in range(2015, 2021, 1): # 2019년부터 1982년까지 거슬러올라가면서 기록을 넣는다
         for start in range(0, 500, 20):
             inserted = getRecords_crawling(1, year, start)
             if (inserted == 0): # 페이지에 선수정보가 더이상 안뜨면 다음년도로 넘어감 
                 break
 
+@api_view(["GET"])
 def getHittersRecords(request):
+    """
+    2015~2020년의 타자 데이터 크롤링하여 DB에 삽입 (player 테이블 & record_hitter 테이블)
+    """
     for year in range(2015, 2021, 1):
         for start in range(0, 500, 20):
             inserted = getRecords_crawling(0, year, start)
             if (inserted == 0): 
                 break
 
+@api_view(["GET"])
 def getFieldersRecords(request):
+    """
+    2015~2020년의 수비 데이터 크롤링하여 DB에 삽입 (player 테이블 & record_fielder 테이블)
+    """
     for year in range(2015, 2021, 1):
         for start in range(0, 500, 20):
             inserted = getRecords_crawling(2, year, start)

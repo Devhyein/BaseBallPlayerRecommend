@@ -14,6 +14,15 @@
         select * from lineup
     </select>
 
+    <select id="getDefaultLineup" resultType="Lineup">
+        select * from lineup where lineup_id &lt; 11
+    </select>
+
+    <select id="getUserLineup" resultType="Lineup" parameterType="int">
+        SELECT * FROM lineup
+        WHERE lineup.user_id=#{id};
+    </select>
+
     <insert id = "insertLineup">
         INSERT INTO lineup(lineup_name, user_id, hitter1, hitter2, hitter3, hitter4, hitter5, hitter6, hitter7, hitter8, hitter9, pitcher)
         VALUES (#{lineup_name}, #{user_id}, #{hitter1}, #{hitter2}, #{hitter3}, #{hitter4}, #{hitter5}, #{hitter6}, #{hitter7}, #{hitter8}, #{hitter9}, #{pitcher})
