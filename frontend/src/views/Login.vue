@@ -126,6 +126,10 @@ export default {
         (res) => {
           console.log(res);
           this.$store.commit("addUserInfo", res);
+
+          // 로그인 완료 시 세션 저장소에 받은 토큰 정보 저장
+          sessionStorage.setItem('jwt-token', res.token);
+
           this.$router.push({name: "main"});
         },
         (err) => {
@@ -141,6 +145,10 @@ export default {
         res => {
           console.log(res);
           this.$store.commit("addUserInfo", res);
+          
+          // 로그인 완료 시 세션 저장소에 받은 토큰 정보 저장
+          sessionStorage.setItem('jwt-token', res.token);
+
           this.$router.push({name: "main"});
         },
         err => {
