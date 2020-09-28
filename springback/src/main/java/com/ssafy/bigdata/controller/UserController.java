@@ -8,13 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.jwt.*;
 
-import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.LoginResponse;
 import com.ssafy.bigdata.dto.RestResponse;
-import com.ssafy.bigdata.service.UserService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -27,16 +23,6 @@ import io.swagger.annotations.ApiOperation;
 public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
-
-    private UserService userService;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 
     @ApiOperation(value = "로그인")
     @PostMapping("/login")
@@ -78,9 +64,11 @@ public class UserController {
         response.data = null;
         try {
             String token = jwtTokenProvider.createToken("test@test.com");
+            User user = userRepository.findByEmail("test@test.com");
+            LoginResponse res = new LoginResponse(user.getUser_id(), user.getEmail(), user.getPicture(), user.getName(), token);
             response.status = true;
             response.msg = "success";
-            response.data = token;
+            response.data = res;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
