@@ -1,14 +1,12 @@
 package com.ssafy.bigdata.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dao.lineup.LineupDao;
 import com.ssafy.bigdata.dao.team.TeamDao;
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

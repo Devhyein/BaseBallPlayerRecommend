@@ -1,10 +1,8 @@
 package com.ssafy.bigdata.dao.lineup;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.User;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
