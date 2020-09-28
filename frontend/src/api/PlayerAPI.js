@@ -140,6 +140,7 @@ const PlayerAPI = {
     modifyLineup:(data,callback,errorCallback)=>putApi('/spring/lineup/update',data,callback,errorCallback),
 
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
+    testLogin:(data,callback,errorCallback)=>postApi('/spring/login/temp',data,callback,errorCallback),
 }
 
 export default PlayerAPI

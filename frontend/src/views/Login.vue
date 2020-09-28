@@ -21,6 +21,9 @@
                   </span>
                   <span class="btn-inner--text">Google</span>
                 </button>
+                <button class="btn btn-neutral btn-icon mt-4" @click="testLogin">
+                  <span class="btn-inner--text">Test Login</span>
+                </button>
             </div>
             </div>
             <!-- <div class="card-body px-lg-5 py-lg-5">
@@ -132,6 +135,20 @@ export default {
         }
       );
     },
+    testLogin() {
+      PlayerAPI.testLogin(
+        null,
+        res => {
+          this.$store.commit("addUserInfo", res);
+          this.$router.push({name: "main"});
+        },
+        err => {
+          console.log(err);
+          swal("실패", "테스트 로그인 실패(왜?)", "error");
+          this.$router.push({name: "main"});
+        }
+      )
+    }
   },
 };
 </script>
