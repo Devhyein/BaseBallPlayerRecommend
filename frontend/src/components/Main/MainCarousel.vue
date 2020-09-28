@@ -1,8 +1,10 @@
 <template>
   <mdb-carousel
     :items="items"
-    :interval="2000"
+    :interval="6000"
+    slide
     controlls
+    indicators
   ></mdb-carousel>
 </template>
 <script>
