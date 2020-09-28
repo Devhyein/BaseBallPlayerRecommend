@@ -2,7 +2,6 @@ package com.ssafy.bigdata.jwt;
 
 import lombok.RequiredArgsConstructor;
 
-import com.google.common.base.Optional;
 import com.ssafy.bigdata.dto.User;
 
 import org.springframework.security.core.userdetails.UserDetails;

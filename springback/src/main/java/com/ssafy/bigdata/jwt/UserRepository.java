@@ -1,8 +1,5 @@
 package com.ssafy.bigdata.jwt;
 
-import java.util.List;
-
-import com.google.common.base.Optional;
 import com.ssafy.bigdata.dto.User;
 
 import org.apache.ibatis.annotations.Mapper;

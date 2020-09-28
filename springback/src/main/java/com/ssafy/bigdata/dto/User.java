@@ -1,8 +1,6 @@
 package com.ssafy.bigdata.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +16,7 @@ public class User implements UserDetails {
     private String email;
     private String name;
     private String picture;
+    private String token;
 
     @Override
     public String getUsername() {
@@ -88,9 +87,17 @@ public class User implements UserDetails {
         this.picture = picture;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
-        return "User [email=" + email + ", name=" + name + ", picture=" + picture + ", user_id=" + user_id + "]";
+        return "User [email=" + email + ", name=" + name + ", picture=" + picture + ", user_id=" + user_id + "token="+token+"]";
     }
 
     public User() {
@@ -108,5 +115,14 @@ public class User implements UserDetails {
         this.name = name;
         this.picture = picture;
     }
+
+    public User(int user_id, String email, String name, String picture, String token) {
+        this.user_id = user_id;
+        this.email = email;
+        this.name = name;
+        this.picture = picture;
+        this.token = token;
+    }
+    
 
 }

@@ -10,6 +10,7 @@ import com.ssafy.bigdata.jwt.*;
 
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.LoginRequest;
+import com.ssafy.bigdata.dto.LoginResponse;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.service.UserService;
 
@@ -44,7 +45,7 @@ public class UserController {
         response.status = false;
         response.msg = "failed";
         response.data = null;
-
+        
         try {
             // 이미 존재하는 메일인가?
             User user = userRepository.findByEmail(request.getEmail());
@@ -55,9 +56,11 @@ public class UserController {
             }
             // 토큰 발급
             String token = jwtTokenProvider.createToken(request.getEmail());
+            LoginResponse res = new LoginResponse(user.getUser_id(), user.getEmail(), user.getPicture(), user.getName(), token);
+
             response.status = true;
             response.msg = "success";
-            response.data = token;
+            response.data = res;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
