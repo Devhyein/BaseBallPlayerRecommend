@@ -27,7 +27,7 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Dashboard.vue')
         },
         {
-          path: '/search/player',
+          path: '/search',
           name: 'search_player',
           component: () => import(/* webpackChunkName: "demo" */ './views/SearchPlayer.vue')
         },

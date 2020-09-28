@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.bigdata.jwt.UserRepository">
+
+    <select id="findByEmail" resultType="User" parameterType="string">
+        select * from user where email=#{email}
+    </select>
+
+    <insert id="save" parameterType="User">
+        insert into user (email, name) values (#{email}, #{name})
+    </insert>
+
+</mapper>
