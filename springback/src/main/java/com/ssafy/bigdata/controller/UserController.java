@@ -64,9 +64,11 @@ public class UserController {
         response.data = null;
         try {
             String token = jwtTokenProvider.createToken("test@test.com");
+            User user = userRepository.findByEmail("test@test.com");
+            LoginResponse res = new LoginResponse(user.getUser_id(), user.getEmail(), user.getPicture(), user.getName(), token);
             response.status = true;
             response.msg = "success";
-            response.data = token;
+            response.data = res;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
