@@ -7,11 +7,9 @@ import java.util.List;
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
-import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
-import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.TeamService;
@@ -40,29 +38,6 @@ public class LineupController {
     private PlayerService PlayerService;
     @Autowired
     private TeamService teamService;
-    @Autowired
-    private UserDao userDao;
-
-    // @ApiOperation(value = "전체 라인업 목록")
-    // @GetMapping("/lineupList")
-    // public Object getLineupList() {
-    //     final RestResponse response = new RestResponse();
-    //     List<LineupList> res = new ArrayList<LineupList>();
-
-    //     List<Lineup> lineupList = lineupService.getLineupList();
-
-    //     for (Lineup list : lineupList) {
-    //         LineupList lineup = new LineupList();
-    //         lineup.setId(list.getLineup_id());
-    //         lineup.setName(list.getLineup_name());
-    //         res.add(lineup);
-    //     }
-
-    //     response.status = true;
-    //     response.msg = "success";
-    //     response.data = res;
-    //     return response;
-    // }
 
     @ApiOperation(value = "유저 & 디폴트 라인업 목록")
     @GetMapping("/lineupList")
