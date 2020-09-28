@@ -1,10 +1,5 @@
 package com.ssafy.bigdata.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class LoginResponse {
     private int id;
     private String email;
@@ -20,6 +15,22 @@ public class LoginResponse {
     @Override
     public String toString() {
         return "LoginResponse [email=" + email + ", id=" + id + "]";
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     
