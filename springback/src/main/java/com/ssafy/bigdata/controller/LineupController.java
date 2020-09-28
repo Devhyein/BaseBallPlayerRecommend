@@ -48,29 +48,7 @@ public class LineupController {
     private UserDao userDao;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    // @Autowired
-    // private JwtAuthenticationFilter jwtFilter;
-    // @ApiOperation(value = "전체 라인업 목록")
-    // @GetMapping("/lineupList")
-    // public Object getLineupList() {
-    // final RestResponse response = new RestResponse();
-    // List<LineupList> res = new ArrayList<LineupList>();
-
-    // List<Lineup> lineupList = lineupService.getLineupList();
-
-    // for (Lineup list : lineupList) {
-    // LineupList lineup = new LineupList();
-    // lineup.setId(list.getLineup_id());
-    // lineup.setName(list.getLineup_name());
-    // res.add(lineup);
-    // }
-
-    // response.status = true;
-    // response.msg = "success";
-    // response.data = res;
-    // return response;
-    // }
-
+   
     @ApiOperation(value = "유저 & 디폴트 라인업 목록")
     @GetMapping("/lineupList")
     public Object getUserLineupList(@RequestHeader final HttpHeaders header) {
