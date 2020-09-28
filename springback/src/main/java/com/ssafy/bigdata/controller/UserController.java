@@ -1,24 +1,32 @@
 package com.ssafy.bigdata.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.jwt.*;
+
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.RestResponse;
-import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = { "*" })
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/spring")
 public class UserController {
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+
     private UserService userService;
 
     @Autowired
@@ -38,11 +46,18 @@ public class UserController {
         response.data = null;
 
         try {
-            String email = userService.login(request);
-            User user = userDao.findByEmail(email);
+            // 이미 존재하는 메일인가?
+            User user = userRepository.findByEmail(request.getEmail());
+            if(user==null) {
+                // 회원가입
+                userRepository.save(request.getEmail(),request.getName());
+                user = userRepository.findByEmail(request.getEmail());
+            }
+            // 토큰 발급
+            String token = jwtTokenProvider.createToken(request.getEmail());
             response.status = true;
             response.msg = "success";
-            response.data = user;
+            response.data = token;
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,13 +73,11 @@ public class UserController {
         response.status = false;
         response.msg = "failed";
         response.data = null;
-        LoginRequest request = new LoginRequest("test@test.com", "test", "https://lh3.googleusercontent.com/-2TkvwZAdIsw/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucm8zmUArKY62CxOA6fx_T_u9hDtxg/s96-c/photo.jpg");
         try {
-            String email = userService.login(request);
-            User user = userDao.findByEmail(email);
+            String token = jwtTokenProvider.createToken("test@test.com");
             response.status = true;
             response.msg = "success";
-            response.data = user;
+            response.data = token;
             return response;
         } catch (Exception e) {
             e.printStackTrace();

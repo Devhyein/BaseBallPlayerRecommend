@@ -1,34 +1,59 @@
 package com.ssafy.bigdata.dto;
 
-public class User {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import java.util.Collection;
+
+@Builder
+@Entity
+public class User implements UserDetails {
 
     private int user_id;
     private String email;
     private String name;
     private String picture;
-    private String team_id;
 
-    public User() {
-    }
-
-    public User(int user_id, String email, String name, String picture, String team_id) {
-        this.user_id = user_id;
-        this.email = email;
-        this.name = name;
-        this.picture = picture;
-        this.team_id = team_id;
-    }
-
-    public User(String email, String name, String picture) {
-        this.email = email;
-        this.name = name;
-        this.picture = picture;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
-    public String toString() {
-        return "User [email=" + email + ", name=" + name + ", picture=" + picture + ", team_id=" + team_id
-                + ", user_id=" + user_id + "]";
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getPassword() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public int getUser_id() {
@@ -63,14 +88,25 @@ public class User {
         this.picture = picture;
     }
 
-    public String getTeam_id() {
-        return team_id;
+    @Override
+    public String toString() {
+        return "User [email=" + email + ", name=" + name + ", picture=" + picture + ", user_id=" + user_id + "]";
     }
 
-    public void setTeam_id(String team_id) {
-        this.team_id = team_id;
+    public User() {
     }
 
-    
-    
+    public User(int user_id, String email, String name, String picture) {
+        this.user_id = user_id;
+        this.email = email;
+        this.name = name;
+        this.picture = picture;
+    }
+
+    public User(String email, String name, String picture) {
+        this.email = email;
+        this.name = name;
+        this.picture = picture;
+    }
+
 }
