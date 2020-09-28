@@ -50,4 +50,26 @@ public class UserController {
 
         return response;
     }
+
+    @ApiOperation(value = "임시로그인")
+    @PostMapping("/login/temp")
+    public Object googleLogin_temp() {
+        final RestResponse response = new RestResponse();
+        response.status = false;
+        response.msg = "failed";
+        response.data = null;
+        LoginRequest request = new LoginRequest("test@test.com", "test", "https://lh3.googleusercontent.com/-2TkvwZAdIsw/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucm8zmUArKY62CxOA6fx_T_u9hDtxg/s96-c/photo.jpg");
+        try {
+            String email = userService.login(request);
+            User user = userDao.findByEmail(email);
+            response.status = true;
+            response.msg = "success";
+            response.data = user;
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 }
