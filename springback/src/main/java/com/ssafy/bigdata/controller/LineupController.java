@@ -7,13 +7,10 @@ import java.util.List;
 import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
-import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
 import com.ssafy.bigdata.dto.User;
-import com.ssafy.bigdata.jwt.JwtAuthenticationFilter;
-import com.ssafy.bigdata.jwt.JwtDecoding;
 import com.ssafy.bigdata.jwt.JwtTokenProvider;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.PlayerService;
@@ -34,11 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpHeaders;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
 import io.swagger.annotations.ApiOperation;
-import org.apache.tomcat.util.codec.binary.Base64;
 
 @CrossOrigin(origins = { "*" })
 @RestController
