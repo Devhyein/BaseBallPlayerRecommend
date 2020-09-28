@@ -130,7 +130,7 @@
               <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.position = false">Close</base-button>
+                <base-button type="secondary" @click="modals.position = false">완료</base-button>
             </template>
           </modal>
 
@@ -171,7 +171,7 @@
               <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.team = false">Close</base-button>
+                <base-button type="secondary" @click="modals.team = false">완료</base-button>
             </template>
           </modal>
 
@@ -565,7 +565,7 @@ export default {
         text: '라인업 이름 입력',
         content: "input",
         button: {
-          text: "Search!",
+          text: "저장",
           closeModal: false,
         },
       })
