@@ -18,8 +18,9 @@
             modal-classes="modal-dialog-centered modal-sm">
             <template slot="header">
                 <h2 class="modal-title" id="exampleModalLabel">포지션 선택</h2>
+                <h5> [ 주황색: 선택됨 ] </h5>
             </template>
-            <div>
+            <div :key="positionRenderKey">
               <base-button class="mb-2" :type="positionFilter[1] ? 'secondary' : 'warning'" @click="changePositionFilter(1)">투수</base-button>
               <base-button class="mb-2" :type="positionFilter[2] ? 'secondary' : 'warning'" @click="changePositionFilter(2)">포수</base-button>
               <base-button class="mb-2" :type="positionFilter[3] ? 'secondary' : 'warning'" @click="changePositionFilter(3)">1루수</base-button>
@@ -32,6 +33,8 @@
               <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
             </div>
             <template slot="footer">
+                <base-button type="secondary" @click="allCanclePosition">전체취소</base-button>
+                <base-button type="secondary" @click="allChoicePosition">전체선택</base-button>
                 <base-button type="secondary" @click="modals.position = false">완료</base-button>
             </template>
           </modal>
@@ -48,8 +51,9 @@
             modal-classes="modal-dialog-centered modal-sm">
             <template slot="header">
                 <h2 class="modal-title" id="exampleModalLabel">팀 선택</h2>
+                <h5> [ 주황색: 선택됨 ] </h5>
             </template>
-            <div>
+            <div :key="teamRenderKey">
               <base-button class="mb-2" :type="teamFilter[1] ? 'secondary' : 'warning'" @click="changeTeamFilter(1)">KIA 타이거즈</base-button>
               <!-- <base-button class="mb-2" :type="teamFilter[2] ? 'secondary' : 'warning'" @click="changeTeamFilter(2)">해태 타이거즈</base-button> -->
               <base-button class="mb-2" :type="teamFilter[3] ? 'secondary' : 'warning'" @click="changeTeamFilter(3)">삼성 라이온즈</base-button>
@@ -73,6 +77,8 @@
               <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
             </div>
             <template slot="footer">
+                <base-button type="secondary" @click="allCancleTeam">전체취소</base-button>
+                <base-button type="secondary" @click="allChoiceTeam">전체선택</base-button>
                 <base-button type="secondary" @click="modals.team = false">완료</base-button>
             </template>
           </modal>
@@ -216,6 +222,9 @@ export default {
         false, false, false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false, false, false,
         false],
+      
+      positionRenderKey: 0,
+      teamRenderKey: 0
     }
   },
   computed: {
@@ -414,26 +423,40 @@ export default {
         }
       )
     },
-    changePositionFilter(idx) {
-      let arr = [];
-      for(let i in this.positionFilter) {
-        let val = this.positionFilter[i];
 
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
-      }
-      this.positionFilter = arr;
+    changePositionFilter(idx) {
+      this.positionFilter[idx] = !this.positionFilter[idx];
+      this.positionRenderKey += 1;
     },
     changeTeamFilter(idx) {
-      let arr = [];
-      for(let i in this.teamFilter) {
-        let val = this.teamFilter[i];
+      this.teamFilter[idx] = !this.teamFilter[idx];
+      this.teamRenderKey += 1;
+    },
 
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
+    allCanclePosition() {
+      for(let i in this.positionFilter) {
+        this.positionFilter[i] = true;
       }
-      this.teamFilter = arr;
-    }
+      this.positionRenderKey += 1;
+    },
+    allChoicePosition() {
+      for(let i in this.positionFilter) {
+        this.positionFilter[i] = false;
+      }
+      this.positionRenderKey += 1;
+    },
+    allCancleTeam() {
+      for(let i in this.teamFilter) {
+        this.teamFilter[i] = true;
+      }
+      this.teamRenderKey += 1;
+    },
+    allChoiceTeam() {
+      for(let i in this.teamFilter) {
+        this.teamFilter[i] = false;
+      }
+      this.teamRenderKey += 1;
+    },
   },
   mounted() {},
 };
