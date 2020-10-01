@@ -70,7 +70,10 @@
         <!-- 구단에 대한 설명 -->
         <div class="row mt-2">
           <div class="col">
-            <team-comparison-table title="구단 특징" :tableData="compareTableData"></team-comparison-table>
+            <team-comparison-table
+              title="구단 특징"
+              :tableData="compareTableData"
+            ></team-comparison-table>
           </div>
         </div>
       </div>
@@ -105,7 +108,7 @@ import TeamComparisonTable from "@/views/Tables/TeamComparisonTable";
 import PlayerAPI from "@/api/PlayerAPI";
 
 // Alert
-import swal from 'sweetalert';
+import swal from "sweetalert";
 
 export default {
   components: {
@@ -214,37 +217,23 @@ export default {
 
       // 특징을 위한 데이터
       comparisonContent: {
-        Dif: {
-          eraDif: 0,
-          healthDif: 0,
-          controlDif: 0,
-          stabilityDif: 0,
-          deterrentDif: 0,
-          powerDif: 0,
-          speedDif: 0,
-          contactDif: 0,
-          defenseDif: 0,
-          shoulderDif: 0,
-        },
-        absoluteValue: {
-          era: 0,
-          health: 0,
-          control: 0,
-          stability: 0,
-          deterrent: 0,
-          power: 0,
-          speed: 0,
-          contact: 0,
-          defense: 0,
-          shoulder: 0,
-        },
+        eraDif: 0,
+        healthDif: 0,
+        controlDif: 0,
+        stabilityDif: 0,
+        deterrentDif: 0,
+        powerDif: 0,
+        speedDif: 0,
+        contactDif: 0,
+        defenseDif: 0,
+        shoulderDif: 0,
       },
     };
   },
   created() {
-    if(this.$store.state.userInfo.user_id == undefined) {
+    if (this.$store.state.userInfo.user_id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
-      this.$router.push({name: "Login"});
+      this.$router.push({ name: "Login" });
       return;
     }
 
@@ -264,40 +253,27 @@ export default {
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
     this.comparisonContent = {
-      Dif: {
-        eraDif: this.MyTeamStatData.era - this.teamStatData.era,
-        healthDif: this.MyTeamStatData.health - this.teamStatData.health,
-        controlDif: this.MyTeamStatData.control - this.teamStatData.control,
-        stabilityDif:
-          this.MyTeamStatData.stability - this.teamStatData.stability,
-        deterrentDif:
-          this.MyTeamStatData.deterrent - this.teamStatData.deterrent,
-        powerDif: this.MyTeamStatData.power - this.teamStatData.power,
-        speedDif: this.MyTeamStatData.speed - this.teamStatData.speed,
-        contactDif: this.MyTeamStatData.contact - this.teamStatData.contact,
-        defenseDif: this.MyTeamStatData.defense - this.teamStatData.defense,
-        shoulderDif: this.MyTeamStatData.shoulder - this.teamStatData.shoulder,
-      },
-      absoluteValue: {
-        era: Math.abs(this.comparisonContent.Dif.eraDif),
-        health: Math.abs(this.comparisonContent.Dif.healthDif),
-        control: Math.abs(this.comparisonContent.Dif.controlDif),
-        stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-        deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-        power: Math.abs(this.comparisonContent.Dif.powerDif),
-        speed: Math.abs(this.comparisonContent.Dif.speedDif),
-        contact: Math.abs(this.comparisonContent.Dif.controlDif),
-        defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-        shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-      },
+      eraDif: this.MyTeamStatData.era - this.teamStatData.era,
+      healthDif: this.MyTeamStatData.health - this.teamStatData.health,
+      controlDif: this.MyTeamStatData.control - this.teamStatData.control,
+      stabilityDif: this.MyTeamStatData.stability - this.teamStatData.stability,
+      deterrentDif: this.MyTeamStatData.deterrent - this.teamStatData.deterrent,
+      powerDif: this.MyTeamStatData.power - this.teamStatData.power,
+      speedDif: this.MyTeamStatData.speed - this.teamStatData.speed,
+      contactDif: this.MyTeamStatData.contact - this.teamStatData.contact,
+      defenseDif: this.MyTeamStatData.defense - this.teamStatData.defense,
+      shoulderDif: this.MyTeamStatData.shoulder - this.teamStatData.shoulder,
     };
-    console.log(this.comparisonContent);
+    this.compareTableData = this.sortObjectEtries(this.comparisonContent);
   },
 
   methods: {
-    // sortArrays(arrays) {
-    //   return this.arrays.sort((a, b) => a - b );
-    // },
+    // 객체 -> 배열 후 정렬
+    sortObjectEtries(obj) {
+      return Object.entries(obj).sort(
+        (a, b) => Math.abs(b[1]) - Math.abs(a[1])
+      );
+    },
     computeLineupPlayerTableData() {
       let arr = [];
       for (let player of this.lineupPlayers) {
@@ -455,35 +431,20 @@ export default {
           this.CommonTeamStatData = this.computeTeamStatData();
           this.isModifiedTeamStat = true;
           this.comparisonContent = {
-            Dif: {
-              eraDif: this.MyTeamStats.era - this.teamStats.era,
-              healthDif: this.MyTeamStats.health - this.teamStats.health,
-              controlDif: this.MyTeamStats.control - this.teamStats.control,
-              stabilityDif:
-                this.MyTeamStats.stability - this.teamStats.stability,
-              deterrentDif:
-                this.MyTeamStats.deterrent - this.teamStats.deterrent,
-              powerDif: this.MyTeamStats.power - this.teamStats.power,
-              speedDif: this.MyTeamStats.speed - this.teamStats.speed,
-              contactDif: this.MyTeamStats.contact - this.teamStats.contact,
-              defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
-              shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
-            },
-            absoluteValue: {
-              era: Math.abs(this.comparisonContent.Dif.eraDif),
-              health: Math.abs(this.comparisonContent.Dif.healthDif),
-              control: Math.abs(this.comparisonContent.Dif.controlDif),
-              stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-              deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-              power: Math.abs(this.comparisonContent.Dif.powerDif),
-              speed: Math.abs(this.comparisonContent.Dif.speedDif),
-              contact: Math.abs(this.comparisonContent.Dif.controlDif),
-              defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-              shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-            },
+            eraDif: this.MyTeamStats.era - this.teamStats.era,
+            healthDif: this.MyTeamStats.health - this.teamStats.health,
+            controlDif: this.MyTeamStats.control - this.teamStats.control,
+            stabilityDif: this.MyTeamStats.stability - this.teamStats.stability,
+            deterrentDif: this.MyTeamStats.deterrent - this.teamStats.deterrent,
+            powerDif: this.MyTeamStats.power - this.teamStats.power,
+            speedDif: this.MyTeamStats.speed - this.teamStats.speed,
+            contactDif: this.MyTeamStats.contact - this.teamStats.contact,
+            defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
+            shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          console.log(this.comparisonContent);
-          console.log(res);
+          this.compareTableData = this.sortObjectEtries(
+            this.comparisonContent
+          );
         },
         (err) => {
           console.log(err);
@@ -507,36 +468,21 @@ export default {
           this.CommonTeamStatData = this.computeMyTeamStatData();
           this.isModifiedMyTeamStat = true;
 
-          (this.comparisonContent = {
-            Dif: {
-              eraDif: this.MyTeamStats.era - this.teamStats.era,
-              healthDif: this.MyTeamStats.health - this.teamStats.health,
-              controlDif: this.MyTeamStats.control - this.teamStats.control,
-              stabilityDif:
-                this.MyTeamStats.stability - this.teamStats.stability,
-              deterrentDif:
-                this.MyTeamStats.deterrent - this.teamStats.deterrent,
-              powerDif: this.MyTeamStats.power - this.teamStats.power,
-              speedDif: this.MyTeamStats.speed - this.teamStats.speed,
-              contactDif: this.MyTeamStats.contact - this.teamStats.contact,
-              defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
-              shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
-            },
-            absoluteValue: {
-              era: Math.abs(this.comparisonContent.Dif.eraDif),
-              health: Math.abs(this.comparisonContent.Dif.healthDif),
-              control: Math.abs(this.comparisonContent.Dif.controlDif),
-              stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-              deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-              power: Math.abs(this.comparisonContent.Dif.powerDif),
-              speed: Math.abs(this.comparisonContent.Dif.speedDif),
-              contact: Math.abs(this.comparisonContent.Dif.controlDif),
-              defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-              shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-            },
-          }),
-            console.log(this.comparisonContent),
-            console.log(res);
+          this.comparisonContent = {
+            eraDif: this.MyTeamStats.era - this.teamStats.era,
+            healthDif: this.MyTeamStats.health - this.teamStats.health,
+            controlDif: this.MyTeamStats.control - this.teamStats.control,
+            stabilityDif: this.MyTeamStats.stability - this.teamStats.stability,
+            deterrentDif: this.MyTeamStats.deterrent - this.teamStats.deterrent,
+            powerDif: this.MyTeamStats.power - this.teamStats.power,
+            speedDif: this.MyTeamStats.speed - this.teamStats.speed,
+            contactDif: this.MyTeamStats.contact - this.teamStats.contact,
+            defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
+            shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
+          };
+          this.compareTableData = this.sortObjectEtries(
+            this.comparisonContent
+          );
         },
         (err) => {
           console.log(err);
