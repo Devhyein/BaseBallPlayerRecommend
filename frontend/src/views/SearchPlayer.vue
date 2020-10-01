@@ -18,8 +18,9 @@
             modal-classes="modal-dialog-centered modal-sm">
             <template slot="header">
                 <h2 class="modal-title" id="exampleModalLabel">포지션 선택</h2>
+                <h5> [ 주황색: 선택됨 ] </h5>
             </template>
-            <div>
+            <div :key="positionRenderKey">
               <base-button class="mb-2" :type="positionFilter[1] ? 'secondary' : 'warning'" @click="changePositionFilter(1)">투수</base-button>
               <base-button class="mb-2" :type="positionFilter[2] ? 'secondary' : 'warning'" @click="changePositionFilter(2)">포수</base-button>
               <base-button class="mb-2" :type="positionFilter[3] ? 'secondary' : 'warning'" @click="changePositionFilter(3)">1루수</base-button>
@@ -32,7 +33,9 @@
               <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.position = false">Close</base-button>
+                <base-button type="secondary" @click="allCanclePosition">전체취소</base-button>
+                <base-button type="secondary" @click="allChoicePosition">전체선택</base-button>
+                <base-button type="secondary" @click="modals.position = false">완료</base-button>
             </template>
           </modal>
 
@@ -48,32 +51,35 @@
             modal-classes="modal-dialog-centered modal-sm">
             <template slot="header">
                 <h2 class="modal-title" id="exampleModalLabel">팀 선택</h2>
+                <h5> [ 주황색: 선택됨 ] </h5>
             </template>
-            <div>
+            <div :key="teamRenderKey">
               <base-button class="mb-2" :type="teamFilter[1] ? 'secondary' : 'warning'" @click="changeTeamFilter(1)">KIA 타이거즈</base-button>
-              <base-button class="mb-2" :type="teamFilter[2] ? 'secondary' : 'warning'" @click="changeTeamFilter(2)">해태 타이거즈</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[2] ? 'secondary' : 'warning'" @click="changeTeamFilter(2)">해태 타이거즈</base-button> -->
               <base-button class="mb-2" :type="teamFilter[3] ? 'secondary' : 'warning'" @click="changeTeamFilter(3)">삼성 라이온즈</base-button>
               <base-button class="mb-2" :type="teamFilter[4] ? 'secondary' : 'warning'" @click="changeTeamFilter(4)">두산 베어스</base-button>
-              <base-button class="mb-2" :type="teamFilter[5] ? 'secondary' : 'warning'" @click="changeTeamFilter(5)">OB 베어스</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[5] ? 'secondary' : 'warning'" @click="changeTeamFilter(5)">OB 베어스</base-button> -->
               <base-button class="mb-2" :type="teamFilter[6] ? 'secondary' : 'warning'" @click="changeTeamFilter(6)">SK 와이번스</base-button>
-              <base-button class="mb-2" :type="teamFilter[7] ? 'secondary' : 'warning'" @click="changeTeamFilter(7)">현대 유니콘스</base-button>
-              <base-button class="mb-2" :type="teamFilter[8] ? 'secondary' : 'warning'" @click="changeTeamFilter(8)">태평양 돌핀스</base-button>
-              <base-button class="mb-2" :type="teamFilter[9] ? 'secondary' : 'warning'" @click="changeTeamFilter(9)">청보 핀토스</base-button>
-              <base-button class="mb-2" :type="teamFilter[10] ? 'secondary' : 'warning'" @click="changeTeamFilter(10)">삼미 슈퍼스타즈</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[7] ? 'secondary' : 'warning'" @click="changeTeamFilter(7)">현대 유니콘스</base-button> -->
+              <!-- <base-button class="mb-2" :type="teamFilter[8] ? 'secondary' : 'warning'" @click="changeTeamFilter(8)">태평양 돌핀스</base-button> -->
+              <!-- <base-button class="mb-2" :type="teamFilter[9] ? 'secondary' : 'warning'" @click="changeTeamFilter(9)">청보 핀토스</base-button> -->
+              <!-- <base-button class="mb-2" :type="teamFilter[10] ? 'secondary' : 'warning'" @click="changeTeamFilter(10)">삼미 슈퍼스타즈</base-button> -->
               <base-button class="mb-2" :type="teamFilter[11] ? 'secondary' : 'warning'" @click="changeTeamFilter(11)">LG 트윈스</base-button>
-              <base-button class="mb-2" :type="teamFilter[12] ? 'secondary' : 'warning'" @click="changeTeamFilter(12)">MBC 청룡</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[12] ? 'secondary' : 'warning'" @click="changeTeamFilter(12)">MBC 청룡</base-button> -->
               <base-button class="mb-2" :type="teamFilter[13] ? 'secondary' : 'warning'" @click="changeTeamFilter(13)">롯데 자이언츠</base-button>
               <base-button class="mb-2" :type="teamFilter[14] ? 'secondary' : 'warning'" @click="changeTeamFilter(14)">한화 이글스</base-button>
-              <base-button class="mb-2" :type="teamFilter[15] ? 'secondary' : 'warning'" @click="changeTeamFilter(15)">빙그레 이글스</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[15] ? 'secondary' : 'warning'" @click="changeTeamFilter(15)">빙그레 이글스</base-button> -->
               <base-button class="mb-2" :type="teamFilter[16] ? 'secondary' : 'warning'" @click="changeTeamFilter(16)">NC 다이노스</base-button>
-              <base-button class="mb-2" :type="teamFilter[17] ? 'secondary' : 'warning'" @click="changeTeamFilter(17)">히어로즈</base-button>
-              <base-button class="mb-2" :type="teamFilter[18] ? 'secondary' : 'warning'" @click="changeTeamFilter(18)">넥센 히어로즈</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[17] ? 'secondary' : 'warning'" @click="changeTeamFilter(17)">히어로즈</base-button> -->
+              <!-- <base-button class="mb-2" :type="teamFilter[18] ? 'secondary' : 'warning'" @click="changeTeamFilter(18)">넥센 히어로즈</base-button> -->
               <base-button class="mb-2" :type="teamFilter[19] ? 'secondary' : 'warning'" @click="changeTeamFilter(19)">키움 히어로즈</base-button>
-              <base-button class="mb-2" :type="teamFilter[20] ? 'secondary' : 'warning'" @click="changeTeamFilter(20)">쌍방울 레이더스</base-button>
+              <!-- <base-button class="mb-2" :type="teamFilter[20] ? 'secondary' : 'warning'" @click="changeTeamFilter(20)">쌍방울 레이더스</base-button> -->
               <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.team = false">Close</base-button>
+                <base-button type="secondary" @click="allCancleTeam">전체취소</base-button>
+                <base-button type="secondary" @click="allChoiceTeam">전체선택</base-button>
+                <base-button type="secondary" @click="modals.team = false">완료</base-button>
             </template>
           </modal>
 
@@ -216,6 +222,9 @@ export default {
         false, false, false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false, false, false,
         false],
+      
+      positionRenderKey: 0,
+      teamRenderKey: 0
     }
   },
   computed: {
@@ -414,26 +423,40 @@ export default {
         }
       )
     },
-    changePositionFilter(idx) {
-      let arr = [];
-      for(let i in this.positionFilter) {
-        let val = this.positionFilter[i];
 
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
-      }
-      this.positionFilter = arr;
+    changePositionFilter(idx) {
+      this.positionFilter[idx] = !this.positionFilter[idx];
+      this.positionRenderKey += 1;
     },
     changeTeamFilter(idx) {
-      let arr = [];
-      for(let i in this.teamFilter) {
-        let val = this.teamFilter[i];
+      this.teamFilter[idx] = !this.teamFilter[idx];
+      this.teamRenderKey += 1;
+    },
 
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
+    allCanclePosition() {
+      for(let i in this.positionFilter) {
+        this.positionFilter[i] = true;
       }
-      this.teamFilter = arr;
-    }
+      this.positionRenderKey += 1;
+    },
+    allChoicePosition() {
+      for(let i in this.positionFilter) {
+        this.positionFilter[i] = false;
+      }
+      this.positionRenderKey += 1;
+    },
+    allCancleTeam() {
+      for(let i in this.teamFilter) {
+        this.teamFilter[i] = true;
+      }
+      this.teamRenderKey += 1;
+    },
+    allChoiceTeam() {
+      for(let i in this.teamFilter) {
+        this.teamFilter[i] = false;
+      }
+      this.teamRenderKey += 1;
+    },
   },
   mounted() {},
 };

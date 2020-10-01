@@ -232,13 +232,14 @@ export default {
   },
   created() {
     if (this.$store.state.userInfo.user_id == undefined) {
+      cdee0da7d38e9a7b84f48ec51494a769bc8ce5ca;
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({ name: "Login" });
       return;
     }
 
     PlayerAPI.getLineupList(
-      "user_id=" + this.$store.state.userInfo.user_id,
+      "none=none",
       (res) => {
         this.lineupList = res;
         this.MyLineupList = res;
@@ -442,9 +443,7 @@ export default {
             defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEtries(
-            this.comparisonContent
-          );
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
         },
         (err) => {
           console.log(err);
@@ -480,9 +479,7 @@ export default {
             defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEtries(
-            this.comparisonContent
-          );
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
         },
         (err) => {
           console.log(err);

@@ -4,7 +4,7 @@
       <template slot="links">
         <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}" />
         <sidebar-item
-          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"
+          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search'}"
         />
         <sidebar-item
           :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
