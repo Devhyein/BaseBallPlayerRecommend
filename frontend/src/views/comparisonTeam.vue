@@ -232,7 +232,6 @@ export default {
   },
   created() {
     if (this.$store.state.userInfo.user_id == undefined) {
-      cdee0da7d38e9a7b84f48ec51494a769bc8ce5ca;
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({ name: "Login" });
       return;
