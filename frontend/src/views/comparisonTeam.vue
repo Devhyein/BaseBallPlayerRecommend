@@ -195,6 +195,7 @@ export default {
       tableColumns: ["At bat", "Position", "Name"],
       MytableColumns: ["At bat", "Position", "Name"],
 
+      // 팀 특징 데이터
       compareTableData: [],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
@@ -232,9 +233,22 @@ export default {
   },
   created() {
     if (this.$store.state.userInfo.user_id == undefined) {
-      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
-      this.$router.push({ name: "Login" });
-      return;
+      if (this.$store.state.userInfo.id == undefined) {
+        swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+        this.$router.push({ name: "Login" });
+        return;
+      }
+
+      // 라인업 리스트 가져오기
+      PlayerAPI.getLineupList(
+        "none=none",
+        (res) => {
+          this.lineupList = res;
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
     }
 
     PlayerAPI.getLineupList(
@@ -264,15 +278,18 @@ export default {
       defenseDif: this.MyTeamStatData.defense - this.teamStatData.defense,
       shoulderDif: this.MyTeamStatData.shoulder - this.teamStatData.shoulder,
     };
-    this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+    this.compareTableData = this.sortObjectEntries(
+      this.comparisonContent
+    );
+    console.log(this.compareTableData)
   },
 
   methods: {
-    // 객체 -> 배열 후 정렬
-    sortObjectEtries(obj) {
-      return Object.entries(obj).sort(
-        (a, b) => Math.abs(b[1]) - Math.abs(a[1])
-      );
+    // 스텟이름
+    sortObjectEntries(obj) {
+      return Object.entries(obj)
+        .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+        .slice(0, 5);
     },
     computeLineupPlayerTableData() {
       let arr = [];
@@ -442,7 +459,10 @@ export default {
             defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(
+            this.comparisonContent
+          );
+          console.log(this.compareTableData);
         },
         (err) => {
           console.log(err);
@@ -478,7 +498,10 @@ export default {
             defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(
+            this.comparisonContent
+          );
+          console.log(this.compareTableData);
         },
         (err) => {
           console.log(err);

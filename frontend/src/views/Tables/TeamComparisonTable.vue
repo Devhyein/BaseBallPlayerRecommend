@@ -53,7 +53,7 @@
       type: {
         type: String
       },
-      title: String
+      comparisonContent: Array
     },
     data() {
       return {
@@ -63,26 +63,6 @@
             status: 'pending',
             completion: 60
           },
-          {
-            title: '상대팀보다 파워가 매우 떨어집니다.',
-            status: 'completed',
-            completion: 100
-          },
-          {
-            title: '상대팀보다 안타율이 다소 낮습니다.',
-            status: 'delayed',
-            completion: 72
-          },
-          {
-            title: '상대팀보다 장타율이 다소 높습니다.',
-            status: 'on schedule',
-            completion: 90
-          },
-          {
-            title: '상대팀보다 수비가 다소 견고합니다.',
-            status: 'completed',
-            completion: 100
-          }
         ]
       }
     }
