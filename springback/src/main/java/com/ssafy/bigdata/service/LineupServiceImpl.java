@@ -23,7 +23,7 @@ public class LineupServiceImpl implements LineupService {
     @Autowired
     private UserDao userDao;
 
-
+//test
     // 라인업리스트 가져오기
     @Override
     public List<Lineup> getLineupList() {
