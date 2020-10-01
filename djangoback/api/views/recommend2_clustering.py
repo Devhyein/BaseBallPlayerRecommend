@@ -4,7 +4,8 @@ import pandas as pd
 from scipy.cluster.hierarchy import linkage, dendrogram
 from scipy.cluster.hierarchy import fcluster
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import *
+from sklearn import metrics
 import matplotlib.pyplot as plt
 
 from sklearn import preprocessing
@@ -198,11 +199,50 @@ def pitcher_clustering(pid):
 
     print(df_normalized)
 
-    model = KMeans(n_clusters=5,algorithm='auto')
-    model.fit(df_normalized)
-    predict = pd.DataFrame(model.predict(df_normalized))
+    #model = KMeans(n_clusters=5,algorithm='auto')
+    #model = DBSCAN(eps=0.125, min_samples=5)
+
+    #model.fit(df_normalized)
+    # fit_predict() = fit() + predict() 라는 듯
+    #predict = pd.DataFrame(model.fit_predict(df_normalized))
+
+    mergings = linkage(df_normalized, method='complete')
+    
+    # plt.figure(figsize=(40,20))
+    # dendrogram(mergings,
+    #         #labels = labels.values,
+    #         leaf_rotation=90,
+    #         leaf_font_size=20,
+    # )
+    # plt.show()
+
+    # y scale이 max 1.6까지다.
+    predict = pd.DataFrame(fcluster(mergings, 0.6, criterion='distance'))
+
     predict.columns=['predict']
     print(predict)
+
+    # 클러스터링 성능 평가
+    print("DB SCORE: ", metrics.davies_bouldin_score(df_normalized, predict))
+
+###
+    r = pd.concat([predict, df_normalized],axis=1)
+    r.columns = ['predict', 'era', 'whip', 'ip/g']
+    print(r)
+
+    plt.rcParams["figure.figsize"] = (6, 6)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection="3d")
+
+    ax.scatter(r['era'],r['whip'], r['ip/g'], c=r['predict'],alpha=0.5)
+    # centers = pd.DataFrame(model.cluster_centers_,columns=['era', 'whip', 'ip/g'])
+    # center_x = centers['era']
+    # center_y = centers['whip']
+    # center_z = centers['ip/g']
+    # ax.scatter(center_x,center_y,center_z,s=50,marker='D',c='r')
+    plt.show()
+###
+
 
     predict['player_id'] = df_grouped_mean.reset_index()['player_id']
     print(predict)
