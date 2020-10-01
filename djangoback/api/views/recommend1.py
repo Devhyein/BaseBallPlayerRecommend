@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from selenium import webdriver
 import pandas as pd
+import numpy as np
 import re
 from .models import *
 from django.conf import settings
 from django.db import connections
 from django.http import JsonResponse # http 응답을 위함
 from sqlalchemy import create_engine # to_sql 사용하기 위해 필요했던 라이브러리
+from sklearn import preprocessing
 # swagger
 from rest_framework.decorators import api_view, parser_classes
 from drf_yasg import openapi
@@ -62,6 +64,19 @@ def recommend_player_method1(request):
     team_stats['speed'] = request.GET.get('speed', '')
     team_stats['stability'] = request.GET.get('stability', '')
 
+    # sum_stat = 0
+    # for value in team_stats.values():
+    #     sum_stat += float(value)
+    # stat_mean = sum_stat / 10
+    
+    # ex) power=0.4라면 2*(1-0.4) = 1.2니까 w=2.2
+    weights = {}
+    for key in team_stats.keys():
+        w = 2 * (1 - float(team_stats[key])) + 1
+        weights[key] = w
+
+    print(weights)    
+
     print(teamid)
     print(team_stats)
 
@@ -81,29 +96,34 @@ def recommend_player_method1(request):
     df_player = df_player[df_player['player_retire'] == 0]
 
     # 팀 스탯 중 약한게 뭔지 뽑아내자.
-    res = sorted(team_stats.items(), key=(lambda x: x[1]), reverse = False)
-    weak_stat = res[0]
+    # res = sorted(team_stats.items(), key=(lambda x: x[1]), reverse = False)
+    # weak_stat = res[0]
 
     # 약한게 투수스탯이면 -> pitcher 테이블 보는 곳으로
     # 약한게 공격스탯이면 (power, speed, contact) -> hitter 테이블로 
     # 약한게 수비스탯이면 (shoulder, defense) -> fielder 테이블로
-    recommended = []
+    recommended_pitcher = []
+    recommended_hitter = []
 
     #recommended_player = [75162451, 44235944, 59621752, 52933398, 28698115]
 
-    if weak_stat[0] in pitcher_stat:
-        recommended = pitcher_recommend(df_player, weak_stat[0])
-    elif weak_stat[0] in hitter_stat:
-        recommended = hitter_recommend(df_player, weak_stat[0])
-    elif weak_stat[0] in fielder_stat:
-        recommended = fielder_recommend(df_player, weak_stat[0])
+    recommended_pitcher = pitcher_recommend(df_player, weights)
+    recommended_hitter = hitter_recommend(df_player, weights)
+
+    # if weak_stat[0] in pitcher_stat:
+    #     recommended = pitcher_recommend(df_player, weak_stat[0])
+    # elif weak_stat[0] in hitter_stat:
+    #     recommended = hitter_recommend(df_player, weak_stat[0])
+    # elif weak_stat[0] in fielder_stat:
+    #     recommended = fielder_recommend(df_player, weak_stat[0])
 
     return_object = {
-        'recommended': recommended
+        'recommended_pitcher': recommended_pitcher,
+        'recommended_hitter': recommended_hitter
     }
     return JsonResponse(return_object)
 
-def pitcher_recommend(players, stat):
+def pitcher_recommend(players, weights):
     # DB -> pandas dataframe으로 데이터 불러오기
     queryset = RecordPitcher.objects.all()
     query, params = queryset.query.sql_with_params()
@@ -122,21 +142,44 @@ def pitcher_recommend(players, stat):
 
     pitchers_sort = []
 
-    if stat == 'era':
-        pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_era_plus", "pitcher_year"].apply(cal_era).to_frame('ERA+')
-        pitchers_sort = pitchers_grouped.sort_values(by=['ERA+'], ascending=False)
-    elif stat == 'health':
-        pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_g", "pitcher_ip", "pitcher_year"].apply(cal_health).to_frame('health')
-        pitchers_sort = pitchers_grouped.sort_values(by=['health'], ascending=False)
-    elif stat == 'control':
-        pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_so", "pitcher_bb", "pitcher_hbp", "pitcher_year"].apply(cal_control).to_frame('control')
-        pitchers_sort = pitchers_grouped.sort_values(by=['control'], ascending=False)
-    elif stat == 'stability':
-        pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_wp", "pitcher_bk", "pitcher_year"].apply(cal_stability).to_frame('stability')
-        pitchers_sort = pitchers_grouped.sort_values(by=['stability'], ascending=True)
-    elif stat == 'deterrent':
-        pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_homerun", "pitcher_year"].apply(cal_deterrent).to_frame('deterrent')
-        pitchers_sort = pitchers_grouped.sort_values(by=['deterrent'], ascending=True)
+    # 5툴 계산
+    pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_era_plus", "pitcher_year"].apply(cal_era).to_frame('ERA+')
+    pitchers_grouped['health'] = df_pitcher.groupby(["player_id"])["pitcher_g", "pitcher_ip", "pitcher_year"].apply(cal_health).to_frame('health')
+    pitchers_grouped['control'] = df_pitcher.groupby(["player_id"])["pitcher_so", "pitcher_bb", "pitcher_hbp", "pitcher_year"].apply(cal_control).to_frame('control')
+    pitchers_grouped['stability'] = df_pitcher.groupby(["player_id"])["pitcher_wp", "pitcher_bk", "pitcher_year"].apply(cal_stability).to_frame('stability')
+    pitchers_grouped['deterrent'] = df_pitcher.groupby(["player_id"])["pitcher_homerun", "pitcher_year"].apply(cal_deterrent).to_frame('deterrent')
+    print(pitchers_grouped)
+
+    # 각 툴을 표준화한다
+    x = pitchers_grouped.values #returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    df_normalized = pd.DataFrame(x_scaled)
+    df_normalized.index = pitchers_grouped.index
+    df_normalized.columns = ['ERA+', 'health', 'control', 'stability', 'deterrent']
+    print(df_normalized)
+
+    # 표준화한 값에다가 weights의 값을 각각 곱함
+    df_normalized['total_score'] = df_normalized['ERA+'] * weights['era'] + df_normalized['health'] * weights['health'] + df_normalized['control'] * weights['control'] + df_normalized['stability'] * weights['stability'] + df_normalized['deterrent'] * weights['deterrent']
+    print(df_normalized)
+    # 모든 툴을 더한 총스탯을 구하여 그 순으로 추천
+    pitchers_sort = df_normalized.sort_values(by=['total_score'], ascending=False)
+
+    # if stat == 'era':
+    #     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_era_plus", "pitcher_year"].apply(cal_era).to_frame('ERA+')
+    #     pitchers_sort = pitchers_grouped.sort_values(by=['ERA+'], ascending=False)
+    # elif stat == 'health':
+    #     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_g", "pitcher_ip", "pitcher_year"].apply(cal_health).to_frame('health')
+    #     pitchers_sort = pitchers_grouped.sort_values(by=['health'], ascending=False)
+    # elif stat == 'control':
+    #     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_so", "pitcher_bb", "pitcher_hbp", "pitcher_year"].apply(cal_control).to_frame('control')
+    #     pitchers_sort = pitchers_grouped.sort_values(by=['control'], ascending=False)
+    # elif stat == 'stability':
+    #     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_wp", "pitcher_bk", "pitcher_year"].apply(cal_stability).to_frame('stability')
+    #     pitchers_sort = pitchers_grouped.sort_values(by=['stability'], ascending=True)
+    # elif stat == 'deterrent':
+    #     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_homerun", "pitcher_year"].apply(cal_deterrent).to_frame('deterrent')
+    #     pitchers_sort = pitchers_grouped.sort_values(by=['deterrent'], ascending=True)
 
     # 173명
     print(pitchers_sort[:10])
