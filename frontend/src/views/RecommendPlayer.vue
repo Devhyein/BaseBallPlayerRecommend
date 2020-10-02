@@ -36,14 +36,48 @@
       <div class="col-xl mr-1 ml-1">
         <!-- 선택된 라인업 선수 목록 -->
         <div class="row">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">{{lineupName}}</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in tableColumns" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="lineupTableRenderKey">
+                  <tr
+                    v-for="(player, rowIdx) in lineupPlayers"
+                    :key="rowIdx" 
+                    :class="{'bg-translucent-warning': rowIdx == lineupSel,
+                             'text-white': rowIdx == lineupSel}">
+                      
+                      <td :class="{'text-yellow': lineupPlayers[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickLineupFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="clickLineupPlayer(rowIdx)">{{atBats[rowIdx]}}</td>
+                      <td @click="clickLineupPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="clickLineupPlayer(rowIdx)">{{player.player_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             class="custom-table"
             :tableTitle="lineupName"
             :tableData="lineupPlayerTableData"
             :cols="tableColumns"
             :selectedRow="lineupSel"
             @clickRow="clickLineupPlayer"
-          />
+          /> -->
         </div>
       </div>
 
@@ -73,25 +107,91 @@
       <div class="col-xl mr-1 ml-1">
         <!-- 1. 추천 선수 목록 테이블 -->
         <div class="row">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">추천 선수</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in tableColumnsForRecommendAndRemoved" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="recommendTableRenderKey">
+                  <tr
+                    v-for="(player, rowIdx) in recommendPlayers"
+                    :key="rowIdx" 
+                    :class="{'bg-translucent-warning': rowIdx == recommendSel,
+                             'text-white': rowIdx == recommendSel}">
+                      
+                      <td :class="{'text-yellow': recommendPlayers[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickRecommendFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="clickRecommendPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="clickRecommendPlayer(rowIdx)">{{player.player_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             class="custom-table"
             tableTitle="추천 선수"
             :tableData="recommendPlayerTableData"
             :cols="tableColumnsForRecommendAndRemoved"
             :selectedRow="recommendSel"
             @clickRow="clickRecommendPlayer"
-          />
+          /> -->
         </div>
         <!-- 2. 선수 목록에서 제외된 선수 목록 테이블 -->
         <div class="row mt-2" v-if="removedPlayers.length > 0">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">제외된 선수</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in tableColumnsForRecommendAndRemoved" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="removedTableRenderKey">
+                  <tr
+                    v-for="(player, rowIdx) in removedPlayers"
+                    :key="rowIdx" 
+                    :class="{'bg-translucent-warning': rowIdx == removedSel,
+                             'text-white': rowIdx == removedSel}">
+                      
+                      <td :class="{'text-yellow': removedPlayers[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickRemovedFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="clickRemovedPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="clickRemovedPlayer(rowIdx)">{{player.player_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             class="custom-table"
             tableTitle="제외된 선수"
             :tableData="removedPlayerTableData"
             :cols="tableColumnsForRecommendAndRemoved"
             :selectedRow="removedSel"
             @clickRow="clickRemovedPlayer"
-          />
+          /> -->
         </div>
       </div>
     </div>
@@ -104,7 +204,7 @@
 import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import CustomTable from "@/views/Tables/CustomTable";
+// import CustomTable from "@/views/Tables/CustomTable";
 
 // API
 import PlayerAPI from "@/api/PlayerAPI";
@@ -115,7 +215,7 @@ import swal from 'sweetalert';
 export default {
   components: {
     CustomRadarChart,
-    CustomTable
+    // CustomTable
   },
   data() {
     return {
@@ -173,14 +273,30 @@ export default {
 
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
-        "At bat"
+        ""
+        , "At bat"
         , "Position"
         , "Name"
       ],
 
+      // 1~9 번 타자 + 투수
+      atBats: [
+        "1번 타자",
+        "2번 타자",
+        "3번 타자",
+        "4번 타자",
+        "5번 타자",
+        "6번 타자",
+        "7번 타자",
+        "8번 타자",
+        "9번 타자",
+        "투수",
+      ],
+
       // 추천선수, 제외된 선수 테이블 컬럼들
       tableColumnsForRecommendAndRemoved: [
-        "Position"
+        ""
+        , "Position"
         , "Name"
       ],
 
@@ -198,6 +314,10 @@ export default {
       // 차트를 위한 데이터
       teamStatData: {},
       playerStatData: {},
+
+      lineupTableRenderKey: 0,
+      recommendTableRenderKey: 0,
+      removedTableRenderKey: 0,
     }
   },
   created() {
@@ -331,6 +451,15 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
+          ///////////////////////////////////////////////////////////////////////////////// 지울곳
+          for(let i in this.recommendPlayers) {
+            this.recommendPlayers[i].isFavorite = false;
+          }
+          for(let i in this.lineupPlayers) {
+            this.lineupPlayers[i].isFavorite = false;
+          }
+          ////////////////////////////////////////////////////////////////////////////////////////
+
           this.lineupPlayerTableData = this.computeLineupPlayerTableData();
           this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
           this.teamStatData = this.computeTeamStatData();
@@ -446,7 +575,20 @@ export default {
           console.log(err);
         }
       )
-    }
+    },
+
+    clickLineupFavorite(idx) {
+      this.lineupPlayers[idx].isFavorite = !this.lineupPlayers[idx].isFavorite;
+      this.lineupTableRenderKey += 1;
+    },
+    clickRecommendFavorite(idx) {
+      this.recommendPlayers[idx].isFavorite = !this.recommendPlayers[idx].isFavorite;
+      this.recommendTableRenderKey += 1;
+    },
+    clickRemovedFavorite(idx) {
+      this.removedPlayers[idx].isFavorite = !this.removedPlayers[idx].isFavorite;
+      this.removedTableRenderKey += 1;
+    },
   }
 };
 </script>
