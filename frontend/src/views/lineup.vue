@@ -27,19 +27,27 @@
           <span class="dropdown-item" @click="newLineUp">라인업 추가</span>
         </base-dropdown>
         <!-- 초기화, 저장 버튼 -->
-        <base-button
+        <!-- <base-button
           slot="title"
           type="secondary"
           class="ml-2"
           @click="resetLineup">
           초기화
+        </base-button> -->
+        <base-button
+          slot="title"
+          type="secondary"
+          class="ml-2"
+          v-if="lineupId > 10 && lineupId < 100"
+          @click="deleteLineup">
+          라인업 삭제
         </base-button>
         <base-button
           slot="title"
           type="secondary"
           class="ml-2"
           @click="saveLineup">
-          저장
+          라인업 저장
         </base-button>
         <!-- 라인업 선수 목록 -->
         <div class="card custom-table mt-2">
@@ -651,6 +659,36 @@ export default {
         }
       )
     },
+    deleteLineup() {
+      PlayerAPI.deleteLineup(
+        'lineup=' + this.lineupId,
+        res => {
+          console.log(res);
+          swal('성공', '라인업이 삭제되었습니다.', 'success');
+
+          // Lineup 초기화
+          this.lineupPlayers = [];
+          this.lineupName = '라인업 선택';
+          this.lineupId = 0;
+          
+          // 라인업 리스트 가져와서 갱신하기
+          PlayerAPI.getLineupList(
+            "none=none",
+            res => {
+              this.lineupList = res;
+            },
+            err => {
+              console.log(err);
+            }
+          );
+        },
+        err => {
+          swal('실패', '라인업 삭제 실패ㅠ', 'error');
+          console.log(err);
+        }
+      )
+    },
+
     search() {
       // 검색할 선수 이름의 일부
       let searchText = this.searchVal;

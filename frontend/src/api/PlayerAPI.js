@@ -64,7 +64,7 @@ const postApi = (url, data, callback, errorCallback) => {
 }
 
 const putApi = (url, data, callback, errorCallback) => {
-    http.get(url, data, header())
+    http.put(url, data, header())
         .then(res => {
             // RestAPI 서버가 null 을 응답하는 경우
             if(res == null) {
@@ -94,9 +94,8 @@ const putApi = (url, data, callback, errorCallback) => {
         });
 }
 
-/*
 const deleteApi = (url, data, callback, errorCallback) => {
-    http.get(url, data, header())
+    http.delete(url + '?' + data, header())
         .then(res => {
             // RestAPI 서버가 null 을 응답하는 경우
             if(res == null) {
@@ -125,7 +124,6 @@ const deleteApi = (url, data, callback, errorCallback) => {
             errorCallback(err);
         });
 }
-*/
 
 const PlayerAPI = {
     getPlayerList:(data,callback,errorCallback)=>postApi('/spring/info/playerlist',data,callback,errorCallback),
@@ -138,6 +136,7 @@ const PlayerAPI = {
     getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
     addLineup:(data,callback,errorCallback)=>postApi('/spring/lineup/insert',data,callback,errorCallback),
     modifyLineup:(data,callback,errorCallback)=>putApi('/spring/lineup/update',data,callback,errorCallback),
+    deleteLineup:(data,callback,errorCallback)=>deleteApi('/spring/lineup/delete',data,callback,errorCallback),
 
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
     testLogin:(data,callback,errorCallback)=>postApi('/spring/login/temp',data,callback,errorCallback),
