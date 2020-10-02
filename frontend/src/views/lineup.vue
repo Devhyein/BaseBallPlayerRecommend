@@ -7,48 +7,60 @@
     <div class="container-fluid mt-2 row">
       <!-- 1번째 열: 라인업 선택 드롭다운과 라인업의 선수 목록 -->
       <div class="col-lg mr-1 ml-1  text-center align-self-center">
-        <!-- 라인업 선택 드롭다운 -->
-        <base-dropdown>
+        <div class="row pl-2 pr-3">
+          <!-- 라인업 선택 드롭다운 -->
+          <base-dropdown class="col">
+            <base-button
+              slot="title"
+              type="secondary"
+              class="dropdown-toggle">
+              {{lineupName}}
+            </base-button>
+            <template v-for="lineup in lineupList">
+              <span
+                :key="lineup.id"
+                class="dropdown-item"
+                @click="changeLineup(lineup.id, lineup.name)">
+                {{lineup.name}}
+              </span>
+            </template>
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item" @click="newLineUp">라인업 추가</span>
+          </base-dropdown>
+          <!-- 초기화, 저장 버튼 -->
+          <!-- <base-button
+            slot="title"
+            type="secondary"
+            class="ml-2"
+            @click="resetLineup">
+            초기화
+          </base-button> -->
           <base-button
             slot="title"
             type="secondary"
-            class="dropdown-toggle">
-            {{lineupName}}
+            class="ml-2 col"
+            @click="saveLineup">
+            라인업 저장
           </base-button>
-          <template v-for="lineup in lineupList">
-            <span
-              :key="lineup.id"
-              class="dropdown-item"
-              @click="changeLineup(lineup.id, lineup.name)">
-              {{lineup.name}}
-            </span>
-          </template>
-          <div class="dropdown-divider"></div>
-          <span class="dropdown-item" @click="newLineUp">라인업 추가</span>
-        </base-dropdown>
-        <!-- 초기화, 저장 버튼 -->
-        <!-- <base-button
-          slot="title"
-          type="secondary"
-          class="ml-2"
-          @click="resetLineup">
-          초기화
-        </base-button> -->
-        <base-button
-          slot="title"
-          type="secondary"
-          class="ml-2"
-          v-if="lineupId > 10 && lineupId < 100"
-          @click="deleteLineup">
-          라인업 삭제
-        </base-button>
-        <base-button
-          slot="title"
-          type="secondary"
-          class="ml-2"
-          @click="saveLineup">
-          라인업 저장
-        </base-button>
+        </div>
+        <div class="row mt-2 pl-2 pr-3">
+          <base-button
+            slot="title"
+            type="secondary"
+            class="ml-2 col"
+            v-if="lineupId > 10 && lineupId < 100"
+            @click="deleteLineup">
+            라인업 삭제
+          </base-button>
+          <base-button
+            slot="title"
+            type="secondary"
+            class="ml-2 col"
+            v-if="lineupId > 10 && lineupId < 100"
+            @click="changeLineupName">
+            라인업 이름변경
+          </base-button>
+        </div>
         <!-- 라인업 선수 목록 -->
         <div class="card custom-table mt-2">
           <div class="card-header border-0">
@@ -658,6 +670,9 @@ export default {
           console.log(err);
         }
       )
+    },
+    changeLineupName() {
+      console.log('Change lineup name!');
     },
     deleteLineup() {
       PlayerAPI.deleteLineup(
