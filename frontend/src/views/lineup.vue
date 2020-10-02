@@ -123,7 +123,7 @@
     </div>
     <div class="container-fluid mt-2 row">
       <card class="col ml-2 mr-2">
-        <form class="navbar-search form-inline">
+        <form class="navbar-search form-inline" onsubmit="return false;">
           <base-button
             slot="title"
             type="secondary"

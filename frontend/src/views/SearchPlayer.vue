@@ -5,7 +5,9 @@
     <!--Content-->
     <div class="container-fluid mt-4">
       <!--Search form-->
-        <form class="navbar-search form-inline">
+        <form
+          class="navbar-search form-inline"
+          onsubmit="return false;">
           <base-button
             slot="title"
             type="secondary"
