@@ -57,6 +57,11 @@ export default new Router({
           name: 'icons',
           component: () => import('./views/Icons.vue')
         },
+        {
+          path: '/simulation',
+          name: 'simulation',
+          component: () => import('./views/Simulation.vue')
+        },
         /*
         {
           path: '/profile',

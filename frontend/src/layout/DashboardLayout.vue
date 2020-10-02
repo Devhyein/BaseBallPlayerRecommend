@@ -13,6 +13,7 @@
           :link="{name: 'Lineup', icon: 'ni ni-cart text-green', path: '/lineup'}"
         />
         <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
+        <sidebar-item :link="{name: 'Simulation Game', icon: 'ni ni-controller', path: '/Simulation'}"/>
 
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
