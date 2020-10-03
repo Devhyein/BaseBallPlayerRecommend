@@ -45,7 +45,7 @@ param11 = openapi.Parameter('stability', openapi.IN_QUERY, type=openapi.TYPE_NUM
 @api_view(["GET"])
 def recommend_player_method1(request):
     """
-    팀 스탯을 받아 가장 약한 부분을 찾아내어, 해당 부분을 채워줄 수 있는 선수를 추천해준다
+    팀 스탯을 받아 약한 부분을 채워줄 수 있는 선수를 추천해준다
     - parameters: team_id (int), 0~1 사이 값으로 표준화된 팀 스탯 10개 (float)
     - returns: recommended 리스트 (추천 선수 10명의 player_id)
     """
@@ -64,11 +64,7 @@ def recommend_player_method1(request):
     team_stats['speed'] = request.GET.get('speed', '')
     team_stats['stability'] = request.GET.get('stability', '')
 
-    # sum_stat = 0
-    # for value in team_stats.values():
-    #     sum_stat += float(value)
-    # stat_mean = sum_stat / 10
-    
+    # 팀 스탯에 따른 가중치 계산 - 현재 옵션: 스탯이 낮을수록 반대로 가중치는 높게 주는 방식
     # ex) power=0.4라면 2*(1-0.4) = 1.2니까 w=2.2
     weights = {}
     for key in team_stats.keys():
@@ -76,7 +72,6 @@ def recommend_player_method1(request):
         weights[key] = w
 
     print(weights)    
-
     print(teamid)
     print(team_stats)
 
@@ -88,6 +83,7 @@ def recommend_player_method1(request):
     # player 테이블 정리: 필요없는 컬럼 지우고, 우리팀 선수 지움
     print(df_player)
     df_player = df_player.drop(columns=['player_num', 'player_birth'])
+
     # request에서 가져오는 teamid는 문자열이라 그냥 바로 넣으면 인식 못하는 듯... int로 변환
     df_player = df_player[df_player['team_id'] != int(teamid)] 
     print(df_player)
@@ -95,27 +91,12 @@ def recommend_player_method1(request):
     # 은퇴선수 거르기
     df_player = df_player[df_player['player_retire'] == 0]
 
-    # 팀 스탯 중 약한게 뭔지 뽑아내자.
-    # res = sorted(team_stats.items(), key=(lambda x: x[1]), reverse = False)
-    # weak_stat = res[0]
-
-    # 약한게 투수스탯이면 -> pitcher 테이블 보는 곳으로
-    # 약한게 공격스탯이면 (power, speed, contact) -> hitter 테이블로 
-    # 약한게 수비스탯이면 (shoulder, defense) -> fielder 테이블로
+    # 투수, 타자를 각각 추천해주는 걸로 변경
     recommended_pitcher = []
     recommended_hitter = []
 
-    #recommended_player = [75162451, 44235944, 59621752, 52933398, 28698115]
-
     recommended_pitcher = pitcher_recommend(df_player, weights)
     recommended_hitter = hitter_recommend(df_player, weights)
-
-    # if weak_stat[0] in pitcher_stat:
-    #     recommended = pitcher_recommend(df_player, weak_stat[0])
-    # elif weak_stat[0] in hitter_stat:
-    #     recommended = hitter_recommend(df_player, weak_stat[0])
-    # elif weak_stat[0] in fielder_stat:
-    #     recommended = fielder_recommend(df_player, weak_stat[0])
 
     return_object = {
         'recommended_pitcher': recommended_pitcher,
@@ -142,7 +123,7 @@ def pitcher_recommend(players, weights):
 
     pitchers_sort = []
 
-    # 5툴 계산
+    # 5툴 계산 
     pitchers_grouped = df_pitcher.groupby(["player_id"])["pitcher_era_plus", "pitcher_year"].apply(cal_era).to_frame('ERA+')
     pitchers_grouped['health'] = df_pitcher.groupby(["player_id"])["pitcher_g", "pitcher_ip", "pitcher_year"].apply(cal_health).to_frame('health')
     pitchers_grouped['control'] = df_pitcher.groupby(["player_id"])["pitcher_so", "pitcher_bb", "pitcher_hbp", "pitcher_year"].apply(cal_control).to_frame('control')
@@ -182,24 +163,25 @@ def pitcher_recommend(players, weights):
     #     pitchers_sort = pitchers_grouped.sort_values(by=['deterrent'], ascending=True)
 
     # 173명
-    print(pitchers_sort[:10])
+    print(pitchers_sort[:5])
     print(type(pitchers_sort))
     return_arr = []
-    for player in pitchers_sort[:10].iterrows():
+    for player in pitchers_sort[:5].iterrows():
         return_arr.append(player[0])
 
     return return_arr
 
-# def minimum_pa(year, pa):
-#     if (year == 20):
-#         return pa >= (100 * 3.1)
-#     else:
-#         return pa >= (144 * 3.1)
-
-def hitter_recommend(players, stat):
+# 원래 hitter, fielder 따로 봤었는데 이제 타자를 수비스탯까지 고려해서 추천해주는 걸로
+def hitter_recommend(players, weights):
     queryset = RecordHitter.objects.all()
     query, params = queryset.query.sql_with_params()
     df_hitter = pd.read_sql_query(query, connections['default'], params = params)
+
+    queryset = RecordFielder.objects.all()
+    query, params = queryset.query.sql_with_params()
+    df_fielder = pd.read_sql_query(query, connections['default'], params = params)
+
+    print(players)
 
     print(df_hitter) # 923명
 
@@ -207,74 +189,91 @@ def hitter_recommend(players, stat):
     #df_hitter = df_hitter[df_hitter.apply(lambda x: minimum_pa(df_hitter['hitter_year'], df_hitter['hitter_pa']))] 
     df_hitter = df_hitter.loc[((df_hitter.hitter_year==20) & (df_hitter.hitter_pa>=100*3.1)) | ((df_hitter.hitter_year!=20) & (df_hitter.hitter_pa>=144*3.1))]
 
-
     # 필요한 스탯: 장타율, 홈런, 도루, 도실, 3루타, 타율, BB, K. 그 외의 컬럼들은 싹 날렸다
     df_hitter = df_hitter[['player_id','hitter_year','hitter_pa','hitter_slg','hitter_homerun', 'hitter_sb', 'hitter_cs'
                         ,'hitter_triple', 'hitter_ba', 'hitter_bb', 'hitter_so']]
-    # 325개의 기록
-    print(df_hitter)
 
-    df_hitter = pd.merge(df_hitter, players, on='player_id', how='inner')
+    df_fielder = df_fielder.loc[((df_fielder.fielder_year==20) & (df_fielder.fielder_inn>=100*5)) | ((df_fielder.fielder_year!=20) & (df_fielder.fielder_inn>=144*5))]
+
+    # 필요한 스탯: 수비율, RNG, 보살/ARM/CS
+    df_fielder = df_fielder[['player_id','fielder_year','fielder_fld','fielder_rng','fielder_a', 'fielder_arm', 'fielder_cs']]
+
+
+    df_hitter = pd.merge(df_hitter, players, on='player_id', how='inner')   # player 테이블과 조인
+    df_hitter = pd.merge(df_hitter, df_fielder, on='player_id', how='inner')    # fielder 테이블과 조인
+
     print(df_hitter)
     # hitter_grouped_ = df_hitter.groupby(["player_id"])
     # print(hitter_grouped_.size())
 
     hitters_sort = []
 
-    if stat == 'power':
-        hitters_grouped = df_hitter.groupby(["player_id"])["hitter_slg", "hitter_year"].apply(cal_power).to_frame('power')
-        hitters_sort = hitters_grouped.sort_values(by=['power'], ascending=False)
-    elif stat == 'contact':
-        hitters_grouped = df_hitter.groupby(["player_id"])["hitter_bb", "hitter_so", "hitter_year"].apply(cal_contact).to_frame('contact')
-        hitters_sort = hitters_grouped.sort_values(by=['contact'], ascending=False)
-    elif stat == 'speed':
-        hitters_grouped = df_hitter.groupby(["player_id"])["hitter_sb", "hitter_cs", "hitter_year"].apply(cal_speed).to_frame('speed')
-        hitters_sort = hitters_grouped.sort_values(by=['speed'], ascending=False)
+    hitters_grouped = df_hitter.groupby(["player_id"])["hitter_slg", "hitter_year"].apply(cal_power).to_frame('power')
+    hitters_grouped['contact'] = df_hitter.groupby(["player_id"])["hitter_bb", "hitter_so", "hitter_year"].apply(cal_contact).to_frame('contact')
+    hitters_grouped['speed'] = df_hitter.groupby(["player_id"])["hitter_sb", "hitter_cs", "hitter_year"].apply(cal_speed).to_frame('speed')
+    hitters_grouped['defense'] = df_hitter.groupby(["player_id"])["fielder_fld", "fielder_rng", "fielder_year"].apply(cal_defense).to_frame('defense')
+    hitters_grouped['shoulder'] = df_hitter.groupby(["player_id"])["fielder_a", "fielder_arm", "fielder_cs", "player_position", "fielder_year"].apply(cal_shoulder).to_frame('shoulder')
+
+    # 각 툴을 표준화한다
+    x = hitters_grouped.values #returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    df_normalized = pd.DataFrame(x_scaled)
+    df_normalized.index = hitters_grouped.index
+    df_normalized.columns = ['power', 'contact', 'speed', 'defense', 'shoulder']
+    print(df_normalized)
+
+    # 표준화한 값에다가 weights의 값을 각각 곱함
+    df_normalized['total_score'] = df_normalized['power'] * weights['power'] + df_normalized['contact'] * weights['contact'] + df_normalized['speed'] * weights['speed'] + df_normalized['defense'] * weights['defense'] + df_normalized['shoulder'] * weights['shoulder']
+    print(df_normalized)
+    # 모든 툴을 더한 총스탯을 구하여 그 순으로 추천
+    hitters_sort = df_normalized.sort_values(by=['total_score'], ascending=False)
+
     # 173명
-    print(hitters_sort[:10])
+    print(hitters_sort[:5])
     print(type(hitters_sort))
     return_arr = []
 
     # pandas 데이터프레임을 행 순회할땐 그냥 for~in 뒤에 df를 붙여주기만 하는게 아니라 꼭 iterrows() 를 써야 하는 듯하다
-    for player in hitters_sort[:10].iterrows():
+    for player in hitters_sort[:5].iterrows():
         return_arr.append(player[0])
 
     return return_arr
 
-def fielder_recommend(players, stat):
-    queryset = RecordFielder.objects.all()
-    query, params = queryset.query.sql_with_params()
-    df_fielder = pd.read_sql_query(query, connections['default'], params = params)
+# def fielder_recommend(players, stat):
+#     queryset = RecordFielder.objects.all()
+#     query, params = queryset.query.sql_with_params()
+#     df_fielder = pd.read_sql_query(query, connections['default'], params = params)
 
-    # 규정 수비이닝 (골글 기준): 경기수*5
-    df_fielder = df_fielder.loc[((df_fielder.fielder_year==20) & (df_fielder.fielder_inn>=100*5)) | ((df_fielder.fielder_year!=20) & (df_fielder.fielder_inn>=144*5))]
+#     # 규정 수비이닝 (골글 기준): 경기수*5
+#     df_fielder = df_fielder.loc[((df_fielder.fielder_year==20) & (df_fielder.fielder_inn>=100*5)) | ((df_fielder.fielder_year!=20) & (df_fielder.fielder_inn>=144*5))]
 
-    # 필요한 스탯: 수비율, RNG, 보살/ARM/CS
-    df_fielder = df_fielder[['player_id','fielder_year','fielder_fld','fielder_rng','fielder_a', 'fielder_arm', 'fielder_cs']]
-    print(df_fielder)
+#     # 필요한 스탯: 수비율, RNG, 보살/ARM/CS
+#     df_fielder = df_fielder[['player_id','fielder_year','fielder_fld','fielder_rng','fielder_a', 'fielder_arm', 'fielder_cs']]
+#     print(df_fielder)
 
-    df_fielder = pd.merge(df_fielder, players, on='player_id', how='inner')
-    print(df_fielder)
+#     df_fielder = pd.merge(df_fielder, players, on='player_id', how='inner')
+#     print(df_fielder)
 
-    fielders_sort = []
+#     fielders_sort = []
 
-    if stat == 'defense':
-        fielders_grouped = df_fielder.groupby(["player_id"])["fielder_fld", "fielder_rng", "fielder_year"].apply(cal_defense).to_frame('defense')
-        fielders_sort = fielders_grouped.sort_values(by=['defense'], ascending=False)
-    elif stat == 'shoulder':
-        fielders_grouped = df_fielder.groupby(["player_id"])["fielder_a", "fielder_arm", "fielder_cs", "player_position", "fielder_year"].apply(cal_shoulder).to_frame('shoulder')
-        fielders_sort = fielders_grouped.sort_values(by=['shoulder'], ascending=False)
+#     if stat == 'defense':
+#         fielders_grouped = df_fielder.groupby(["player_id"])["fielder_fld", "fielder_rng", "fielder_year"].apply(cal_defense).to_frame('defense')
+#         fielders_sort = fielders_grouped.sort_values(by=['defense'], ascending=False)
+#     elif stat == 'shoulder':
+#         fielders_grouped = df_fielder.groupby(["player_id"])["fielder_a", "fielder_arm", "fielder_cs", "player_position", "fielder_year"].apply(cal_shoulder).to_frame('shoulder')
+#         fielders_sort = fielders_grouped.sort_values(by=['shoulder'], ascending=False)
 
-    # 173명
-    print(fielders_sort[:10])
-    print(type(fielders_sort))
-    return_arr = []
+#     # 173명
+#     print(fielders_sort[:10])
+#     print(type(fielders_sort))
+#     return_arr = []
 
-    # pandas 데이터프레임을 행 순회할땐 그냥 for~in 뒤에 df를 붙여주기만 하는게 아니라 꼭 iterrows() 를 써야 하는 듯하다
-    for player in fielders_sort[:10].iterrows():
-        return_arr.append(player[0])
+#     # pandas 데이터프레임을 행 순회할땐 그냥 for~in 뒤에 df를 붙여주기만 하는게 아니라 꼭 iterrows() 를 써야 하는 듯하다
+#     for player in fielders_sort[:10].iterrows():
+#         return_arr.append(player[0])
 
-    return return_arr
+#     return return_arr
 
 
 def cal_power(arr):
