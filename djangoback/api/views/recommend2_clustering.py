@@ -126,33 +126,19 @@ def hitter_clustering(pid):
 
     print(df_normalized)
 
-    model = KMeans(n_clusters=5,algorithm='auto')
-    model.fit(df_normalized)
-    predict = pd.DataFrame(model.predict(df_normalized))
+    # 계층형 클러스터링
+    mergings = linkage(df_normalized, method='complete')
+    predict = pd.DataFrame(fcluster(mergings, 0.3, criterion='distance'))
+
+    # K-Mean 클러스터링
+    # model = KMeans(n_clusters=7,algorithm='auto')
+    # model.fit(df_normalized)
+    # predict = pd.DataFrame(model.predict(df_normalized))
+    
     predict.columns=['predict']
     print(predict)
 
-
-
-    r = pd.concat([predict, df_normalized],axis=1)
-    r.columns = ['predict', 'ba', 'obp', 'slg']
-    print(r)
-
-    plt.rcParams["figure.figsize"] = (6, 6)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-
-    ax.scatter(r['ba'],r['obp'], r['slg'], c=r['predict'],alpha=0.5)
-    centers = pd.DataFrame(model.cluster_centers_,columns=['ba', 'obp', 'slg'])
-    center_x = centers['ba']
-    center_y = centers['obp']
-    center_z = centers['slg']
-    ax.scatter(center_x,center_y,center_z,s=50,marker='D',c='r')
-    plt.show()
-
-
-
-
+    #evaluation(df_normalized)
 
     predict['player_id'] = df_grouped_mean.reset_index()['player_id']
     print(predict)
@@ -199,50 +185,17 @@ def pitcher_clustering(pid):
 
     print(df_normalized)
 
-    #model = KMeans(n_clusters=5,algorithm='auto')
-    #model = DBSCAN(eps=0.125, min_samples=5)
+    # 계층형 클러스터링
+    # mergings = linkage(df_normalized, method='complete')
+    # predict = pd.DataFrame(fcluster(mergings, 0.2, criterion='distance'))
 
-    #model.fit(df_normalized)
-    # fit_predict() = fit() + predict() 라는 듯
-    #predict = pd.DataFrame(model.fit_predict(df_normalized))
-
-    mergings = linkage(df_normalized, method='complete')
+    # # K-means 클러스터링
+    model = KMeans(n_clusters=5,algorithm='auto')
+    predict = pd.DataFrame(model.fit_predict(df_normalized))
     
-    # plt.figure(figsize=(40,20))
-    # dendrogram(mergings,
-    #         #labels = labels.values,
-    #         leaf_rotation=90,
-    #         leaf_font_size=20,
-    # )
-    # plt.show()
-
-    # y scale이 max 1.6까지다.
-    predict = pd.DataFrame(fcluster(mergings, 0.6, criterion='distance'))
-
     predict.columns=['predict']
-    print(predict)
 
-    # 클러스터링 성능 평가
-    print("DB SCORE: ", metrics.davies_bouldin_score(df_normalized, predict))
-
-###
-    r = pd.concat([predict, df_normalized],axis=1)
-    r.columns = ['predict', 'era', 'whip', 'ip/g']
-    print(r)
-
-    plt.rcParams["figure.figsize"] = (6, 6)
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-
-    ax.scatter(r['era'],r['whip'], r['ip/g'], c=r['predict'],alpha=0.5)
-    # centers = pd.DataFrame(model.cluster_centers_,columns=['era', 'whip', 'ip/g'])
-    # center_x = centers['era']
-    # center_y = centers['whip']
-    # center_z = centers['ip/g']
-    # ax.scatter(center_x,center_y,center_z,s=50,marker='D',c='r')
-    plt.show()
-###
-
+    #evaluation(df_normalized)
 
     predict['player_id'] = df_grouped_mean.reset_index()['player_id']
     print(predict)
@@ -274,26 +227,70 @@ def pitcher_clustering(pid):
     # ax.scatter(center_x,center_y,center_z,s=50,marker='D',c='r')
     # plt.show()
 
+def evaluation(df_normalized):
+    eps = [0.075, 0.1, 0.125, 0.15]
+    min_samples = [3, 4, 5]
+    for e in eps:
+        for mins in min_samples:
+        #model = KMeans(n_clusters=n,algorithm='auto')
+            model = DBSCAN(eps=e, min_samples=mins)
 
-def clustering_test_2(request):
-    iris = datasets.load_iris()
-    labels = pd.DataFrame(iris.target)
-    labels.columns=['labels']
-    data = pd.DataFrame(iris.data)
-    data.columns=['Sepal length','Sepal width','Petal length','Petal width']
-    data = pd.concat([data,labels],axis=1)
+        #model.fit(df_normalized)
+        # fit_predict() = fit() + predict() 라는 듯
+            predict = pd.DataFrame(model.fit_predict(df_normalized))
 
-    # Calculate the linkage: mergings
-    mergings = linkage(data,method='complete')
+    # mergings = linkage(df_normalized, method='complete')
+    
+    # plt.figure(figsize=(40,20))
+    # dendrogram(mergings,
+    #         #labels = labels.values,
+    #         leaf_rotation=90,
+    #         leaf_font_size=20,
+    # )
+    # plt.show()
 
-    # Plot the dendrogram, using varieties as labels
-    plt.figure(figsize=(40,20))
-    dendrogram(mergings,
-            labels = labels.values,
-            leaf_rotation=90,
-            leaf_font_size=20,
-    )
-    plt.show()
+    # # y scale이 max 1.6까지다.
+    # for y in range(1, 10):
+    #     y = y/10
+    #     predict = pd.DataFrame(fcluster(mergings, y, criterion='distance'))
+
+            predict.columns=['predict']
+            #print(predict)
+
+            # 클러스터링 성능 평가
+            print("DB SCORE: ", metrics.davies_bouldin_score(df_normalized, predict))
+
+            r = pd.concat([predict, df_normalized],axis=1)
+            r.columns = ['predict', 'era', 'whip', 'ip/g']
+            #print(r)
+
+            plt.rcParams["figure.figsize"] = (6, 6)
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection="3d")
+            plt.title("DBSCAN eps=" + str(e) + " / min_samples=" + str(mins))
+            ax.scatter(r['era'],r['whip'], r['ip/g'], c=r['predict'],alpha=0.5)
+            plt.show()
+
+
+# def clustering_test_2(request):
+#     iris = datasets.load_iris()
+#     labels = pd.DataFrame(iris.target)
+#     labels.columns=['labels']
+#     data = pd.DataFrame(iris.data)
+#     data.columns=['Sepal length','Sepal width','Petal length','Petal width']
+#     data = pd.concat([data,labels],axis=1)
+
+#     # Calculate the linkage: mergings
+#     mergings = linkage(data,method='complete')
+
+#     # Plot the dendrogram, using varieties as labels
+#     plt.figure(figsize=(40,20))
+#     dendrogram(mergings,
+#             labels = labels.values,
+#             leaf_rotation=90,
+#             leaf_font_size=20,
+#     )
+#     plt.show()
 
 
 
