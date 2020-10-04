@@ -1,35 +1,38 @@
 package com.ssafy.bigdata.dto;
 
-public class score {
-    private int hit_info_id;
+import java.util.Arrays;
+
+public class Score {
+    private int score_id;
     private int simulation_id;
-    private int player_id;
-    private int at_bat_count;
-    private int hit_count;
-    private int homerun_count;
-    private int foul_count;
+    private String my_score;
+    private int[] my_score_array;
+    private String your_score;
+    private int[] your_score_array;
 
-    public score() {
-
+    Score() {
     }
 
-    public score(int hit_info_id, int simulation_id, int player_id, int at_bat_count, int hit_count, int homerun_count,
-            int foul_count) {
-        this.hit_info_id = hit_info_id;
+    public Score(int score_id, int simulation_id, String my_score, String your_score) {
+        this.score_id = score_id;
         this.simulation_id = simulation_id;
-        this.player_id = player_id;
-        this.at_bat_count = at_bat_count;
-        this.hit_count = hit_count;
-        this.homerun_count = homerun_count;
-        this.foul_count = foul_count;
+        this.my_score = my_score;
+        this.your_score = your_score;
     }
 
-    public int getHit_info_id() {
-        return hit_info_id;
+    public Score(int score_id, int simulation_id, int[] my_score_array, int[] your_score_array) {
+        this.score_id = score_id;
+        this.simulation_id = simulation_id;
+        this.my_score_array = my_score_array;
+        this.your_score_array = your_score_array;
     }
 
-    public void setHit_info_id(int hit_info_id) {
-        this.hit_info_id = hit_info_id;
+    public int getScore_id() {
+        return score_id;
+    }
+
+    public void setScore_id(int score_id) {
+        this.score_id = score_id;
     }
 
     public int getSimulation_id() {
@@ -40,51 +43,43 @@ public class score {
         this.simulation_id = simulation_id;
     }
 
-    public int getPlayer_id() {
-        return player_id;
+    public String getMy_score() {
+        return my_score;
     }
 
-    public void setPlayer_id(int player_id) {
-        this.player_id = player_id;
+    public void setMy_score(String my_score) {
+        this.my_score = my_score;
     }
 
-    public int getAt_bat_count() {
-        return at_bat_count;
+    public int[] getMy_score_array() {
+        return my_score_array;
     }
 
-    public void setAt_bat_count(int at_bat_count) {
-        this.at_bat_count = at_bat_count;
+    public void setMy_score_array(int[] my_score_array) {
+        this.my_score_array = my_score_array;
     }
 
-    public int getHit_count() {
-        return hit_count;
+    public String getYour_score() {
+        return your_score;
     }
 
-    public void setHit_count(int hit_count) {
-        this.hit_count = hit_count;
+    public void setYour_score(String your_score) {
+        this.your_score = your_score;
     }
 
-    public int getHomerun_count() {
-        return homerun_count;
+    public int[] getYour_score_array() {
+        return your_score_array;
     }
 
-    public void setHomerun_count(int homerun_count) {
-        this.homerun_count = homerun_count;
-    }
-
-    public int getFoul_count() {
-        return foul_count;
-    }
-
-    public void setFoul_count(int foul_count) {
-        this.foul_count = foul_count;
+    public void setYour_score_array(int[] your_score_array) {
+        this.your_score_array = your_score_array;
     }
 
     @Override
     public String toString() {
-        return "score [at_bat_count=" + at_bat_count + ", foul_count=" + foul_count + ", hit_count=" + hit_count
-                + ", hit_info_id=" + hit_info_id + ", homerun_count=" + homerun_count + ", player_id=" + player_id
-                + ", simulation_id=" + simulation_id + "]";
+        return "hit_info [my_score=" + my_score + ", my_score_array=" + Arrays.toString(my_score_array) + ", score_id="
+                + score_id + ", simulation_id=" + simulation_id + ", your_score=" + your_score + ", your_score_array="
+                + Arrays.toString(your_score_array) + "]";
     }
 
 }

@@ -2,7 +2,7 @@ package com.ssafy.bigdata.dto;
 
 import java.util.Arrays;
 
-public class SimulationGame {
+public class Simulation {
 
     private int simulation_id;
     private int user_id;
@@ -22,11 +22,11 @@ public class SimulationGame {
     private int replaced_player;
     private int[] replaced_player_array;
 
-    public SimulationGame() {
+    public Simulation() {
 
     }
 
-    public SimulationGame(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, String my_lineup_play,
+    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, String my_lineup_play,
             boolean is_attack, int innings, boolean is_top, int out_count, String base_info, int my_score,
             int your_score, int hit_order, int replaced_player) {
         this.simulation_id = simulation_id;
@@ -45,7 +45,7 @@ public class SimulationGame {
         this.replaced_player = replaced_player;
     }
 
-    public SimulationGame(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id,
+    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id,
             String[] my_lineup_play_array, boolean is_attack, int innings, boolean is_top, int out_count,
             int[] base_info_array, int my_score, int your_score, int hit_order, int[] replaced_player_array) {
         this.simulation_id = simulation_id;

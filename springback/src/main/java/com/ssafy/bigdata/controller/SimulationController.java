@@ -1,7 +1,5 @@
 package com.ssafy.bigdata.controller;
 
-import static org.junit.Assert.fail;
-
 import java.util.HashMap;
 
 import com.ssafy.bigdata.dto.RestResponse;
@@ -26,17 +24,6 @@ public class SimulationController {
 
     @Autowired
     private SimulationService simulationService;
-
-    @ApiOperation(value = "시뮬레이션 게임 시작")
-    @GetMapping("/start")
-    public Object getUserLineupList(@RequestHeader final HttpHeaders header) {
-        final RestResponse response = new RestResponse();
-
-        response.status = true;
-        response.msg = "success";
-        response.data = null;
-        return response;
-    }
 
     @ApiOperation(value = "시뮬레이션 게임 시작")
     @PostMapping("/start")
