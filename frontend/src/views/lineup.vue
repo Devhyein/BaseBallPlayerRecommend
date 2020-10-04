@@ -121,142 +121,198 @@
     <div class="container-fluid mt-2 row">
       <h1>선수 목록</h1>
     </div>
-    <div class="container-fluid mt-2 row">
-      <card class="col ml-2 mr-2">
-        <form class="navbar-search form-inline" onsubmit="return false;">
-          <base-button
-            slot="title"
-            type="secondary"
-            class="mr-2 mb-1"
-            @click="modals.position = true">
-            포지션
-          </base-button>
-          <modal
-            :show.sync="modals.position"
-            modal-classes="modal-dialog-centered modal-sm">
-            <template slot="header">
-                <h2 class="modal-title" id="exampleModalLabel">포지션 선택</h2>
-                <h5> [ 주황색: 선택됨 ] </h5>
-            </template>
-            <div :key="positionRenderKey">
-              <base-button class="mb-2" :type="positionFilter[1] ? 'secondary' : 'warning'" @click="changePositionFilter(1)">투수</base-button>
-              <base-button class="mb-2" :type="positionFilter[2] ? 'secondary' : 'warning'" @click="changePositionFilter(2)">포수</base-button>
-              <base-button class="mb-2" :type="positionFilter[3] ? 'secondary' : 'warning'" @click="changePositionFilter(3)">1루수</base-button>
-              <base-button class="mb-2" :type="positionFilter[4] ? 'secondary' : 'warning'" @click="changePositionFilter(4)">2루수</base-button>
-              <base-button class="mb-2" :type="positionFilter[5] ? 'secondary' : 'warning'" @click="changePositionFilter(5)">3루수</base-button>
-              <base-button class="mb-2" :type="positionFilter[6] ? 'secondary' : 'warning'" @click="changePositionFilter(6)">유격수</base-button>
-              <base-button class="mb-2" :type="positionFilter[7] ? 'secondary' : 'warning'" @click="changePositionFilter(7)">좌익수</base-button>
-              <base-button class="mb-2" :type="positionFilter[8] ? 'secondary' : 'warning'" @click="changePositionFilter(8)">중견수</base-button>
-              <base-button class="mb-2" :type="positionFilter[9] ? 'secondary' : 'warning'" @click="changePositionFilter(9)">우익수</base-button>
-              <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
-            </div>
-            <template slot="footer">
-                <base-button type="secondary" @click="allCanclePosition">전체취소</base-button>
-                <base-button type="secondary" @click="allChoicePosition">전체선택</base-button>
-                <base-button type="secondary" @click="modals.position = false">완료</base-button>
-            </template>
-          </modal>
 
-          <base-button
-            slot="title"
-            type="secondary"
-            class="mr-2 mb-1"
-            @click="modals.team = true">
-            팀
-          </base-button>
-          <modal
-            :show.sync="modals.team"
-            modal-classes="modal-dialog-centered modal-sm">
-            <template slot="header">
-                <h2 class="modal-title" id="exampleModalLabel">팀 선택</h2>
-                <h5> [ 주황색: 선택됨 ] </h5>
-            </template>
-            <div :key="teamRenderKey">
-              <base-button class="mb-2" :type="teamFilter[1] ? 'secondary' : 'warning'" @click="changeTeamFilter(1)">KIA 타이거즈</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[2] ? 'secondary' : 'warning'" @click="changeTeamFilter(2)">해태 타이거즈</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[3] ? 'secondary' : 'warning'" @click="changeTeamFilter(3)">삼성 라이온즈</base-button>
-              <base-button class="mb-2" :type="teamFilter[4] ? 'secondary' : 'warning'" @click="changeTeamFilter(4)">두산 베어스</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[5] ? 'secondary' : 'warning'" @click="changeTeamFilter(5)">OB 베어스</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[6] ? 'secondary' : 'warning'" @click="changeTeamFilter(6)">SK 와이번스</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[7] ? 'secondary' : 'warning'" @click="changeTeamFilter(7)">현대 유니콘스</base-button> -->
-              <!-- <base-button class="mb-2" :type="teamFilter[8] ? 'secondary' : 'warning'" @click="changeTeamFilter(8)">태평양 돌핀스</base-button> -->
-              <!-- <base-button class="mb-2" :type="teamFilter[9] ? 'secondary' : 'warning'" @click="changeTeamFilter(9)">청보 핀토스</base-button> -->
-              <!-- <base-button class="mb-2" :type="teamFilter[10] ? 'secondary' : 'warning'" @click="changeTeamFilter(10)">삼미 슈퍼스타즈</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[11] ? 'secondary' : 'warning'" @click="changeTeamFilter(11)">LG 트윈스</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[12] ? 'secondary' : 'warning'" @click="changeTeamFilter(12)">MBC 청룡</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[13] ? 'secondary' : 'warning'" @click="changeTeamFilter(13)">롯데 자이언츠</base-button>
-              <base-button class="mb-2" :type="teamFilter[14] ? 'secondary' : 'warning'" @click="changeTeamFilter(14)">한화 이글스</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[15] ? 'secondary' : 'warning'" @click="changeTeamFilter(15)">빙그레 이글스</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[16] ? 'secondary' : 'warning'" @click="changeTeamFilter(16)">NC 다이노스</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[17] ? 'secondary' : 'warning'" @click="changeTeamFilter(17)">히어로즈</base-button> -->
-              <!-- <base-button class="mb-2" :type="teamFilter[18] ? 'secondary' : 'warning'" @click="changeTeamFilter(18)">넥센 히어로즈</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[19] ? 'secondary' : 'warning'" @click="changeTeamFilter(19)">키움 히어로즈</base-button>
-              <!-- <base-button class="mb-2" :type="teamFilter[20] ? 'secondary' : 'warning'" @click="changeTeamFilter(20)">쌍방울 레이더스</base-button> -->
-              <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
-            </div>
-            <template slot="footer">
-                <base-button type="secondary" @click="allCancleTeam">전체취소</base-button>
-                <base-button type="secondary" @click="allChoiceTeam">전체선택</base-button>
-                <base-button type="secondary" @click="modals.team = false">완료</base-button>
-            </template>
-          </modal>
+    <tabs fill class="flex-column flex-md-row container-fluid">
+      <card shadow>
+          <tab-pane title="searchPlayer">
+              <span slot="title">
+                  <i class="ni ni-cloud-upload-96" />
+                  선수 검색
+              </span>
+              <div class="container-fluid mt-2 row">
+                <card class="col ml-2 mr-2">
+                  <form class="navbar-search form-inline" onsubmit="return false;">
+                    <base-button
+                      slot="title"
+                      type="secondary"
+                      class="mr-2 mb-1"
+                      @click="modals.position = true">
+                      포지션
+                    </base-button>
+                    <modal
+                      :show.sync="modals.position"
+                      modal-classes="modal-dialog-centered modal-sm">
+                      <template slot="header">
+                          <h2 class="modal-title" id="exampleModalLabel">포지션 선택</h2>
+                          <h5> [ 주황색: 선택됨 ] </h5>
+                      </template>
+                      <div :key="positionRenderKey">
+                        <base-button class="mb-2" :type="positionFilter[1] ? 'secondary' : 'warning'" @click="changePositionFilter(1)">투수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[2] ? 'secondary' : 'warning'" @click="changePositionFilter(2)">포수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[3] ? 'secondary' : 'warning'" @click="changePositionFilter(3)">1루수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[4] ? 'secondary' : 'warning'" @click="changePositionFilter(4)">2루수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[5] ? 'secondary' : 'warning'" @click="changePositionFilter(5)">3루수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[6] ? 'secondary' : 'warning'" @click="changePositionFilter(6)">유격수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[7] ? 'secondary' : 'warning'" @click="changePositionFilter(7)">좌익수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[8] ? 'secondary' : 'warning'" @click="changePositionFilter(8)">중견수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[9] ? 'secondary' : 'warning'" @click="changePositionFilter(9)">우익수</base-button>
+                        <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
+                      </div>
+                      <template slot="footer">
+                          <base-button type="secondary" @click="allCanclePosition">전체취소</base-button>
+                          <base-button type="secondary" @click="allChoicePosition">전체선택</base-button>
+                          <base-button type="secondary" @click="modals.position = false">완료</base-button>
+                      </template>
+                    </modal>
 
-          <div class="form-group mb-0">
-              <label class="mr-3">
-                이름 입력: 
-              </label>
-              <base-input
-                placeholder="Search"
-                class="input-group-alternative"
-                alternative
-                addon-right-icon="fas fa-search"
-                v-model="searchVal"
-                @clickIcon="search"
-              ></base-input>
-          </div>
-        </form>
+                    <base-button
+                      slot="title"
+                      type="secondary"
+                      class="mr-2 mb-1"
+                      @click="modals.team = true">
+                      팀
+                    </base-button>
+                    <modal
+                      :show.sync="modals.team"
+                      modal-classes="modal-dialog-centered modal-sm">
+                      <template slot="header">
+                          <h2 class="modal-title" id="exampleModalLabel">팀 선택</h2>
+                          <h5> [ 주황색: 선택됨 ] </h5>
+                      </template>
+                      <div :key="teamRenderKey">
+                        <base-button class="mb-2" :type="teamFilter[1] ? 'secondary' : 'warning'" @click="changeTeamFilter(1)">KIA 타이거즈</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[2] ? 'secondary' : 'warning'" @click="changeTeamFilter(2)">해태 타이거즈</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[3] ? 'secondary' : 'warning'" @click="changeTeamFilter(3)">삼성 라이온즈</base-button>
+                        <base-button class="mb-2" :type="teamFilter[4] ? 'secondary' : 'warning'" @click="changeTeamFilter(4)">두산 베어스</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[5] ? 'secondary' : 'warning'" @click="changeTeamFilter(5)">OB 베어스</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[6] ? 'secondary' : 'warning'" @click="changeTeamFilter(6)">SK 와이번스</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[7] ? 'secondary' : 'warning'" @click="changeTeamFilter(7)">현대 유니콘스</base-button> -->
+                        <!-- <base-button class="mb-2" :type="teamFilter[8] ? 'secondary' : 'warning'" @click="changeTeamFilter(8)">태평양 돌핀스</base-button> -->
+                        <!-- <base-button class="mb-2" :type="teamFilter[9] ? 'secondary' : 'warning'" @click="changeTeamFilter(9)">청보 핀토스</base-button> -->
+                        <!-- <base-button class="mb-2" :type="teamFilter[10] ? 'secondary' : 'warning'" @click="changeTeamFilter(10)">삼미 슈퍼스타즈</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[11] ? 'secondary' : 'warning'" @click="changeTeamFilter(11)">LG 트윈스</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[12] ? 'secondary' : 'warning'" @click="changeTeamFilter(12)">MBC 청룡</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[13] ? 'secondary' : 'warning'" @click="changeTeamFilter(13)">롯데 자이언츠</base-button>
+                        <base-button class="mb-2" :type="teamFilter[14] ? 'secondary' : 'warning'" @click="changeTeamFilter(14)">한화 이글스</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[15] ? 'secondary' : 'warning'" @click="changeTeamFilter(15)">빙그레 이글스</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[16] ? 'secondary' : 'warning'" @click="changeTeamFilter(16)">NC 다이노스</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[17] ? 'secondary' : 'warning'" @click="changeTeamFilter(17)">히어로즈</base-button> -->
+                        <!-- <base-button class="mb-2" :type="teamFilter[18] ? 'secondary' : 'warning'" @click="changeTeamFilter(18)">넥센 히어로즈</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[19] ? 'secondary' : 'warning'" @click="changeTeamFilter(19)">키움 히어로즈</base-button>
+                        <!-- <base-button class="mb-2" :type="teamFilter[20] ? 'secondary' : 'warning'" @click="changeTeamFilter(20)">쌍방울 레이더스</base-button> -->
+                        <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
+                      </div>
+                      <template slot="footer">
+                          <base-button type="secondary" @click="allCancleTeam">전체취소</base-button>
+                          <base-button type="secondary" @click="allChoiceTeam">전체선택</base-button>
+                          <base-button type="secondary" @click="modals.team = false">완료</base-button>
+                      </template>
+                    </modal>
 
+                    <div class="form-group mb-0">
+                        <label class="mr-3">
+                          이름 입력: 
+                        </label>
+                        <base-input
+                          placeholder="Search"
+                          class="input-group-alternative"
+                          alternative
+                          addon-right-icon="fas fa-search"
+                          v-model="searchVal"
+                          @clickIcon="search"
+                        ></base-input>
+                    </div>
+                  </form>
+
+                </card>
+              </div>
+
+              <!-- 3번째 행: 라인업에 추가할 선수 목록(검색) -->
+              <div class="container-fluid mt-2 row">
+                <div class="card custom-table col mr-2 ml-2">
+                  <div class="card-header border-0">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h3 class="mb-0">검색된 선수 목록</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table tablesorter table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th></th>
+                          <th v-for="column in tableColumnsForSearch" :key="column">{{ column }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(row, rowIdx) in searchedPlayerTableData" :key="rowIdx">
+                            <td class="text-blue" @click="addToLineup(rowIdx)"><i class="ni ni-fat-add"></i></td>
+                            <td v-for="(val, valIdx) in row" :key="valIdx" @click="clickSearchedPlayer(rowIdx)">
+                              {{val}}
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- <custom-table
+                  class="custom-table col mr-2 ml-2"
+                  tableTitle="검색된 선수 목록"
+                  :tableData="searchedPlayerTableData"
+                  :cols="tableColumnsForSearch"
+                  :selectedRow="searchedSel"
+                  @clickRow="clickSearchedPlayer"
+                /> -->
+              </div>
+          </tab-pane>
+
+          <tab-pane title="favoritePlayer">
+              <span slot="title">
+                  <i class="ni ni-bell-55 mr-2" />
+                  즐겨찾기한 선수
+              </span>
+              <div class="container-fluid mt-2 row">
+                <div class="card custom-table col mr-2 ml-2">
+                  <div class="card-header border-0">
+                    <div class="row align-items-center">
+                      <div class="col">
+                        <h3 class="mb-0">즐겨찾기 선수 목록</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table tablesorter table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th></th>
+                          <th v-for="column in tableColumnsForSearch" :key="column">{{ column }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(row, rowIdx) in searchedPlayerTableData" :key="rowIdx">
+                            <td class="text-blue" @click="addToLineup(rowIdx)"><i class="ni ni-fat-add"></i></td>
+                            <td v-for="(val, valIdx) in row" :key="valIdx" @click="clickSearchedPlayer(rowIdx)">
+                              {{val}}
+                            </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- <custom-table
+                  class="custom-table col mr-2 ml-2"
+                  tableTitle="검색된 선수 목록"
+                  :tableData="searchedPlayerTableData"
+                  :cols="tableColumnsForSearch"
+                  :selectedRow="searchedSel"
+                  @clickRow="clickSearchedPlayer"
+                /> -->
+              </div>
+          </tab-pane>
       </card>
-    </div>
+    </tabs>
 
-    <!-- 3번째 행: 라인업에 추가할 선수 목록(검색) -->
-    <div class="container-fluid mt-2 row">
-      <div class="card custom-table col mr-2 ml-2">
-        <div class="card-header border-0">
-          <div class="row align-items-center">
-            <div class="col">
-              <h3 class="mb-0">검색된 선수 목록</h3>
-            </div>
-          </div>
-        </div>
-        <div class="table-responsive">
-          <table class="table tablesorter table-hover">
-            <thead class="thead-light">
-              <tr>
-                <th></th>
-                <th v-for="column in tableColumnsForSearch" :key="column">{{ column }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, rowIdx) in searchedPlayerTableData" :key="rowIdx">
-                  <td class="text-blue" @click="addToLineup(rowIdx)"><i class="ni ni-fat-add"></i></td>
-                  <td v-for="(val, valIdx) in row" :key="valIdx" @click="clickSearchedPlayer(rowIdx)">
-                    {{val}}
-                  </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- <custom-table
-        class="custom-table col mr-2 ml-2"
-        tableTitle="검색된 선수 목록"
-        :tableData="searchedPlayerTableData"
-        :cols="tableColumnsForSearch"
-        :selectedRow="searchedSel"
-        @clickRow="clickSearchedPlayer"
-      /> -->
-    </div>
     <div class="container-fluid mt-1 row">
       <base-pagination
         class="col"
@@ -672,7 +728,27 @@ export default {
       )
     },
     changeLineupName() {
-      console.log('Change lineup name!');
+      swal({
+        text: '수정할 이름 입력',
+        content: "input",
+        button: {
+          text: "수정",
+          closeModal: true,
+        },
+      })
+      .then(name => {
+        if (!name) {
+          swal({
+            title: "이름을 입력해주세요!",
+            icon: "error"
+          });
+        } else {
+          this.changeLIneupNameAsync(name);
+        }
+      });
+    },
+    changeLIneupNameAsync(name) {
+      console.log('수정할 이름: ', name);
     },
     deleteLineup() {
       PlayerAPI.deleteLineup(
