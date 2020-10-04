@@ -4,6 +4,7 @@ from api.views import player_crawling
 from api.views import lineup_crawling
 from api.views import recommend1
 from api.views import recommend2_clustering
+from api.views import salary_crawling
 
 from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
@@ -35,7 +36,8 @@ urlpatterns = [
     url(r'retiredata', player_crawling.getEntireRecords),
     url(r'defaultlineup', lineup_crawling.getLineup),
     url(r'recommend1', recommend1.recommend_player_method1),
-    url(r'recommend2', recommend2_clustering.clustering_test)
+    url(r'recommend2', recommend2_clustering.clustering_test),
+    url(r'salarydata', salary_crawling.getSalaryData)
 ]
 
 schema_view = get_schema_view(

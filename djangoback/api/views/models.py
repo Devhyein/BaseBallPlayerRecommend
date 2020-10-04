@@ -8,6 +8,16 @@
 from django.db import models
 
 
+class Favorites(models.Model):
+    favorites_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    player = models.ForeignKey('Player', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'favorites'
+
+
 class Lineup(models.Model):
     lineup_id = models.AutoField(primary_key=True)
     lineup_name = models.CharField(max_length=50)
@@ -154,6 +164,15 @@ class RecordPitcher(models.Model):
     class Meta:
         managed = False
         db_table = 'record_pitcher'
+
+
+class Salary(models.Model):
+    player_id = models.IntegerField(primary_key=True)
+    salary = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'salary'
 
 
 class Stadium(models.Model):
