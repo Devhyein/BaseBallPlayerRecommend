@@ -6,7 +6,7 @@
     <div class="container-fluid mt-2 row">
       <!-- 왼쪽 - 상대 팀 라인업 -->
       <!-- 1번째 열: 라인업 선택 드롭다운과 라인업의 선수 목록 -->
-      <div class="col mr-1 ml-1 text-center align-self-center">
+      <div class="col-xl-3 mr-1 ml-1 text-center align-self-center">
         <base-dropdown>
           <base-button slot="title" type="secondary" class="dropdown-toggle">{{
             yourLineupName
@@ -21,7 +21,7 @@
           </template>
         </base-dropdown>
         <!-- 라인업 선수 목록 -->
-        <div class="card custom-table mt-2">
+        <div class="card custom-table row mt-1">
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col">
@@ -33,7 +33,8 @@
             <table class="table tablesorter table-hover">
               <thead class="thead-light">
                 <tr>
-                  <th v-for="column in tableColumns" :key="column">{{ column }}</th>
+                  <th>AT BAT</th>
+                  <th>NAME</th>
                 </tr>
               </thead>
               <draggable v-model="yourLineupPlayers" tag="tbody">
@@ -48,13 +49,80 @@
       </div>
       
       <!-- 가운데 -->
-      <div class="col mr-1 ml-1 text-center align-self-center">
-        여기 경기 정보가 들어가용
+      <div class="col-xl mr-1 ml-1 text-center align-self-center">
+
+        <!-- 경기 score table -->
+        <div style="overflow-x:auto;">
+          <table class="score_table" style="width:100%;margin-top: 85px; margin-bottom:20px;">
+            <thead>
+              <tr>
+                <th>TEAM</th>
+                <th v-for="key in 12" :key="key" class="inning_score">{{key}}</th>
+                <th>결과</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border:1px solid black">
+                <td>{{lineupName}}</td>
+                <td v-for="key in 12" :key="key">{{0}}</td>
+                <td>0</td>
+              </tr>            
+              <tr>
+                <td>{{yourLineupName}}</td>
+                <td v-for="key in 12" :key="key">{{0}}</td>
+                <td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+        <!-- 경기 내용 -->
+        <div style="height:250px; border:1px solid black; margin-bottom:20px;">
+          경기내용 <br/>
+          000 선수가 1루로 진입했습니다. <br/>
+
+          게임을 계속하시려면 진행을 교체하시려면 선수 검색을 해주세요. <br/>
+        </div>
+
+
+        <!-- 타석 타자 정보 -->
+        <div style="height:100px; border:1px solid black; margin-bottom:20px;">
+
+        </div>
+
+        <!-- 경기 base 정보, sbo -->
+        <div style="height:140px; margin-bottom:20px;" class="base_info row">
+          <div class="col">
+            <div id="diamond">
+              <div id="base2"></div>
+              <div id="base1"></div>
+              <div id="base3"></div>
+            </div>
+          </div>
+          <div id="sbo" class="col">
+            <div>
+              <div style="display: inline-block;">S</div>
+              <div v-for="s in 2" :key="s" style="display: inline-block;"><div class="circle_s"></div></div>
+            </div>
+            <div>
+              <div style="display: inline-block;">B</div>
+              <div v-for="s in 2" :key="s" style="display: inline-block;"><div class="circle_b"></div></div>
+            </div>
+            <div>
+              <div style="display: inline-block;">O</div>
+              <div v-for="s in 2" :key="s" style="display: inline-block;"><div class="circle_o"></div></div>
+            </div>
+          </div>
+        </div>
+        
+
+
       </div>
 
 
     <!-- 오른쪽 - 우리 팀 라인업  -->
-      <div class="col mr-1 ml-1 text-center align-self-center">
+      <div class="col-xl-4 mr-1 ml-1 text-center align-self-center">
         <!-- 라인업 선택 드롭다운 -->
         <base-dropdown>
           <base-button
@@ -667,5 +735,126 @@ export default {
 <style scoped>
 .custom-table {
   margin: auto;
+}
+.score_table th, .score_table td {
+   border:1px solid black;
+}
+.inning_score {
+  width: 20px;
+}
+
+.base_info {
+  /* background-color: #071D6799; */
+}
+
+#diamond {
+  width: 0;
+  height: 0;
+  border: 50px solid transparent;
+  border-bottom-color: green;
+  position: relative;
+  top: -50px;
+  /* margin: 18px; */
+  left: 20px;
+}
+#diamond:after {
+  content: '';
+  position: absolute;
+  left: -50px;
+  top: 50px;
+  width: 0;
+  height: 0;
+  border: 50px solid transparent;
+  border-top-color:  green;
+}
+#base2 {
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-bottom-color: white;
+  position: relative;
+  top: -10px;
+  right: 10px;
+}
+#base2:after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color:  white;
+}
+#base1 {
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-bottom-color: white;
+  position: relative;
+  top: 10px;
+  right: -30px;
+  z-index: 1;
+}
+#base1:after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color:  white;
+}
+#base3 {
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-bottom-color: white;
+  position: relative;
+  top: -10px;
+  right: 50px;
+  z-index: 1;
+}
+#base3:after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color:  white;
+}
+
+#sbo {
+  text-align: left;
+  margin-top: 2px;
+}
+
+#sbo div {
+  margin-top: 3px;
+}
+
+.circle_s {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: yellow;
+  margin-left: 10px;
+}
+.circle_b {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: darkslateblue;
+  margin-left: 10px;
+}
+.circle_o {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: crimson;
+  margin-left: 10px;
 }
 </style>
