@@ -115,11 +115,7 @@
             </div>
           </div>
         </div>
-        
-
-
       </div>
-
 
     <!-- 오른쪽 - 우리 팀 라인업  -->
       <div class="col-xl-4 mr-1 ml-1 text-center align-self-center">
@@ -180,6 +176,17 @@
           :selectedRow="lineupSel"
           @clickRow="clickLineupPlayer"
         /> -->
+      </div>
+    </div>
+
+    <div class="game_button">
+      <div v-if="!start">
+        <base-button type="primary" @click="click_start">게임시작</base-button>
+      </div>
+
+      <div v-if="start"> 
+        <base-button type="primary">게임진행</base-button>
+        <base-button type="primary">게임종료</base-button>
       </div>
     </div>
 
@@ -359,7 +366,7 @@ export default {
         , defense: 0
         , shoulder: 0
       },
-
+      start : true,
       // 수정된 팀 스탯
       modifiedTeamStat: {},
       isModifiedTeamStat: false,
@@ -856,5 +863,10 @@ export default {
   border-radius: 50%;
   background-color: crimson;
   margin-left: 10px;
+}
+
+.game_button {
+  position: absolute;
+  right: 62px;
 }
 </style>
