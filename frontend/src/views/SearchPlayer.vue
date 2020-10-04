@@ -104,12 +104,43 @@
       <!--Table-->
       <div class="row mt-5">
         <div class="col mb-5">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Player List</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in playerListTableCols" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="tableRenderKey">
+                  <tr v-for="(player, rowIdx) in playerListShowData" :key="rowIdx">
+                      <td :class="{'text-yellow': playerListShowData[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="selectPlayer(rowIdx)">{{player.player_name}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_team}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_num}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_age}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             tableTitle="Player List"
             :tableData="playerListTableData"
             :cols="playerListTableCols"
             @clickRow="selectPlayer"
-          />
+          /> -->
           <div>
             <base-pagination
               :page-count="pageCount"
@@ -156,7 +187,7 @@ import PlayerStatChart from "@/components/Player/PlayerStatChart";
 import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import CustomTable from "@/views/Tables/CustomTable";
+// import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
@@ -170,7 +201,7 @@ export default {
     PlayerStatChart,
     CustomRadarChart,
 
-    CustomTable,
+    // CustomTable,
     PlayerStatTable,
   },
   data() {
@@ -178,7 +209,8 @@ export default {
       ////////////////////////////////////////////////////////////////////////////
       playerList: [],
       playerListTableCols: [
-        "Name"
+        ""
+        , "Name"
         , "Team"
         , "Position"
         , "Number"
@@ -226,7 +258,9 @@ export default {
         false],
       
       positionRenderKey: 0,
-      teamRenderKey: 0
+      teamRenderKey: 0,
+
+      tableRenderKey: 0,
     }
   },
   computed: {
@@ -384,6 +418,11 @@ export default {
       )
     },
     resetPlayerListTable() {
+      ///////////////////////////////////////////////////////// 나중에 지울곳
+      for(let i in this.playerList) {
+        this.playerList[i].isFavorite = false;
+      }
+      ///////////////////////////////////////////////////////////////////////
       this.total = this.playerList.length;
       this.from = 0;
       let to = 5;
@@ -459,6 +498,11 @@ export default {
       }
       this.teamRenderKey += 1;
     },
+
+    clickFavorite(idx) {
+      this.playerListShowData[idx].isFavorite = !this.playerListShowData[idx].isFavorite;
+      this.tableRenderKey += 1;
+    }
   },
   mounted() {},
 };

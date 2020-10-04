@@ -132,6 +132,7 @@ const PlayerAPI = {
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/lineupList',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
+    getSimilarPlayers:(data,callback,errorCallback)=>getApi('/spring/recommend/player',data,callback,errorCallback),
 
     getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
     addLineup:(data,callback,errorCallback)=>postApi('/spring/lineup/insert',data,callback,errorCallback),
