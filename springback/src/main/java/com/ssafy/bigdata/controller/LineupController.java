@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
 import com.ssafy.bigdata.dto.Player;
@@ -15,6 +14,7 @@ import com.ssafy.bigdata.jwt.JwtTokenProvider;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.TeamService;
+import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -45,33 +45,26 @@ public class LineupController {
     @Autowired
     private TeamService teamService;
     @Autowired
-    private UserDao userDao;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private UserService userService;
    
     @ApiOperation(value = "유저 & 디폴트 라인업 목록")
     @GetMapping("/lineupList")
     public Object getUserLineupList(@RequestHeader final HttpHeaders header) {
         final RestResponse response = new RestResponse();
         List<LineupList> res = new ArrayList<LineupList>();
-        User user = new User();
-        // 토큰 해석
-        String token = header.get("token").get(0);
-        System.out.println("TOKEN : " + header.get("token").get(0));
+        
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
      
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("*** "+jwtTokenProvider.getUserPk(token));
-            user = userDao.findByEmail(jwtTokenProvider.getUserPk(token));
-        } else {
+        if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "failed";
+            response.msg = "Token Failed";
             response.data = null;
             return response;
         }
+        //////////////////////////////////////////////////////////////////////
 
         List<Lineup> lineupList = lineupService.getUserLineupList(user.getUser_id());
 
