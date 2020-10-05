@@ -64,12 +64,12 @@
             <tbody>
               <tr style="border:1px solid black">
                 <td>{{lineupName}}</td>
-                <td v-for="key in 12" :key="key">{{0}}</td>
+                <td v-for="score in score.my_score_array" :key="score">{{score}}</td>
                 <td>0</td>
               </tr>            
               <tr>
                 <td>{{yourLineupName}}</td>
-                <td v-for="key in 12" :key="key">{{0}}</td>
+                <td v-for="key in score.your_score_array" :key="key">{{key}}</td>
                 <td>0</td>
               </tr>
             </tbody>
@@ -115,7 +115,7 @@
           </div>
           <div class="col-7">
             <div id="sbo">
-              <div style="display: inline-block;">O</div>
+              <div style="display: inline-block;">OUT</div>
               <div v-for="s in 2" :key="s" style="display: inline-block;"><div class="circle_o"></div></div>
             </div>
             
@@ -341,8 +341,8 @@ export default {
         is_progress : true
       },
       score : {
-        my_score_array : [],
-        your_score_array : []
+        my_score_array : [0,0,0,0,0,0,0,0,0,0,0,0],
+        your_score_array : [0,0,0,0,0,0,0,0,0,0,0,0]
       },
       hit_info : {
         at_bat_count : 0,
@@ -386,6 +386,11 @@ export default {
         console.log(err);
       }
     );
+
+    // // api 테스트 - 추후 삭제 예정
+    // this.score.my_score_array = [0,1,1,0,1,2,4,0,1,0,0,0];
+    // this.score.your_score_array = [0,1,1,0,1,2,4,0,1,2,0,5];
+
 
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
