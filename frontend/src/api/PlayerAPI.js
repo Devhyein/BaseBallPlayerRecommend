@@ -140,6 +140,9 @@ const PlayerAPI = {
     modifyLineupName:(data,callback,errorCallback)=>putApi('/spring/lineup/changename',data,callback,errorCallback),
     deleteLineup:(data,callback,errorCallback)=>deleteApi('/spring/lineup/delete',data,callback,errorCallback),
 
+    addFavorite:(data,callback,errorCallback)=>postApi('/spring/favorites/insert',data,callback,errorCallback),
+    deleteFavorite:(data,callback,errorCallback)=>deleteApi('/spring/favorites/delete',data,callback,errorCallback),
+
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
     testLogin:(data,callback,errorCallback)=>postApi('/spring/login/temp',data,callback,errorCallback),
 }

@@ -718,7 +718,7 @@ export default {
         data,
         res => {
           console.log(res);
-          swal('성공', '라인업 추가 성공!', 'success');
+          swal('성공', '라인업 수정 성공!', 'success');
         },
         err => {
           swal('실패', '라인업 저장 실패ㅠ', 'error');
