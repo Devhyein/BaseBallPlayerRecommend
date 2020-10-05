@@ -10,6 +10,15 @@ public class Player {
     private int player_position;
     private String player_team;
     private String position;
+    private boolean isFavorite;
+
+    public boolean isIsFavorite() {
+        return this.isFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
 
     public int getPlayer_id() {
         return player_id;
