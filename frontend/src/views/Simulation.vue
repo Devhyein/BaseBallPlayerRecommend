@@ -77,18 +77,22 @@
         </div>
 
 
-        <!-- 경기 내용 -->
+        <!-- 경기 내용 추후 추가 -->
         <div style="height:250px; border:1px solid black; margin-bottom:20px;">
-          경기내용 <br/>
+          <img src="/img/field.png" alt="">
+        
+          <!-- 경기내용 <br/>
           000 선수가 1루로 진입했습니다. <br/>
 
-          게임을 계속하시려면 진행을 교체하시려면 선수 검색을 해주세요. <br/>
+          게임을 계속하시려면 진행을 교체하시려면 선수 검색을 해주세요. <br/> -->
         </div>
+
+      
 
 
         <!-- 타석 타자 정보 -->
         <div style="height:100px; border:1px solid black; margin-bottom:20px;">
-
+          타석 안타수 홈런수 
         </div>
 
         <!-- 경기 base 정보, sbo -->
@@ -154,7 +158,6 @@
                 <tr>
                   <th></th>
                   <th v-for="column in tableColumns" :key="column">{{ column }}</th>
-                  <th></th>
                 </tr>
               </thead>
               <draggable v-model="lineupPlayers" tag="tbody">
@@ -162,31 +165,22 @@
                     <td class="text-red" @click="deleteFromLineup(rowIdx)"><i class="ni ni-fat-delete"></i></td>
                     <td @click="clickLineupPlayer(rowIdx)">{{atBat[rowIdx]}}</td>
                     <td @click="clickLineupPlayer(rowIdx)">{{row.player_name}}</td>
-                    <td><i class="ni ni-align-center"></i></td>
                 </tr>
               </draggable>
             </table>
           </div>
         </div>
-        <!-- <custom-table
-          class="custom-table mt-2"
-          :tableTitle="lineupName"
-          :tableData="lineupPlayerTableData"
-          :cols="tableColumns"
-          :selectedRow="lineupSel"
-          @clickRow="clickLineupPlayer"
-        /> -->
       </div>
     </div>
 
     <div class="game_button">
       <div v-if="!start">
-        <base-button type="primary" @click="click_start">게임시작</base-button>
+        <base-button type="primary" @click="clickStartBtn">게임시작</base-button>
       </div>
 
       <div v-if="start"> 
         <base-button type="primary">게임진행</base-button>
-        <base-button type="primary">게임종료</base-button>
+        <base-button type="primary" @click="clickEndBtn">게임종료</base-button>
       </div>
     </div>
 
@@ -366,7 +360,6 @@ export default {
         , defense: 0
         , shoulder: 0
       },
-      start : true,
       // 수정된 팀 스탯
       modifiedTeamStat: {},
       isModifiedTeamStat: false,
@@ -468,6 +461,39 @@ export default {
         false, false, false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false, false, false,
         false],
+
+      // 시뮬레이션 관련 
+      start : false,
+      simulation_id : 0,
+      replaced_player : 0,
+
+      game : {
+        simulatio_id : 0,
+        user_id : 0,
+        my_lineup_id : 0,
+        your_lineup_id : 0,
+        is_attack : true,
+        innings : 0,
+        is_top : true,
+        out_count : 0,
+        base_info_array : [],
+        my_score : [],
+        your_score : [],
+        hit_order : 0,
+        replaced_player_array : [],
+        is_progress : true
+      },
+      score : {
+        my_score_array : [],
+        your_score_array : []
+      },
+      hit_info : {
+        at_bat_count : 0,
+        hit_count : 0,
+        homerun_count : 0,
+        foul_count : 0
+      },
+      my_lineup_array : [],
     }
   },
   watch: {
@@ -735,6 +761,89 @@ export default {
     },
     deleteFromLineup(idx) {
       this.lineupPlayers.splice(idx, 1);
+    },
+
+    // 시뮬레이션 
+    clickStartBtn() {
+      if(this.lineupPlayers.length==0){
+        swal("경고", "라인업을 먼저 선택해주세요.", "warning");
+        return;
+      }
+      if(this.yourLineupPlayers.length==0){
+        swal("경고", "상대방 라인업을 먼저 선택해주세요.", "warning");
+        return;
+      }
+      // 백에 게임 시작 api 전송
+      let data = {};
+      data.user_id = this.$store.state.userInfo.id;
+      data.my_lineup_id = this.lineupId;
+      data.your_lineup_id = this.yourLineupId;
+      // data.is_attack = true;
+      PlayerAPI.gameStart(
+        data,
+        res => {
+          console.log(res);
+          this.start = true;
+          this.game = res.game;
+          this.score = res.score;
+          this.hit_info = res.hit_info;
+          this.lineupId = this.game.my_lineup_id;
+          this.yourLineupId = this.game.your_lineup_id;
+
+          swal("성공", "게임을 시작합니다.", "success");
+        },
+        err => {
+          swal('실패', '게임 시작에 실패햐였습니다.', 'error');
+          console.log(err);
+        }
+      )
+    },
+
+    clickProgressBtn() {
+      // 교체 선수 있으면 백에 전달
+      PlayerAPI.gameProgress(
+        {
+          simulation_id : this.simulation_id,
+          replaced_player : this.replaced_player,
+        },
+        res => {
+          console.log(res);
+          this.game = res.game;
+          this.score = res.score;
+          this.hit_info = res.hit_info;
+          this.lineupId = this.game.my_lineup_id;
+          this.yourLineupId = this.game.your_lineup_id;
+
+          // swal("성공", "게임을 중단합니다.", "success");
+        },
+        err => {
+          swal('실패', '게임 진행에 실패햐였습니다.', 'error');
+          console.log(err);
+        }
+      )
+    },
+
+    clickEndBtn() {
+      PlayerAPI.gameEnd(
+        {
+          simulation_id:this.simulationId
+        },
+        res => {
+          console.log(res);
+          // 초기화
+          this.start = false;
+          this.game = [],
+          this.score = [],
+          this.hit_info = [],
+          this.simulation_id = 0,
+          this.replaced_player = 0,
+          swal("성공", "게임을 종료하였습니다.", "success");
+        },
+        err => {
+          swal('실패', '게임 종료에 실패햐였습니다.', 'error');
+          console.log(err);
+        }
+      )
     }
   }
 };
