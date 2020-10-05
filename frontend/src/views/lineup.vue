@@ -702,7 +702,6 @@ export default {
     modifyLineup() {
       let data = {};
       data.lineup_id = this.lineupId;
-      data.user_id = this.$store.state.userInfo.id;
 
       data.hitter1 = this.lineupPlayers[0].player_id;
       data.hitter2 = this.lineupPlayers[1].player_id;
@@ -748,7 +747,34 @@ export default {
       });
     },
     changeLIneupNameAsync(name) {
-      console.log('수정할 이름: ', name);
+      let data = {};
+      data.lineup_id = this.lineupId;
+      data.lineup_name = name;
+
+      PlayerAPI.modifyLineupName(
+        data,
+        res => {
+          console.log(res);
+          swal('성공', '라인업 이름이 변경되었습니다.', 'success');
+          
+          // 라인업 리스트 가져와서 갱신하기
+          PlayerAPI.getLineupList(
+            "none=none",
+            res => {
+              this.lineupList = res;
+            },
+            err => {
+              console.log(err);
+            }
+          );
+
+          // 라인업 이름 갱신하기
+          this.lineupName = name;
+        },
+        err => {
+          console.log(err);
+        }
+      )
     },
     deleteLineup() {
       PlayerAPI.deleteLineup(

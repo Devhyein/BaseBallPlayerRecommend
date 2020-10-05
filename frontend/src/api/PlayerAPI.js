@@ -137,6 +137,7 @@ const PlayerAPI = {
     getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
     addLineup:(data,callback,errorCallback)=>postApi('/spring/lineup/insert',data,callback,errorCallback),
     modifyLineup:(data,callback,errorCallback)=>putApi('/spring/lineup/update',data,callback,errorCallback),
+    modifyLineupName:(data,callback,errorCallback)=>putApi('/spring/lineup/changename',data,callback,errorCallback),
     deleteLineup:(data,callback,errorCallback)=>deleteApi('/spring/lineup/delete',data,callback,errorCallback),
 
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
