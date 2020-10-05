@@ -121,6 +121,8 @@ public class FavoritesController {
             return response;
         }
 
+        favorites.setUser_id(user.getUser_id());
+
         int res = favoritesService.insertFavorites(favorites);
         if(res!=0){
             response.status = true;

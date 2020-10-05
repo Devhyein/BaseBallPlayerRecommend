@@ -215,18 +215,18 @@ public class TeamController {
             String st = br.readLine();
             List<Integer> list = new ArrayList<Integer>();  
             System.out.println("** "+st);
-            String line = "";          
             String digit = "";
             while (st.length()>0) {
                 String ch = st.substring(0, 1);
                 st = st.substring(1);
                 if(Character.isDigit(ch.charAt(0))){
-                    digit += ch.charAt(0);
+                    digit += ch;
                 } else if(ch.charAt(0)==',' || ch.charAt(0)==']'){
-                    list.add(Integer.parseInt(digit));
-                    digit = "";
+                    if(digit.length() > 0) {
+                        list.add(Integer.parseInt(digit));
+                        digit = "";
+                    }
                 }
-                line+=ch;
             }
 
             result.status = true;

@@ -231,7 +231,6 @@ export default {
           defense: 0,
           shoulder: 0,
         },
-        // 투수 스탯이라고 가정
         stats: [],
       },
       ////////////////////////////////////////////////////////////////////////////
@@ -418,11 +417,6 @@ export default {
       )
     },
     resetPlayerListTable() {
-      ///////////////////////////////////////////////////////// 나중에 지울곳
-      for(let i in this.playerList) {
-        this.playerList[i].isFavorite = false;
-      }
-      ///////////////////////////////////////////////////////////////////////
       this.total = this.playerList.length;
       this.from = 0;
       let to = 5;
@@ -502,6 +496,36 @@ export default {
     clickFavorite(idx) {
       this.playerListShowData[idx].isFavorite = !this.playerListShowData[idx].isFavorite;
       this.tableRenderKey += 1;
+
+      this.modifyFavorite(this.playerListShowData[idx].player_id, this.playerListShowData[idx].isFavorite);
+    },
+    modifyFavorite(id, s) {
+      // 별에 불들어왔다면 즐겨찾기에 추가
+      if(s) {
+        PlayerAPI.addFavorite(
+          {
+            player_id: id
+          },
+          res => {
+            console.log('add favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
+      // 별에 불 꺼졌다면 즐겨찾기에서 제거
+      else {
+        PlayerAPI.deleteFavorite(
+          'player_id=' + id,
+          res => {
+            console.log('delete favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
     }
   },
   mounted() {},
