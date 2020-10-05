@@ -11,21 +11,27 @@ import java.util.List;
 import java.util.Map;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
+import com.ssafy.bigdata.dto.Favorites;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
+import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.service.FavoritesService;
 import com.ssafy.bigdata.service.PlayerServiceImpl;
 import com.ssafy.bigdata.service.TeamService;
+import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +46,12 @@ public class TeamController {
     private TeamService teamService;
     private PlayerServiceImpl playerServiceImpl;
     private PlayerDao playerDao;
+
+    @Autowired
+    private FavoritesService favoritesService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public void setPlayerDao(PlayerDao playerDao) {
@@ -80,11 +92,24 @@ public class TeamController {
 
     @ApiOperation(value = "선수 리스트, 팀 스탯, 추천 선수")
     @GetMapping("/recommend1")
-    public Object search_player(@RequestParam int lineup) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
         List<Player> recommendlist = new ArrayList<Player>();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "Token Failed";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
 
         // 라인업의 선수 반환
         try {
@@ -100,6 +125,12 @@ public class TeamController {
                             p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                             p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
                             p.setPlayer_position(index++);
+
+                            Favorites favorites = new Favorites();
+                            favorites.setPlayer_id(p.getPlayer_id());
+                            favorites.setUser_id(user.getUser_id());
+
+                            p.setIsFavorite(favoritesService.isFavorite(favorites));
                         }
                     }
                 } catch (Exception e) {
@@ -129,6 +160,12 @@ public class TeamController {
                                 p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
                                 p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                                 p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
+                                
+                                Favorites favorites = new Favorites();
+                                favorites.setPlayer_id(p.getPlayer_id());
+                                favorites.setUser_id(user.getUser_id());
+
+                                p.setIsFavorite(favoritesService.isFavorite(favorites));
                             }
                         }
                     } catch (Exception e) {
@@ -178,18 +215,18 @@ public class TeamController {
             String st = br.readLine();
             List<Integer> list = new ArrayList<Integer>();  
             System.out.println("** "+st);
-            String line = "";          
             String digit = "";
             while (st.length()>0) {
                 String ch = st.substring(0, 1);
                 st = st.substring(1);
                 if(Character.isDigit(ch.charAt(0))){
-                    digit += ch.charAt(0);
+                    digit += ch;
                 } else if(ch.charAt(0)==',' || ch.charAt(0)==']'){
-                    list.add(Integer.parseInt(digit));
-                    digit = "";
+                    if(digit.length() > 0) {
+                        list.add(Integer.parseInt(digit));
+                        digit = "";
+                    }
                 }
-                line+=ch;
             }
 
             result.status = true;

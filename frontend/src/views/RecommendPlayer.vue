@@ -488,15 +488,6 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          ///////////////////////////////////////////////////////////////////////////////// 지울곳
-          for(let i in this.recommendPlayers) {
-            this.recommendPlayers[i].isFavorite = false;
-          }
-          for(let i in this.lineupPlayers) {
-            this.lineupPlayers[i].isFavorite = false;
-          }
-          ////////////////////////////////////////////////////////////////////////////////////////
-
           this.teamStatData = this.computeTeamStatData();
         },
         err => {
@@ -523,12 +514,6 @@ export default {
           res => {
             this.similarPlayers = res.recommendList;
             
-            ///////////////////////////////////////////////////////////////////////////////// 지울곳
-            for(let i in this.similarPlayers) {
-              this.similarPlayers[i].isFavorite = false;
-            }
-            ////////////////////////////////////////////////////////////////////////////////////////
-
             this.resetSimilarPlayerShowData();
           },
           err => {
@@ -692,19 +677,56 @@ export default {
     clickLineupFavorite(idx) {
       this.lineupPlayers[idx].isFavorite = !this.lineupPlayers[idx].isFavorite;
       this.lineupTableRenderKey += 1;
+
+      this.modifyFavorite(this.lineupPlayers[idx].player_id, this.lineupPlayers[idx].isFavorite);
     },
     clickRecommendFavorite(idx) {
       this.recommendPlayers[idx].isFavorite = !this.recommendPlayers[idx].isFavorite;
       this.recommendTableRenderKey += 1;
+
+      this.modifyFavorite(this.recommendPlayers[idx].player_id, this.recommendPlayers[idx].isFavorite);
     },
     clickSimilarFavorite(idx) {
       this.similarPlayers[idx].isFavorite = !this.similarPlayers[idx].isFavorite;
       this.similarTableRenderKey += 1;
+
+      this.modifyFavorite(this.similarPlayers[idx].player_id, this.similarPlayers[idx].isFavorite);
     },
     clickRemovedFavorite(idx) {
       this.removedPlayers[idx].isFavorite = !this.removedPlayers[idx].isFavorite;
       this.removedTableRenderKey += 1;
+
+      this.modifyFavorite(this.removedPlayers[idx].player_id, this.removedPlayers[idx].isFavorite);
     },
+
+    modifyFavorite(id, s) {
+      // 별에 불들어왔다면 즐겨찾기에 추가
+      if(s) {
+        PlayerAPI.addFavorite(
+          {
+            player_id: id
+          },
+          res => {
+            console.log('add favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
+      // 별에 불 꺼졌다면 즐겨찾기에서 제거
+      else {
+        PlayerAPI.deleteFavorite(
+          'player_id=' + id,
+          res => {
+            console.log('delete favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
+    }
   }
 };
 </script>
