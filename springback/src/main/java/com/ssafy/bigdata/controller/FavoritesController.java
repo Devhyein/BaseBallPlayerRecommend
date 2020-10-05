@@ -83,7 +83,7 @@ public class FavoritesController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "Token Failed 123";
             response.data = null;
             return response;
         }
@@ -107,7 +107,7 @@ public class FavoritesController {
     }
 
     @ApiOperation(value = "즐겨찾기 선수 추가")
-    @PostMapping("/favorites/delete")
+    @PostMapping("/favorites/insert")
     public Object insertFavorites(@RequestHeader final HttpHeaders header, @RequestBody Favorites favorites) {
         final RestResponse response = new RestResponse();
        
@@ -120,6 +120,8 @@ public class FavoritesController {
             response.data = null;
             return response;
         }
+
+        favorites.setUser_id(user.getUser_id());
 
         int res = favoritesService.insertFavorites(favorites);
         if(res!=0){

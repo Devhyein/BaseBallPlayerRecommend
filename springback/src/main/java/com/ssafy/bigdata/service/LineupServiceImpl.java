@@ -83,6 +83,8 @@ public class LineupServiceImpl implements LineupService {
         }
     }
 
-
-
+    @Override
+    public int modifyLineupName(Lineup lineup) {
+        return lineupDao.modifyLineupName(lineup);
+    }
 }
