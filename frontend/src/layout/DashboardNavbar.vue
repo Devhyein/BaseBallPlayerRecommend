@@ -1,12 +1,12 @@
 <template>
   <base-nav class="navbar-top navbar-dark" id="navbar-main" :show-toggle-button="false" expand>
     <ul class="navbar-nav align-items-center d-none d-md-flex ml-auto">
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown" :key="renderKey">
         <template v-if="isLogin">
           <base-dropdown class="nav-link pr-0">
             <div class="media align-items-center" slot="title">
               <span class="avatar avatar-sm rounded-circle">
-                <img alt="Image placeholder" src="img/theme/team-4-800x800.jpg" />
+                <img alt="Image placeholder" :src="userPic" />
               </span>
               <div class="media-body ml-2 d-none d-lg-block">
                 <span class="mb-0 text-sm font-weight-bold">{{userName}}</span>
@@ -68,6 +68,8 @@ export default {
       searchQuery: "",
 
       showModal: false,
+
+      renderKey: 0,
     };
   },
   methods: {
@@ -85,6 +87,13 @@ export default {
     },
     logout() {
       this.$store.commit('deleteUserInfo');
+      console.log("logout clicked!!");
+      
+      this.renderKey += 1;
+      console.log(this.$router.currentRoute.name);
+      if(this.$router.currentRoute.name != "main") {
+        this.$router.push({name: "main"});
+      }
     }
   },
   computed: {
@@ -92,7 +101,10 @@ export default {
       return (this.$store.state.userInfo.email != undefined);
     },
     userName() {
-      return this.$store.state.userInfo.email;
+      return this.$store.state.userInfo.name;
+    },
+    userPic() {
+      return this.$store.state.userInfo.picture;
     }
   },
 };

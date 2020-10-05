@@ -3,7 +3,6 @@ package com.ssafy.bigdata.service;
 import java.util.List;
 
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.User;
 
 public interface LineupService {
      //라인업리스트 가져오기
