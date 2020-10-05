@@ -79,8 +79,15 @@
 
         <!-- 경기 내용 추후 추가 -->
         <div v-if="lineupId>0" style="height:250px; margin-bottom:20px;">
-          <img src="/img/field.png" alt="경기장" style="height:250px; width: 100%;">
-        
+          <img v-if="!game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/no.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base1.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="!game.base_info_array[0] && game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base2.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="!game.base_info_array[0] && !game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base3.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0] && game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base12.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0] && !game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base13.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="!game.base_info_array[0] && game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base23.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0] && game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base123.png" alt="경기장" style="height:250px; width: 100%;">
+      
           <!-- 경기내용 <br/>
           000 선수가 1루로 진입했습니다. <br/>
 
@@ -104,8 +111,21 @@
           </table>
         </div>
 
+        <!-- 경기 시작 버튼 -->
+        <div v-if="lineupId>0">
+          <div v-if="!start" class="gameBtn">
+            <base-button type="primary" @click="clickStartBtn">게임시작</base-button>
+          </div>
+
+          <div v-if="start" class="gameBtn"> 
+            <base-button type="primary">게임진행</base-button>
+            <base-button type="primary" @click="clickEndBtn">게임종료</base-button>
+          </div>
+        </div>
+
+
         <!-- 경기 base 정보, sbo -->
-        <div v-if="lineupId>0" style="height:140px; margin-bottom:20px;" class="base_info row">
+        <!-- <div v-if="lineupId>0" style="height:140px; margin-bottom:20px;" class="base_info row">
           <div class="col-5">
             <div id="diamond">
               <div id="base2"></div>
@@ -131,7 +151,7 @@
             </div>
           </div>
 
-        </div>
+        </div> -->
       </div>
 
     <!-- 오른쪽 - 우리 팀 라인업  -->
@@ -374,7 +394,6 @@ export default {
       this.$router.push({name: "Login"});
       return;
     }
-
     // 라인업 리스트 가져오기
     PlayerAPI.getLineupList(
       "none=none",
@@ -642,7 +661,7 @@ export default {
       data.user_id = this.$store.state.userInfo.id;
       data.my_lineup_id = this.lineupId;
       data.your_lineup_id = this.yourLineupId;
-      // data.is_attack = true;
+      data.is_attack = true;
       PlayerAPI.gameStart(
         data,
         res => {
@@ -723,89 +742,6 @@ export default {
   width: 20px;
 }
 
-.base_info {
-  /* background-color: #071D6799; */
-}
-
-#diamond {
-  width: 0;
-  height: 0;
-  border: 50px solid transparent;
-  border-bottom-color: green;
-  position: relative;
-  top: -50px;
-  /* margin: 18px; */
-  left: 20px;
-}
-#diamond:after {
-  content: '';
-  position: absolute;
-  left: -50px;
-  top: 50px;
-  width: 0;
-  height: 0;
-  border: 50px solid transparent;
-  border-top-color:  green;
-}
-#base2 {
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-bottom-color: white;
-  position: relative;
-  top: -10px;
-  right: 10px;
-}
-#base2:after {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 10px;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color:  white;
-}
-#base1 {
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-bottom-color: white;
-  position: relative;
-  top: 10px;
-  right: -30px;
-  z-index: 1;
-}
-#base1:after {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 10px;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color:  white;
-}
-#base3 {
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-bottom-color: white;
-  position: relative;
-  top: -10px;
-  right: 50px;
-  z-index: 1;
-}
-#base3:after {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 10px;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color:  white;
-}
 
 #sbo {
   text-align: left;
@@ -839,8 +775,6 @@ export default {
 }
 
 .gameBtn {
-  position: absolute;
-  right: 0;
-  top: 30px;
+  text-align: right;
 }
 </style>
