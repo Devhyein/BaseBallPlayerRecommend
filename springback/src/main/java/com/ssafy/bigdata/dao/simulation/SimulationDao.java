@@ -1,8 +1,8 @@
 package com.ssafy.bigdata.dao.simulation;
 
-import com.ssafy.bigdata.dto.HitInfo;
-import com.ssafy.bigdata.dto.Score;
-import com.ssafy.bigdata.dto.Simulation;
+import com.ssafy.bigdata.dto.simulation.HitInfo;
+import com.ssafy.bigdata.dto.simulation.Score;
+import com.ssafy.bigdata.dto.simulation.Simulation;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;

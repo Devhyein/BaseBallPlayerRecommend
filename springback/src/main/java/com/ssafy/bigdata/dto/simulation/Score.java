@@ -1,4 +1,4 @@
-package com.ssafy.bigdata.dto;
+package com.ssafy.bigdata.dto.simulation;
 
 import java.util.Arrays;
 

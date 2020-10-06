@@ -1,4 +1,4 @@
-package com.ssafy.bigdata.dto;
+package com.ssafy.bigdata.dto.simulation;
 
 import java.util.Arrays;
 
@@ -8,8 +8,6 @@ public class Simulation {
     private int user_id;
     private int my_lineup_id;
     private int your_lineup_id;
-    private String my_lineup_play;
-    private String[] my_lineup_play_array;
     private boolean is_attack;
     private int innings;
     private boolean is_top;
@@ -19,21 +17,17 @@ public class Simulation {
     private int my_score;
     private int your_score;
     private int hit_order;
-    private int replaced_player;
-    private int[] replaced_player_array;
 
     public Simulation() {
 
     }
 
-    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, String my_lineup_play,
-            boolean is_attack, int innings, boolean is_top, int out_count, String base_info, int my_score,
-            int your_score, int hit_order, int replaced_player) {
+    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
+            int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score, int hit_order) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
         this.my_lineup_id = my_lineup_id;
         this.your_lineup_id = your_lineup_id;
-        this.my_lineup_play = my_lineup_play;
         this.is_attack = is_attack;
         this.innings = innings;
         this.is_top = is_top;
@@ -42,17 +36,15 @@ public class Simulation {
         this.my_score = my_score;
         this.your_score = your_score;
         this.hit_order = hit_order;
-        this.replaced_player = replaced_player;
     }
 
-    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id,
-            String[] my_lineup_play_array, boolean is_attack, int innings, boolean is_top, int out_count,
-            int[] base_info_array, int my_score, int your_score, int hit_order, int[] replaced_player_array) {
+    public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
+            int innings, boolean is_top, int out_count, int[] base_info_array, int my_score, int your_score,
+            int hit_order) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
         this.my_lineup_id = my_lineup_id;
         this.your_lineup_id = your_lineup_id;
-        this.my_lineup_play_array = my_lineup_play_array;
         this.is_attack = is_attack;
         this.innings = innings;
         this.is_top = is_top;
@@ -61,7 +53,6 @@ public class Simulation {
         this.my_score = my_score;
         this.your_score = your_score;
         this.hit_order = hit_order;
-        this.replaced_player_array = replaced_player_array;
     }
 
     public int getSimulation_id() {
@@ -94,22 +85,6 @@ public class Simulation {
 
     public void setYour_lineup_id(int your_lineup_id) {
         this.your_lineup_id = your_lineup_id;
-    }
-
-    public String getMy_lineup_play() {
-        return my_lineup_play;
-    }
-
-    public void setMy_lineup_play(String my_lineup_play) {
-        this.my_lineup_play = my_lineup_play;
-    }
-
-    public String[] getMy_lineup_play_array() {
-        return my_lineup_play_array;
-    }
-
-    public void setMy_lineup_play_array(String[] my_lineup_play_array) {
-        this.my_lineup_play_array = my_lineup_play_array;
     }
 
     public boolean isIs_attack() {
@@ -184,31 +159,13 @@ public class Simulation {
         this.hit_order = hit_order;
     }
 
-    public int getReplaced_player() {
-        return replaced_player;
-    }
-
-    public void setReplaced_player(int replaced_player) {
-        this.replaced_player = replaced_player;
-    }
-
-    public int[] getReplaced_player_array() {
-        return replaced_player_array;
-    }
-
-    public void setReplaced_player_array(int[] replaced_player_array) {
-        this.replaced_player_array = replaced_player_array;
-    }
-
     @Override
     public String toString() {
-        return "SimulationGame [base_info=" + base_info + ", base_info_array=" + Arrays.toString(base_info_array)
+        return "Simulation [base_info=" + base_info + ", base_info_array=" + Arrays.toString(base_info_array)
                 + ", hit_order=" + hit_order + ", innings=" + innings + ", is_attack=" + is_attack + ", is_top="
-                + is_top + ", my_lineup_id=" + my_lineup_id + ", my_lineup_play=" + my_lineup_play
-                + ", my_lineup_play_array=" + Arrays.toString(my_lineup_play_array) + ", my_score=" + my_score
-                + ", out_count=" + out_count + ", replaced_player=" + replaced_player + ", replaced_player_array="
-                + Arrays.toString(replaced_player_array) + ", simulation_id=" + simulation_id + ", user_id=" + user_id
-                + ", your_lineup_id=" + your_lineup_id + ", your_score=" + your_score + "]";
+                + is_top + ", my_lineup_id=" + my_lineup_id + ", my_score=" + my_score + ", out_count=" + out_count
+                + ", simulation_id=" + simulation_id + ", user_id=" + user_id + ", your_lineup_id=" + your_lineup_id
+                + ", your_score=" + your_score + "]";
     }
 
 }

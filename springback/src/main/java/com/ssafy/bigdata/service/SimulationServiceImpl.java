@@ -1,10 +1,10 @@
 package com.ssafy.bigdata.service;
 
 import com.ssafy.bigdata.dao.simulation.SimulationDao;
-import com.ssafy.bigdata.dto.HitInfo;
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.Score;
-import com.ssafy.bigdata.dto.Simulation;
+import com.ssafy.bigdata.dto.simulation.HitInfo;
+import com.ssafy.bigdata.dto.simulation.Score;
+import com.ssafy.bigdata.dto.simulation.Simulation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +32,7 @@ public class SimulationServiceImpl implements SimulationService {
     @Override
     public Simulation progressSimulation(int simulation_id) {
         Simulation game = searchSimulation(simulation_id);
-        // 
+        //
 
         return game;
     }
