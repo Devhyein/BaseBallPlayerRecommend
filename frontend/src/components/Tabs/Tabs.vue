@@ -158,6 +158,8 @@ export default {
       this.deactivateTabs();
       tab.active = true;
       this.activeTabIndex = this.tabs.findIndex(t => t.active);
+
+      this.$emit('activateTab', this.activeTabIndex);
     },
     deactivateTabs() {
       this.tabs.forEach(tab => {

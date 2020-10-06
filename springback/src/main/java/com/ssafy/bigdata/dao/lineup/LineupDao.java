@@ -1,10 +1,8 @@
 package com.ssafy.bigdata.dao.lineup;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.User;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -24,6 +22,9 @@ public interface LineupDao {
 
 	public List<Lineup> getUserLineup(int id);
 
-	public List<Lineup> getDefaultLineup();
+     public List<Lineup> getDefaultLineup();
+     
+     // 라인업 이름 변경
+     public int modifyLineupName(Lineup lineup);
 
 }

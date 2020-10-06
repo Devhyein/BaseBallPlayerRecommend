@@ -36,14 +36,48 @@
       <div class="col-xl mr-1 ml-1">
         <!-- 선택된 라인업 선수 목록 -->
         <div class="row">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">{{lineupName}}</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in tableColumns" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="lineupTableRenderKey">
+                  <tr
+                    v-for="(player, rowIdx) in lineupPlayers"
+                    :key="rowIdx" 
+                    :class="{'bg-translucent-warning': rowIdx == lineupSel,
+                             'text-white': rowIdx == lineupSel}">
+                      
+                      <td :class="{'text-yellow': lineupPlayers[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickLineupFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="clickLineupPlayer(rowIdx)">{{atBats[rowIdx]}}</td>
+                      <td @click="clickLineupPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="clickLineupPlayer(rowIdx)">{{player.player_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             class="custom-table"
             :tableTitle="lineupName"
             :tableData="lineupPlayerTableData"
             :cols="tableColumns"
             :selectedRow="lineupSel"
             @clickRow="clickLineupPlayer"
-          />
+          /> -->
         </div>
       </div>
 
@@ -73,25 +107,149 @@
       <div class="col-xl mr-1 ml-1">
         <!-- 1. 추천 선수 목록 테이블 -->
         <div class="row">
-          <custom-table
-            class="custom-table"
-            tableTitle="추천 선수"
-            :tableData="recommendPlayerTableData"
-            :cols="tableColumnsForRecommendAndRemoved"
-            :selectedRow="recommendSel"
-            @clickRow="clickRecommendPlayer"
-          />
+          <tabs fill class="" @activateTab="activateTab">
+            <tab-pane title="searchPlayer">
+              <span slot="title">
+                <i class="ni ni-cloud-upload-96" />
+                팀에 필요한 선수
+              </span>
+
+              <base-radio name="1" class="mb-3" value="1" v-model="radiopicked">
+                  팀의 약점을 보완할 수 있는 선수
+              </base-radio>
+              <base-radio name="2" class="mb-3" value="2" v-model="radiopicked">
+                  팀의 강점을 더 극대화할 수 있는 선수
+              </base-radio>
+              <base-radio name="3" class="mb-3" value="3" v-model="radiopicked">
+                  직접 가중치 선택
+              </base-radio>
+
+              <div class="card custom-table mt-2">
+                <div class="card-header border-0">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h3 class="mb-0">필요한 선수</h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table tablesorter table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th v-for="column in tableColumnsForRecommendAndRemoved" :key="column">{{ column }}</th>
+                      </tr>
+                    </thead>
+                    <tbody :key="recommendTableRenderKey">
+                      <tr
+                        v-for="(player, rowIdx) in recommendPlayers"
+                        :key="rowIdx" 
+                        :class="{'bg-translucent-warning': rowIdx == recommendSel,
+                                'text-white': rowIdx == recommendSel}">
+                          
+                          <td :class="{'text-yellow': recommendPlayers[rowIdx].isFavorite}">
+                            <i  class="fa fa-star" aria-hidden="true" @click="clickRecommendFavorite(rowIdx)"></i>
+                          </td>
+                          
+                          <td @click="clickRecommendPlayer(rowIdx)">{{player.position}}</td>
+                          <td @click="clickRecommendPlayer(rowIdx)">{{player.player_name}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </tab-pane>
+
+            <tab-pane title="favoritePlayer">
+              <span slot="title">
+                <i class="ni ni-bell-55 mr-2" />
+                비슷한 선수
+              </span>
+              <div class="card custom-table mt-2">
+                <div class="card-header border-0">
+                  <div class="row align-items-center">
+                    <div class="col">
+                      <h3 class="mb-0">유사한 선수</h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table tablesorter table-hover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th v-for="column in tableColumnsForRecommendAndRemoved" :key="column">{{ column }}</th>
+                      </tr>
+                    </thead>
+                    <tbody :key="similarTableRenderKey">
+                      <tr
+                        v-for="(player, rowIdx) in similarPlayerListShowData"
+                        :key="rowIdx" 
+                        :class="{'bg-translucent-warning': rowIdx == similarSel,
+                                'text-white': rowIdx == similarSel}">
+                          
+                          <td :class="{'text-yellow': similarPlayerListShowData[rowIdx].isFavorite}">
+                            <i  class="fa fa-star" aria-hidden="true" @click="clickSimilarFavorite(rowIdx)"></i>
+                          </td>
+                          
+                          <td @click="clickSimilarPlayer(rowIdx)">{{player.position}}</td>
+                          <td @click="clickSimilarPlayer(rowIdx)">{{player.player_name}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div>
+                <base-pagination
+                  :page-count="pageCount"
+                  v-model="pageVal"
+                  align="center"
+                />
+              </div>
+            </tab-pane>
+          </tabs>
         </div>
         <!-- 2. 선수 목록에서 제외된 선수 목록 테이블 -->
         <div class="row mt-2" v-if="removedPlayers.length > 0">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">제외된 선수</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in tableColumnsForRecommendAndRemoved" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="removedTableRenderKey">
+                  <tr
+                    v-for="(player, rowIdx) in removedPlayers"
+                    :key="rowIdx" 
+                    :class="{'bg-translucent-warning': rowIdx == removedSel,
+                             'text-white': rowIdx == removedSel}">
+                      
+                      <td :class="{'text-yellow': removedPlayers[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickRemovedFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="clickRemovedPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="clickRemovedPlayer(rowIdx)">{{player.player_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             class="custom-table"
             tableTitle="제외된 선수"
             :tableData="removedPlayerTableData"
             :cols="tableColumnsForRecommendAndRemoved"
             :selectedRow="removedSel"
             @clickRow="clickRemovedPlayer"
-          />
+          /> -->
         </div>
       </div>
     </div>
@@ -104,7 +262,7 @@
 import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import CustomTable from "@/views/Tables/CustomTable";
+// import CustomTable from "@/views/Tables/CustomTable";
 
 // API
 import PlayerAPI from "@/api/PlayerAPI";
@@ -115,10 +273,26 @@ import swal from 'sweetalert';
 export default {
   components: {
     CustomRadarChart,
-    CustomTable
+    // CustomTable
   },
   data() {
     return {
+
+      radiopicked: "1",
+
+      recommendWeights: {
+          era: 1
+          , health: 1
+          , control: 1
+          , stability: 1
+          , deterrent: 1
+          , power: 1
+          , speed: 1
+          , contact: 1
+          , defense: 1
+          , shoulder: 1
+      },
+
       // 팀 스탯
       teamStats: {
         era: 0
@@ -158,13 +332,24 @@ export default {
       // 추천 선수 목록
       recommendPlayers: [],
 
+      // 유사한 선수 목록
+      similarPlayers: [],
+
       // 선수 목록에서 제외된 선수 목록
       removedPlayers: [],
+
+      // 유사한 선수 페이지네이션을 위한 것
+      similarPlayerListShowData: [],
+      pageCount: 1,
+      pageVal: 1,
+      from: 0,
+      total: 0,
 
       // 라인업과 추천선수 목록에서
       // 선택된 행을 기억하는 변수
       lineupSel: -1,
       recommendSel: -1,
+      similarSel: -1,
       removedSel: -1,
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
@@ -173,14 +358,30 @@ export default {
 
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
-        "At bat"
+        ""
+        , "At bat"
         , "Position"
         , "Name"
       ],
 
+      // 1~9 번 타자 + 투수
+      atBats: [
+        "1번 타자",
+        "2번 타자",
+        "3번 타자",
+        "4번 타자",
+        "5번 타자",
+        "6번 타자",
+        "7번 타자",
+        "8번 타자",
+        "9번 타자",
+        "투수",
+      ],
+
       // 추천선수, 제외된 선수 테이블 컬럼들
       tableColumnsForRecommendAndRemoved: [
-        "Position"
+        ""
+        , "Position"
         , "Name"
       ],
 
@@ -193,22 +394,45 @@ export default {
       // 테이블을 위한 데이터
       lineupPlayerTableData: [],
       recommendPlayerTableData: [],
+      similarPlayersTableData: [],
       removedPlayerTableData: [],
 
       // 차트를 위한 데이터
       teamStatData: {},
       playerStatData: {},
+
+      lineupTableRenderKey: 0,
+      recommendTableRenderKey: 0,
+      similarTableRenderKey: 0,
+      removedTableRenderKey: 0,
+
+      similarTab: false,
+    }
+  },
+  watch: {
+    radiopicked(){
+      this.changeLineup(this.lineupId, this.lineupName)
+    },
+
+    pageVal(newVal) {
+      // 1: 0 to 5
+      // 2: 5 to 10
+      // 3: 10 to 15
+      this.from = (newVal - 1) * 5
+      let to = this.from + 5
+      if(to > this.total) to = this.total;
+      this.similarPlayerListShowData = this.similarPlayers.slice(this.from, to);
     }
   },
   created() {
-    if(this.$store.state.userInfo.user_id == undefined) {
+    if(this.$store.state.userInfo.id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({name: "Login"});
       return;
     }
 
     PlayerAPI.getLineupList(
-      "user_id=" + this.$store.state.userInfo.user_id,
+      "none=none",
       res => {
         this.lineupList = res;
         console.log(res);
@@ -222,42 +446,12 @@ export default {
     this.playerStatData = this.computePlayerStatData();
   },
   methods: {
-    computeLineupPlayerTableData() {
-      let arr = [];
-      for(let player of this.lineupPlayers) {
-        let atBat = player.player_position + '번 타자';
-        if(player.player_position == 10) {
-          atBat = '투수';
-        }
+    clickRecommendOption(option){
+      this.recommendOption = option
+      console.log(option)
+      console.log(this.recommendOption)
+    },
 
-        arr.push([
-          atBat, 
-          player.position, 
-          player.player_name
-        ]);
-      }
-      return arr;
-    },
-    computeRecommendPlayerTableData() {
-      let arr = [];
-      for(let player of this.recommendPlayers) {
-        arr.push([
-          player.position, 
-          player.player_name
-        ]);
-      }
-      return arr;
-    },
-    computeRemovedPlayerTableData() {
-      let arr = [];
-      for(let player of this.removedPlayers) {
-        arr.push([
-          player.position, 
-          player.player_name
-        ]);
-      }
-      return arr;
-    },
     computeTeamStatData() {
       let obj = {};
       let label = [];
@@ -322,7 +516,7 @@ export default {
       this.lineupName = name;
 
       PlayerAPI.getTeamStatWithRecommend(
-        "lineup=" + id,
+        "lineup=" + id + "&option=" + this.radiopicked,
         res => {
           this.lineupPlayers = res.playerList;
           this.recommendPlayers = res.recommendList;
@@ -331,11 +525,7 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-          this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
           this.teamStatData = this.computeTeamStatData();
-
-          console.log(res);
         },
         err => {
           console.log(err);
@@ -346,7 +536,6 @@ export default {
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
-          console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
         },
@@ -354,10 +543,39 @@ export default {
           console.log(err);
         }
       )
+
+      // 유사한 선수도 찾아줘야 한다면
+      if(this.similarTab) {
+        PlayerAPI.getSimilarPlayers(
+          'player_id=' + id,
+          res => {
+            this.similarPlayers = res.recommendList;
+            
+            this.resetSimilarPlayerShowData();
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
     },
+    resetSimilarPlayerShowData() {
+      this.total = this.similarPlayers.length;
+      this.from = 0;
+      let to = 5;
+
+      let v = this.total - 1;
+      if(v < 0) v = 0;
+      this.pageCount = parseInt(v / 5 + 1);
+      this.pageVal = 1;
+
+      if(to > this.total) to = this.total;
+
+      this.similarPlayerListShowData = this.similarPlayers.slice(this.from, to);
+    },
+
     clickLineupPlayer(index) {
       if(this.lineupSel != index) {
-        this.playerName = this.lineupPlayers[index].name;
         this.lineupSel = index;
         
         this.getPlayerStat(this.lineupPlayers[index].player_id);
@@ -366,7 +584,6 @@ export default {
     },
     clickRecommendPlayer(index) {
       if(this.recommendSel != index) {
-        this.playerName = this.recommendPlayers[index].name;
         this.recommendSel = index;
         this.removedSel = -1;
 
@@ -374,11 +591,30 @@ export default {
         this.playerName = this.recommendPlayers[index].player_name;
       }
     },
+    clickSimilarPlayer(index) {
+      if(this.similarSel != index) {
+        this.similarSel = index;
+        this.removedSel = -1;
+
+        // 이땐 오직 플레이어의 스탯만 가져오기
+        PlayerAPI.getPlayerStat(
+          'num=' + this.similarPlayerListShowData[index].player_id,
+          res => {
+            this.playerStats = res;
+            this.playerStatData = this.computePlayerStatData();
+          },
+          err => {
+            console.log(err);
+          }
+        )
+        this.playerName = this.similarPlayerListShowData[index].player_name;
+      }
+    },
     clickRemovedPlayer(index) {
       if(this.removedSel != index) {
-        this.playerName = this.removedPlayers[index].name;
         this.removedSel = index;
         this.recommendSel = -1;
+        this.similarSel = -1;
 
         this.getPlayerStat(this.removedPlayers[index].player_id);
         this.playerName = this.removedPlayers[index].player_name;
@@ -387,7 +623,7 @@ export default {
     changePlayer() {
       // 양쪽이 모두 선택되지 않은경우 그냥 반환
       if(this.lineupSel == -1 || 
-          (this.recommendSel == -1 && this.removedSel == -1)) {
+          (this.recommendSel == -1 && this.removedSel == -1 && this.similarSel == -1)) {
         return;
       }
 
@@ -407,7 +643,25 @@ export default {
         this.recommendPlayers.splice(this.recommendSel, 1);
         this.recommendSel = -1;
       }
-      // 2. removed 와 교환
+      // 2. Similar 와 교환
+      else if(this.similarSel != -1) {
+        // 선택된 인덱스를 similarPlayers 의 해당 인덱스로 변환(계산)
+        let similarIdx = this.from + this.similarSel;
+        // 양쪽의 포지션이 다르면 교환 안함
+        if(temp.position != this.similarPlayers[similarIdx].position) {
+          alert('포지션이 다르면 교환이 안됩니다!');
+          return;
+        }
+
+        this.similarPlayers[similarIdx].player_position = temp.player_position;
+        this.lineupPlayers[this.lineupSel] = this.similarPlayers[similarIdx];
+        this.similarPlayers.splice(similarIdx, 1);
+        this.similarSel = -1;
+
+        // similarPlayerShowData 에서 해당 데이터 빼고 다시 만들어주기
+        this.resetSimilarPlayerShowData2();
+      }
+      // 3. removed 와 교환
       else if(this.removedSel != -1) {
         // 양쪽의 포지션이 다르면 교환 안함
         if(temp.position != this.removedPlayers[this.removedSel].position) {
@@ -423,10 +677,6 @@ export default {
       
       // 선수목록에서 빠진건 무조건 removedPlayers 로 가기
       this.removedPlayers.push(temp);
-
-      this.lineupPlayerTableData = this.computeLineupPlayerTableData();
-      this.recommendPlayerTableData = this.computeRecommendPlayerTableData();
-      this.removedPlayerTableData = this.computeRemovedPlayerTableData();
 
       // 선수 교체가 일어났으므로
       // 바뀐 팀 스탯도 보여주기
@@ -446,6 +696,73 @@ export default {
           console.log(err);
         }
       )
+    },
+    resetSimilarPlayerShowData2() {
+      this.total = this.similarPlayers.length;
+
+      let to = this.from + 5
+      if(to > this.total) to = this.total;
+      this.similarPlayerListShowData = this.similarPlayers.slice(this.from, to);
+    },
+
+    activateTab(no) {
+      console.log('Activate Tab No: ' + no);
+
+      this.similarTab = (no == 1);
+    },
+
+    clickLineupFavorite(idx) {
+      this.lineupPlayers[idx].isFavorite = !this.lineupPlayers[idx].isFavorite;
+      this.lineupTableRenderKey += 1;
+
+      this.modifyFavorite(this.lineupPlayers[idx].player_id, this.lineupPlayers[idx].isFavorite);
+    },
+    clickRecommendFavorite(idx) {
+      this.recommendPlayers[idx].isFavorite = !this.recommendPlayers[idx].isFavorite;
+      this.recommendTableRenderKey += 1;
+
+      this.modifyFavorite(this.recommendPlayers[idx].player_id, this.recommendPlayers[idx].isFavorite);
+    },
+    clickSimilarFavorite(idx) {
+      this.similarPlayers[idx].isFavorite = !this.similarPlayers[idx].isFavorite;
+      this.similarTableRenderKey += 1;
+
+      this.modifyFavorite(this.similarPlayers[idx].player_id, this.similarPlayers[idx].isFavorite);
+    },
+    clickRemovedFavorite(idx) {
+      this.removedPlayers[idx].isFavorite = !this.removedPlayers[idx].isFavorite;
+      this.removedTableRenderKey += 1;
+
+      this.modifyFavorite(this.removedPlayers[idx].player_id, this.removedPlayers[idx].isFavorite);
+    },
+
+    modifyFavorite(id, s) {
+      // 별에 불들어왔다면 즐겨찾기에 추가
+      if(s) {
+        PlayerAPI.addFavorite(
+          {
+            player_id: id
+          },
+          res => {
+            console.log('add favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
+      // 별에 불 꺼졌다면 즐겨찾기에서 제거
+      else {
+        PlayerAPI.deleteFavorite(
+          'player_id=' + id,
+          res => {
+            console.log('delete favorites success', res);
+          },
+          err => {
+            console.log(err);
+          }
+        )
+      }
     }
   }
 };

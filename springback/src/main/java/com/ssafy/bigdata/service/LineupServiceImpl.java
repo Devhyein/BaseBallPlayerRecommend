@@ -1,14 +1,11 @@
 package com.ssafy.bigdata.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dao.lineup.LineupDao;
 import com.ssafy.bigdata.dao.team.TeamDao;
-import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +18,6 @@ public class LineupServiceImpl implements LineupService {
 
     @Autowired
     private TeamDao teamDao;
-
-    @Autowired
-    private UserDao userDao;
 
 
     // 라인업리스트 가져오기
@@ -89,6 +83,8 @@ public class LineupServiceImpl implements LineupService {
         }
     }
 
-
-
+    @Override
+    public int modifyLineupName(Lineup lineup) {
+        return lineupDao.modifyLineupName(lineup);
+    }
 }

@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ssafy.bigdata.dao.user.UserDao;
+import com.ssafy.bigdata.dto.Favorites;
 import com.ssafy.bigdata.dto.Lineup;
 import com.ssafy.bigdata.dto.LineupList;
-import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
 import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.service.FavoritesService;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.TeamService;
+import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -41,35 +44,30 @@ public class LineupController {
     @Autowired
     private TeamService teamService;
     @Autowired
-    private UserDao userDao;
-
-    // @ApiOperation(value = "전체 라인업 목록")
-    // @GetMapping("/lineupList")
-    // public Object getLineupList() {
-    //     final RestResponse response = new RestResponse();
-    //     List<LineupList> res = new ArrayList<LineupList>();
-
-    //     List<Lineup> lineupList = lineupService.getLineupList();
-
-    //     for (Lineup list : lineupList) {
-    //         LineupList lineup = new LineupList();
-    //         lineup.setId(list.getLineup_id());
-    //         lineup.setName(list.getLineup_name());
-    //         res.add(lineup);
-    //     }
-
-    //     response.status = true;
-    //     response.msg = "success";
-    //     response.data = res;
-    //     return response;
-    // }
-
+    private UserService userService;
+    @Autowired
+    private FavoritesService favoritesService;
+   
     @ApiOperation(value = "유저 & 디폴트 라인업 목록")
     @GetMapping("/lineupList")
-    public Object getUserLineupList(@RequestParam final int user_id) {
+    public Object getUserLineupList(@RequestHeader final HttpHeaders header) {
         final RestResponse response = new RestResponse();
         List<LineupList> res = new ArrayList<LineupList>();
-        List<Lineup> lineupList = lineupService.getUserLineupList(user_id);
+        
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "Token Failed";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
+        List<Lineup> lineupList = lineupService.getUserLineupList(user.getUser_id());
 
         for (Lineup list : lineupList) {
             LineupList lineup = new LineupList();
@@ -86,10 +84,23 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 선수 목록")
     @GetMapping("/lineup")
-    public Object getLineupPlayer(@RequestParam int lineup) {
+    public Object getLineupPlayer(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
         final RestResponse response = new RestResponse();
         HashMap<String, Object> res = new HashMap<String, Object>();
         List<Player> playerlist = new ArrayList<Player>();
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "Token Failed";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
 
         // 라인업의 선수 반환
         try {
@@ -105,6 +116,12 @@ public class LineupController {
                             p.setPosition(PlayerService.findPlayerPosition(p.getPlayer_id()));
                             p.setPlayer_age(PlayerService.getAgeWithBirth(p.getPlayer_birth()));
                             p.setPlayer_position(index++);
+
+                            Favorites favorites = new Favorites();
+                            favorites.setPlayer_id(p.getPlayer_id());
+                            favorites.setUser_id(user.getUser_id());
+
+                            p.setIsFavorite(favoritesService.isFavorite(favorites));
                         }
                     }
                 } catch (Exception e) {
@@ -200,6 +217,25 @@ public class LineupController {
         }else{
             response.status = false;
             response.msg = "fail to delete lineup";
+            response.data = res;
+        }
+
+        return response;
+    }
+
+    @ApiOperation(value = "라인업 이름 변경")
+    @PutMapping("/lineup/changename")
+    public Object modifyLineupName(@RequestBody Lineup lineup) {
+        final RestResponse response = new RestResponse();
+
+        int res = lineupService.modifyLineupName(lineup);
+        if(res!=0){
+            response.status = true;
+            response.msg = "success";
+            response.data = res;
+        }else{
+            response.status = false;
+            response.msg = "fail to modify lineup name";
             response.data = res;
         }
 

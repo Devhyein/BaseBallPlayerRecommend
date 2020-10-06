@@ -40,42 +40,39 @@ param11 = openapi.Parameter('stability', openapi.IN_QUERY, type=openapi.TYPE_NUM
 
 @swagger_auto_schema(
     method='get',
-    manual_parameters = [param1, param2, param3, param4,  param5, param6, param7,
+    manual_parameters = [param1, param2, param3, param4, param5, param6, param7,
                          param8, param9, param10, param11]
 )
 
 @api_view(["GET"])
 def recommend_player_method1(request):
     """
-    팀 스탯을 받아 약한 부분을 채워줄 수 있는 선수를 추천해준다
+    각 스탯에 대한 가중치를 받아 약한 부분을 채워줄 수 있는 선수를 추천해준다
     - parameters: team_id (int), 0~1 사이 값으로 표준화된 팀 스탯 10개 (float)
     - returns: recommended 리스트 (추천 선수 10명의 player_id)
     """
 
-    team_stats = {}
+    weights = {}
     # django에서 GET request를 받는 방법
     teamid = request.GET.get('team_id',  '')
-    team_stats['deterrent'] = request.GET.get('deterrent', '')
-    team_stats['defense'] = request.GET.get('defense', '')
-    team_stats['era'] = request.GET.get('era', '')
-    team_stats['contact'] = request.GET.get('contact', '')
-    team_stats['health'] = request.GET.get('health', '')
-    team_stats['control'] = request.GET.get('control', '')
-    team_stats['power'] = request.GET.get('power', '')
-    team_stats['shoulder'] = request.GET.get('shoulder', '')
-    team_stats['speed'] = request.GET.get('speed', '')
-    team_stats['stability'] = request.GET.get('stability', '')
+    weights['deterrent'] = request.GET.get('deterrent', '')
+    weights['defense'] = request.GET.get('defense', '')
+    weights['era'] = request.GET.get('era', '')
+    weights['contact'] = request.GET.get('contact', '')
+    weights['health'] = request.GET.get('health', '')
+    weights['control'] = request.GET.get('control', '')
+    weights['power'] = request.GET.get('power', '')
+    weights['shoulder'] = request.GET.get('shoulder', '')
+    weights['speed'] = request.GET.get('speed', '')
+    weights['stability'] = request.GET.get('stability', '')
+
+    for key in weights.keys():
+        weights[key] = float(weights[key])
 
     # 팀 스탯에 따른 가중치 계산 - 현재 옵션: 스탯이 낮을수록 반대로 가중치는 높게 주는 방식
     # ex) power=0.4라면 2*(1-0.4) = 1.2니까 w=2.2
-    weights = {}
-    for key in team_stats.keys():
-        w = 2 * (1 - float(team_stats[key])) + 1
-        weights[key] = w
-
-    print(weights)    
-    print(teamid)
-    print(team_stats)
+    # 자바 백엔드 쪽으로 옮겨짐
+    print(weights)
 
     # player 테이블 pandas로 가져오기
     queryset = Player.objects.all()
@@ -83,12 +80,12 @@ def recommend_player_method1(request):
     df_player = pd.read_sql_query(query, connections['default'], params = params)
 
     # player 테이블 정리: 필요없는 컬럼 지우고, 우리팀 선수 지움
-    print(df_player)
+    #print(df_player)
     df_player = df_player.drop(columns=['player_num', 'player_birth'])
 
     # request에서 가져오는 teamid는 문자열이라 그냥 바로 넣으면 인식 못하는 듯... int로 변환
     df_player = df_player[df_player['team_id'] != int(teamid)] 
-    print(df_player)
+    #print(df_player)
 
     # 은퇴선수 거르기
     df_player = df_player[df_player['player_retire'] == 0]
@@ -121,13 +118,13 @@ def pitcher_recommend(players, weights):
 
     # 표준화한 값에다가 weights의 값을 각각 곱함
     df_normalized['total_score'] = df_normalized['ERA+'] * weights['era'] + df_normalized['health'] * weights['health'] + df_normalized['control'] * weights['control'] + df_normalized['stability'] * weights['stability'] + df_normalized['deterrent'] * weights['deterrent']
-    print(df_normalized)
+    #print(df_normalized)
     # 모든 툴을 더한 총스탯을 구하여 그 순으로 추천
     pitchers_sort = df_normalized.sort_values(by=['total_score'], ascending=False)
 
     # 173명
-    print(pitchers_sort[:5])
-    print(type(pitchers_sort))
+    #print(pitchers_sort[:5])
+    #print(type(pitchers_sort))
     return_arr = []
     for player in pitchers_sort[:5].iterrows():
         return_arr.append(player[0])
@@ -144,8 +141,8 @@ def hitter_recommend(players, weights):
     query, params = queryset.query.sql_with_params()
     df_fielder = pd.read_sql_query(query, connections['default'], params = params)
 
-    print(players)
-    print(df_hitter) # 923명
+    #print(players)
+    #print(df_hitter) # 923명
 
     # 규정타석 거르기
     #df_hitter = df_hitter[df_hitter.apply(lambda x: minimum_pa(df_hitter['hitter_year'], df_hitter['hitter_pa']))] 
@@ -158,13 +155,13 @@ def hitter_recommend(players, weights):
 
     # 표준화한 값에다가 weights의 값을 각각 곱함
     df_normalized['total_score'] = df_normalized['power'] * weights['power'] + df_normalized['contact'] * weights['contact'] + df_normalized['speed'] * weights['speed'] + df_normalized['defense'] * weights['defense'] + df_normalized['shoulder'] * weights['shoulder']
-    print(df_normalized)
+    #print(df_normalized)
     # 모든 툴을 더한 총스탯을 구하여 그 순으로 추천
     hitters_sort = df_normalized.sort_values(by=['total_score'], ascending=False)
 
     # 173명
-    print(hitters_sort[:5])
-    print(type(hitters_sort))
+    #print(hitters_sort[:5])
+    #print(type(hitters_sort))
     return_arr = []
 
     # pandas 데이터프레임을 행 순회할땐 그냥 for~in 뒤에 df를 붙여주기만 하는게 아니라 꼭 iterrows() 를 써야 하는 듯하다
