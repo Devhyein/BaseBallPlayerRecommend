@@ -92,7 +92,14 @@ public class TeamController {
 
     @ApiOperation(value = "선수 리스트, 팀 스탯, 추천 선수")
     @GetMapping("/recommend1")
-    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup, @RequestParam int option) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup, @RequestParam int option,
+    @RequestParam(required = false) float power, @RequestParam(required = false) float speed, @RequestParam(required = false) float contact, 
+    @RequestParam(required = false) float defense, @RequestParam(required = false) float shoulder,
+    @RequestParam(required = false) float era, @RequestParam(required = false) float health, @RequestParam(required = false) float control, 
+    @RequestParam(required = false) float stability, @RequestParam(required = false) float deterrent
+    ) { // 지나치게 params가 많아지는 경우 post로 대체할 수도 있다고 하는데, 이미 get인걸 뜯어고치긴 좀 그러니까...
+        // 슬라이더 값은 기본적으로 int가 아니라 4.00 같이 실수값인 듯
+
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
@@ -155,7 +162,7 @@ public class TeamController {
             TeamStat weight = new TeamStat();
             weight.setTeam_id(data.getTeam_id());
             switch (option){
-                case 1:
+                case 1: // 1, 2번의 경우 팀스탯을 이용
                     weight.setPower(2 * (1 - data.getPower()) + 1);
                     weight.setSpeed(2 * (1 - data.getSpeed()) + 1);
                     weight.setContact(2 * (1 - data.getContact()) + 1);
@@ -179,7 +186,17 @@ public class TeamController {
                     weight.setStability(2 * (data.getStability()) + 1);
                     weight.setDeterrent(2 * (data.getDeterrent()) + 1);
                     break;
-                case 3:
+                case 3: // 3번의 경우 param으로 가져온 값들을 이용
+                    weight.setPower((power / 5) + 1);
+                    weight.setSpeed((speed / 5) + 1);
+                    weight.setContact((contact / 5) + 1);
+                    weight.setDefense((defense / 5) + 1);
+                    weight.setShoulder((shoulder / 5) + 1);
+                    weight.setEra((era / 5) + 1);
+                    weight.setHealth((health / 5) + 1);
+                    weight.setControl((control / 5) + 1);
+                    weight.setStability((stability / 5) + 1);
+                    weight.setDeterrent((deterrent / 5) + 1);
                     break;
             }
 
