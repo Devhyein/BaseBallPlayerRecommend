@@ -52,17 +52,18 @@
       <div class="col-xl mr-1 ml-1 text-center align-self-center">
 
         <!-- 현재 경기 score -->
-        <div v-if="lineupId>0" style="margin-top:10px;">
+        <div v-if="lineupId>0" style="margin-top:40px;">
           <div class="score">
-            {{yourLineupName}} {{your_total_score}} vs {{total_score}} {{lineupName}}
+            {{yourLineupName}}  {{your_total_score}} vs {{total_score}}  {{lineupName}}
           </div>
           <div class="play_info">
-            {{game.innings}} 회 
+            {{game.innings}}회 
             <span v-if="game.is_top">초</span>
             <span v-else>말</span>
             {{game.out_count}}아웃  
-            <span v-if="game.is_attack">공격</span>
-            <span v-else>수비</span>
+            <span v-if="game.is_attack" style="margin-left:10px;">{{lineupName}}</span>
+            <span v-else>{{yourLineupName}}</span>
+            공격
           </div>
         </div>
 
@@ -92,14 +93,14 @@
         </div>
 
         <div v-if="lineupId>0" style="height:250px; margin-bottom:20px;">
-          <img v-if="!game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/no.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base1.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="!game.base_info_array[0] && game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base2.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="!game.base_info_array[0] && !game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base3.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="game.base_info_array[0] && game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base12.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="game.base_info_array[0] && !game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base13.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="!game.base_info_array[0] && game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base23.png" alt="경기장" style="height:250px; width: 100%;">
-          <img v-if="game.base_info_array[0] && game.base_info_array[1] && game.base_info_array[2]" src="/img/field/base123.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==0 && game.base_info_array[1]==0 && game.base_info_array[2]==0" src="/img/field/no.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==1 && game.base_info_array[1]==0 && game.base_info_array[2]==0" src="/img/field/base1.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==0 && game.base_info_array[1]==1 && game.base_info_array[2]==0" src="/img/field/base2.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==0 && game.base_info_array[1]==0 && game.base_info_array[2]==1" src="/img/field/base3.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==1 && game.base_info_array[1]==1 && game.base_info_array[2]==0" src="/img/field/base12.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==1 && game.base_info_array[1]==0 && game.base_info_array[2]==1" src="/img/field/base13.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==0 && game.base_info_array[1]==1 && game.base_info_array[2]==1" src="/img/field/base23.png" alt="경기장" style="height:250px; width: 100%;">
+          <img v-if="game.base_info_array[0]==1 && game.base_info_array[1]==1 && game.base_info_array[2]==1" src="/img/field/base123.png" alt="경기장" style="height:250px; width: 100%;">
       
           <!-- 경기내용 <br/>
           000 선수가 1루로 진입했습니다. <br/>
@@ -117,7 +118,7 @@
             </thead>
             <draggable v-model="hit_info" tag="tbody" style="margin-top:5px;">
               <tr>
-                <td>{{lineupPlayers[hit_order]}}</td>
+                <td>{{lineupPlayers[game.hit_order].player_name}}</td>
                 <td v-for="row in hit_info" :key="row">{{row}}</td>
               </tr>
             </draggable>
@@ -131,8 +132,8 @@
           </div>
 
           <div v-if="start" class="gameBtn"> 
-            <base-button type="primary">게임진행</base-button>
-            <base-button type="primary" @click="clickEndBtn">게임종료</base-button>
+            <base-button type="primary" v-if="game.game_status">게임진행</base-button>
+            <base-button type="primary" v-if="game.game_status" @click="clickEndBtn">게임종료</base-button>
           </div>
         </div>
       </div>
@@ -337,15 +338,15 @@ export default {
         innings : 0,
         is_top : true,
         out_count : 0,
-        base_info_array : [],
+        base_info_array : [0,0,0],
         my_score : [],
         your_score : [],
         hit_order : 0, 
-        is_progress : true
+        game_status : false
       },
       score : {
-        my_score_array : [0,10,0,0,0,0,0,0,0,0,0,0],
-        your_score_array : [0,0,0,0,0,2,0,0,3,0,0,0]
+        my_score_array : [0,0,0,0,0,0,0,0,0,0,0,0],
+        your_score_array : [0,0,0,0,0,0,0,0,0,0,0,0]
       },
       hit_info : {
         at_bat_count : 0,
@@ -355,7 +356,7 @@ export default {
         hit3_count : 0,
         foul_count : 0
       },
-      my_lineup_array : [],
+      // my_lineup_array : [],
       total_score : 0,
       your_total_score : 0,
     }
@@ -670,8 +671,7 @@ export default {
     clickProgressBtn() {
       PlayerAPI.gameProgress(
         {
-          simulation_id : this.simulation_id,
-          replaced_player : this.replaced_player,
+          simulation_id : this.simulation_id
         },
         res => {
           console.log(res);
@@ -708,8 +708,7 @@ export default {
           this.game = [],
           this.score = [],
           this.hit_info = [],
-          this.simulation_id = 0,
-          this.replaced_player = 0,
+          this.simulation_id = 0
           swal("성공", "게임을 종료하였습니다.", "success");
         },
         err => {
@@ -748,5 +747,9 @@ export default {
 
 .score {
   font-size: 25px;
+}
+.play_info {
+  font-size: 17px;
+  margin-top: 10px;
 }
 </style>
