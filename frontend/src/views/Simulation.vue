@@ -39,8 +39,8 @@
               </thead>
               <draggable v-model="yourLineupPlayers" tag="tbody">
                 <tr v-for="(row, rowIdx) in yourLineupPlayers" :key="rowIdx">
-                    <td @click="clickLineupPlayer(rowIdx)">{{atBat[rowIdx]}}</td>
-                    <td @click="clickLineupPlayer(rowIdx)">{{row.player_name}}</td>
+                    <td>{{atBat[rowIdx]}}</td>
+                    <td>{{row.player_name}}</td>
                 </tr>
               </draggable>
             </table>
@@ -109,6 +109,7 @@
         </div>
 
         <!-- 타석 타자 정보 -->
+        <div style="font-size: 15px; text-align: left;"> 다음 타석 타자 정보 </div>
         <div v-if="lineupId>0" style="overflow-x:auto;height:100px; border:1px solid black; margin-bottom:20px;">
           <table style="width:100%;margin-top: 20px;">
             <thead>
@@ -118,6 +119,7 @@
             </thead>
             <draggable v-model="hit_info" tag="tbody" style="margin-top:5px;">
               <tr>
+                <td>{{game.hit_order+1}}</td>
                 <td>{{lineupPlayers[game.hit_order].player_name}}</td>
                 <td v-for="row in hit_info" :key="row">{{row}}</td>
               </tr>
@@ -177,8 +179,8 @@
               </thead>
               <draggable v-model="lineupPlayers" tag="tbody">
                 <tr v-for="(row, rowIdx) in lineupPlayers" :key="rowIdx">
-                    <td @click="clickLineupPlayer(rowIdx)">{{atBat[rowIdx]}}</td>
-                    <td @click="clickLineupPlayer(rowIdx)">{{row.player_name}}</td>
+                    <td>{{atBat[rowIdx]}}</td>
+                    <td>{{row.player_name}}</td>
                 </tr>
               </draggable>
             </table>
@@ -207,35 +209,6 @@ export default {
   },
   data() {
     return {
-      // 팀 스탯
-      teamStats: {
-        era: 0
-        , health: 0
-        , control: 0
-        , stability: 0
-        , deterrent: 0
-        , power: 0
-        , speed: 0
-        , contact: 0
-        , defense: 0
-        , shoulder: 0
-      },
-      // 수정된 팀 스탯
-      modifiedTeamStat: {},
-      isModifiedTeamStat: false,
-
-      // 플레이어 스탯
-      playerStats: {
-        five_tool: {
-          power: 0,
-          speed: 0,
-          contact: 0,
-          defense: 0,
-          shoulder: 0,
-        },
-        stats: [],
-      },
-
       // 라인업 리스트
       lineupList: [],
       yourLineupList: [],
@@ -243,21 +216,6 @@ export default {
       // 라인업 선수 목록
       lineupPlayers: [],
       yourLineupPlayers: [],
-
-      // 검색된 선수 목록
-      searchedPlayers: [],
-
-      // 검색된 선수 페이지네이션을 위한 것
-      searchedPlayerListShowData: [],
-      pageCount: 1,
-      pageVal: 1,
-      from: 0,
-      total: 0,
-
-      // 라인업과 추천선수 목록에서
-      // 선택된 행을 기억하는 변수
-      lineupSel: -1,
-      searchedSel: -1,
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
       lineupName: "나의 라인업 선택",
@@ -268,65 +226,25 @@ export default {
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
         "At bat"
-        // , "Position"
         , "Name"
       ],     
       // 상대 라인업 선수 테이블 컬럼들
       yourTableColumns: [
         "At bat"
-        // , "Position"
         , "Name"
       ],
-
-      // 검색된 선수 테이블 컬럼들
-      tableColumnsForSearch: [
-        "Name"
-        , "Team"
-        , "Position"
-        , "Number"
-        , "Age"
-      ],
-
-      // 선택한 선수의 이름 저장(스탯 보여주기 용)
-      playerName: "Select player",
-
-      // 그래프 타입(배경 색)
-      chartType: "secondary",
 
       // 테이블을 위한 데이터
       atBat: [
         '1번 타자', '2번 타자', '3번 타자', '4번 타자', '5번 타자',
         '6번 타자', '7번 타자', '8번 타자', '9번 타자', '투수'
       ],
-      searchedPlayerTableData: [],
-
-      // 차트를 위한 데이터
-      teamStatData: {},
-      playerStatData: {},
-
-      // 검색창에 입력한 내용
-      searchVal: '',
-
-      // 필터링에 쓰일 modal 을 위한 내용
-      modals: {
-        position: false,
-        team: false,
-      },
-      
-      // 포지션 필터링용 리스트
-      positionFilter: [false,
-        false, false, false, false, false, false, false, false, false, false],
-      // 팀 필터링용 리스트
-      teamFilter: [false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false],
 
       // 시뮬레이션 관련 
       start : false,
       simulation_id : 0,
       hitterInfoColumns: [
-        "이름","타석","1루타","2루타","3루타","홈런","파울"
+        "타순","이름","타석","1루타","2루타","3루타","홈런","파울"
       ], 
 
       game : {
@@ -361,19 +279,7 @@ export default {
       your_total_score : 0,
     }
   },
-  watch: {
-    pageVal(newVal) {
-      // 1: 0 to 5
-      // 2: 5 to 10
-      // 3: 10 to 15
-      this.from = (newVal - 1) * 5
-      let to = this.from + 5
-      if(to > this.total) to = this.total;
-      this.searchedPlayerListShowData = this.searchedPlayers.slice(this.from, to);
 
-      this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
-    }
-  },
   created() {
     if(this.$store.state.userInfo.id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
@@ -391,11 +297,6 @@ export default {
         console.log(err);
       }
     );
-
-    // // api 테스트 - 추후 삭제 예정
-    // this.score.my_score_array = [0,1,1,0,1,2,4,0,1,0,0,0];
-    // this.score.your_score_array = [0,1,1,0,1,2,4,0,1,2,0,5];
-
 
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
@@ -447,40 +348,6 @@ export default {
         }
       );
     },
-    clickLineupPlayer(index) {
-      if(this.lineupSel != index) {
-        this.lineupSel = index;
-        this.searchedSel = -1;
-        
-        this.getPlayerStat(this.lineupPlayers[index].player_id);
-        this.playerName = this.lineupPlayers[index].player_name;
-      }
-    },
-    clickSearchedPlayer(index) {
-      if(this.searchedSel != index) {
-        this.searchedSel = index;
-        this.lineupSel = -1;
-
-        this.getPlayerStat(this.searchedPlayerListShowData[index].player_id);
-        this.playerName = this.searchedPlayerListShowData[index].player_name;
-      }
-    },
-    getPlayerStat(id) {
-      console.log(id);
-      if(id == -1) return;
-
-      PlayerAPI.getPlayerStat(
-        'num=' + id,
-        res => {
-          console.log(res);
-          this.playerStats = res;
-          this.playerStatData = this.computePlayerStatData();
-        },
-        err => {
-          console.log(err);
-        }
-      )
-    },
     computeSearchedPlayerTableData() {
       let arr = [];
       for(let player of this.searchedPlayerListShowData) {
@@ -494,144 +361,6 @@ export default {
       }
       return arr;
     },
-    search() {
-      // 검색할 선수 이름의 일부
-      let searchText = this.searchVal;
-      if(this.searchVal.length == 0) {
-        searchText = null
-      }
-      console.log(searchText);
-
-      // 포지션 필터링
-      let cnt = 0;
-      let positions = '';
-      for(let i in this.positionFilter) {
-        let v = this.positionFilter[i];
-        if(!v) {
-          positions += (i + ",");
-          cnt += 1;
-        }
-      }
-      if(cnt == 0) {
-        swal("검색 오류!", "적어도 하나의 포지션은 선택되어야 합니다!", "warning");
-        return;
-      }
-      positions = positions.slice(0, -1);
-      console.log(positions);
-
-      // 팀
-      cnt = 0;
-      let teams = '';
-      for(let i in this.teamFilter) {
-        let v = this.teamFilter[i];
-        if(!v) {
-          teams += (i + ",");
-          cnt += 1;
-        }
-      }
-      if(cnt == 0) {
-        swal("검색 오류!", "적어도 하나의 팀은 선택되어야 합니다!", "warning");
-        return;
-      }
-      teams = teams.slice(0, -1);
-      console.log(teams);
-
-      PlayerAPI.getPlayerList(
-        {
-          searchText: searchText,
-          teams: teams,
-          positions: positions
-        },
-        res => {
-          this.searchedPlayers = res;
-          this.resetSearchedPlayerTableData();
-        },
-        err => {
-          console.log(err);
-        }
-      );
-    },
-    resetSearchedPlayerTableData() {
-      this.total = this.searchedPlayers.length;
-      this.from = 0;
-      let to = 5;
-
-      let v = this.total - 1;
-      if(v < 0) v = 0;
-      this.pageCount = parseInt(v / 5 + 1);
-      this.pageVal = 1;
-
-      if(to > this.total) to = this.total;
-
-      this.searchedPlayerListShowData = this.searchedPlayers.slice(this.from, to);
-
-      this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
-    },
-    // 버튼 누르면 바로 반영되게 하기 위한 편법
-    changePositionFilter(idx) {
-      let arr = [];
-      for(let i in this.positionFilter) {
-        let val = this.positionFilter[i];
-
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
-      }
-      this.positionFilter = arr;
-    },
-    changeTeamFilter(idx) {
-      let arr = [];
-      for(let i in this.teamFilter) {
-        let val = this.teamFilter[i];
-
-        if(i == idx) arr.push(!val);
-        else         arr.push(val);
-      }
-      this.teamFilter = arr;
-    },
-
-    newLineUp() {
-      this.lineupId = 100;
-      this.lineupName = "새 라인업";
-      this.isNewLineup = true;
-      this.lineupPlayers = [];
-    },
-    addToLineup(idx) {
-      // 라인업을 먼저 선택해야함
-      if(this.lineupId == 0) {
-        swal("경고", "라인업을 먼저 선택해주세요", "warning");
-        return;
-      }
-      // 라인업이 꽉 찼으면 더 이상 추가 할 수 없음
-      let lineupLen = this.lineupPlayers.length;
-      if(lineupLen == 10) {
-        swal("경고", "라인업이 꽉 찼습니다, 선수를 비워주세요", "warning");
-        return;
-      }
-      
-      // 선택된 선수 정보 가져오기
-      let player = this.searchedPlayerListShowData[idx]
-      let playerId = player.player_id;
-
-      // 라인업에 이미 동일한 선수가 있다면 중복
-      let check = true;
-      for(let p of this.lineupPlayers) {
-        if(p.player_id == playerId) {
-          check = false;
-          break;
-        }
-      }
-      if(!check) {
-        swal("경고", "이미 라인업에 있는 선수입니다, 다른 선수를 선택해주세요", "warning");
-        return;
-      }
-
-      // 라인업에 추가
-      this.lineupPlayers.push(this.searchedPlayerListShowData[idx]);
-    },
-    deleteFromLineup(idx) {
-      this.lineupPlayers.splice(idx, 1);
-    },
-
     // 시뮬레이션 
     clickStartBtn() {
       if(this.lineupPlayers.length==0){
@@ -667,7 +396,6 @@ export default {
         }
       )
     },
-
     clickProgressBtn() {
       PlayerAPI.gameProgress(
         {
