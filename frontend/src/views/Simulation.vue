@@ -72,21 +72,21 @@
           <table class="score_table" id="score_table" style="width:100%;margin-top: 25px; margin-bottom:20px;">
             <thead>
               <tr>
-                <th>TEAM</th>
-                <th v-for="key in 12" :key="key" class="inning_score">{{key}}</th>
-                <th>결과</th>
+                <th class="col">TEAM</th>
+                <th v-for="key in 12" :key="key" class="inning_score col">{{key}}</th>
+                <!-- <th class="col">결과</th> -->
               </tr>
             </thead>
             <tbody>
               <tr style="border:1px solid black">
                 <td>{{lineupName}}</td>
                 <td v-for="score in score.my_score_array" :key="score">{{score}}</td>
-                <td>0</td>
+                <!-- <td class="col">0</td> -->
               </tr>            
               <tr>
                 <td>{{yourLineupName}}</td>
                 <td v-for="key in score.your_score_array" :key="key">{{key}}</td>
-                <td>0</td>
+                <!-- <td class="col">0</td> -->
               </tr>
             </tbody>
           </table>
