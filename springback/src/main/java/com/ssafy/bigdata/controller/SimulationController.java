@@ -35,49 +35,64 @@ public class SimulationController {
     @ApiOperation(value = "시뮬레이션 게임 시작")
     @PostMapping("/start")
     public Object simulationStart(@RequestBody int user_id, int my_lineup_id, int your_lineup_id, int is_attack) {
-        RestResponse response = new RestResponse();
+        final RestResponse response = new RestResponse();
         Score score = null; // 스코어 정보를 담을 객체
         HitInfo hit_info = null; // 타석 정보를 담을 객체
         Lineup lineup = null; // 라인업 정보를 담을 객체
         Simulation simulation = null; // 시뮬레이션을 담을 객체
-        int[] base_info_array = { 0, 0, 0 };
+        int simulation_id; // id
 
         try {
-            int simulation_id = simulationService.createSimulation(user_id, my_lineup_id, your_lineup_id, is_attack, 1,
-                    true, 0); // 시물레이션 생성
-            List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulation_id); // 내 라인업 정보
-            List<Integer> your_lineup = lineupService.getPlayerListByLineup(your_lineup_id); // 상대 라인업 정보
-            simulation = simulationService.searchSimulation(simulation_id); // 시뮬레이션 정보
+            // 시물레이션
+            int simulation_status = simulationService.createSimulation(user_id, my_lineup_id, your_lineup_id, is_attack,
+                    1, true, 0, "000", 0, 0, 1); // 생성
+            simulation_id = simulationService.searchSimulationByUserId(user_id);// 시뮬레이션 아이디
 
-            // response data
+            if (simulation_status == 1) {
+                simulation = simulationService.searchSimulation(simulation_id);
+            } else {
+                response.status = false;
+                response.msg = "Fail to create simulation.";
+                return response;
+            }
+            List<Integer> my_lineup = lineupService.getPlayerListByLineup(my_lineup_id);
+            List<Integer> your_lineup = lineupService.getPlayerListByLineup(your_lineup_id);
+            simulation = simulationService.searchSimulation(simulation_id);
+
+            // 스코어 정보
             try {
-                int score_status = simulationService.createScore(simulation_id); // 점수 생성
+                int score_status = simulationService.createScore(simulation_id); // 생성
                 try {
-                    score = simulationService.searchScore(simulation_id); // 스코어 정보
+                    score = simulationService.searchScore(simulation_id);
                 } catch (Exception e) {
                     response.status = false;
                     response.msg = "Fail to create score board.";
+                    return response;
                 }
             } catch (Exception e) {
                 response.status = false;
                 response.msg = "Fail to load score score.";
+                return response;
             }
 
+            // 타석 정보
             try {
-                int hit_info_status = simulationService.createHitInfo(simulation_id); // 타석정보 생성
+                int hit_info_status = simulationService.createHitInfo(simulation_id); // 생성
                 try {
-                    hit_info = simulationService.searchHitInfo(simulation_id); // 타석 정보
+                    hit_info = simulationService.searchHitInfo(simulation_id);
                 } catch (Exception e) {
                     response.status = false;
                     response.msg = "Fail to load hit_info board.";
+                    return response;
                 }
             } catch (Exception e) {
                 response.status = false;
                 response.msg = "Fail to create hit_info board.";
+                return response;
             }
 
             // simulate
-            simulation = simulationService.progressSimulation(simulation_id); // 시뮬레이션 진행
+            simulation = simulationService.progressSimulation(simulation,simulation_id,score,hit_info,my_lineup,your_lineup); // 시뮬레이션 진행
 
             // data
             SimulationData data = new SimulationData(simulation, score, hit_info);
