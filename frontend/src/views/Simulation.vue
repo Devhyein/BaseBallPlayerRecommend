@@ -51,9 +51,24 @@
       <!-- 가운데 -->
       <div class="col-xl mr-1 ml-1 text-center align-self-center">
 
+        <!-- 현재 경기 score -->
+        <div v-if="lineupId>0" style="margin-top:10px;">
+          <div class="score">
+            {{yourLineupName}} {{your_total_score}} vs {{total_score}} {{lineupName}}
+          </div>
+          <div class="play_info">
+            {{game.innings}} 회 
+            <span v-if="game.is_top">초</span>
+            <span v-else>말</span>
+            {{game.out_count}}아웃  
+            <span v-if="game.is_attack">공격</span>
+            <span v-else>수비</span>
+          </div>
+        </div>
+
         <!-- 경기 score table -->
         <div style="overflow-x:auto;">
-          <table class="score_table" style="width:100%;margin-top: 85px; margin-bottom:20px;">
+          <table class="score_table" id="score_table" style="width:100%;margin-top: 25px; margin-bottom:20px;">
             <thead>
               <tr>
                 <th>TEAM</th>
@@ -76,8 +91,6 @@
           </table>
         </div>
 
-
-        <!-- 경기 내용 추후 추가 -->
         <div v-if="lineupId>0" style="height:250px; margin-bottom:20px;">
           <img v-if="!game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/no.png" alt="경기장" style="height:250px; width: 100%;">
           <img v-if="game.base_info_array[0] && !game.base_info_array[1] && !game.base_info_array[2]" src="/img/field/base1.png" alt="경기장" style="height:250px; width: 100%;">
@@ -122,36 +135,6 @@
             <base-button type="primary" @click="clickEndBtn">게임종료</base-button>
           </div>
         </div>
-
-
-        <!-- 경기 base 정보, sbo -->
-        <!-- <div v-if="lineupId>0" style="height:140px; margin-bottom:20px;" class="base_info row">
-          <div class="col-5">
-            <div id="diamond">
-              <div id="base2"></div>
-              <div id="base1"></div>
-              <div id="base3"></div>
-            </div>
-          </div>
-          <div class="col-7">
-            <div id="sbo">
-              <div style="display: inline-block;">OUT</div>
-              <div v-for="s in 2" :key="s" style="display: inline-block;"><div class="circle_o"></div></div>
-            </div>
-            
-            <div class="col">
-              <div v-if="!start" class="gameBtn">
-                <base-button type="primary" @click="clickStartBtn">게임시작</base-button>
-              </div>
-
-              <div v-if="start" class="gameBtn"> 
-                <base-button type="primary">게임진행</base-button>
-                <base-button type="primary" @click="clickEndBtn">게임종료</base-button>
-              </div>
-            </div>
-          </div>
-
-        </div> -->
       </div>
 
     <!-- 오른쪽 - 우리 팀 라인업  -->
@@ -361,8 +344,8 @@ export default {
         is_progress : true
       },
       score : {
-        my_score_array : [0,0,0,0,0,0,0,0,0,0,0,0],
-        your_score_array : [0,0,0,0,0,0,0,0,0,0,0,0]
+        my_score_array : [0,10,0,0,0,0,0,0,0,0,0,0],
+        your_score_array : [0,0,0,0,0,2,0,0,3,0,0,0]
       },
       hit_info : {
         at_bat_count : 0,
@@ -373,6 +356,8 @@ export default {
         foul_count : 0
       },
       my_lineup_array : [],
+      total_score : 0,
+      your_total_score : 0,
     }
   },
   watch: {
@@ -683,7 +668,6 @@ export default {
     },
 
     clickProgressBtn() {
-      // 교체 선수 있으면 백에 전달
       PlayerAPI.gameProgress(
         {
           simulation_id : this.simulation_id,
@@ -697,6 +681,12 @@ export default {
           this.lineupId = this.game.my_lineup_id;
           this.yourLineupId = this.game.your_lineup_id;
 
+          this.score.total_score = 0;
+          this.score.your_total_score = 0;
+          for (let i=0; i < this.score.my_score_array; i++) {
+            this.total_score += this.score.my_score_array[i];
+            this.your_total_score += this.score.your_score_array[i];
+          }
           // swal("성공", "게임을 중단합니다.", "success");
         },
         err => {
@@ -752,29 +742,11 @@ export default {
   margin-top: 3px;
 }
 
-.circle_s {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: yellow;
-  margin-left: 10px;
-}
-.circle_b {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: darkslateblue;
-  margin-left: 10px;
-}
-.circle_o {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: crimson;
-  margin-left: 10px;
-}
-
 .gameBtn {
   text-align: right;
+}
+
+.score {
+  font-size: 25px;
 }
 </style>
