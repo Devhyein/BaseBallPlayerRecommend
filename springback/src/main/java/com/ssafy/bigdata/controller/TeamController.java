@@ -92,7 +92,7 @@ public class TeamController {
 
     @ApiOperation(value = "선수 리스트, 팀 스탯, 추천 선수")
     @GetMapping("/recommend1")
-    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup, @RequestParam int option) {
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
@@ -146,10 +146,46 @@ public class TeamController {
         try{
             data = teamService.analyzeStat(lineup);
        
-            System.out.println("TEAM STAT : "+data);
+            System.out.println("TEAM STAT : "+ data);
+            System.out.println("OPTION : " + option);
             // 여기서 분석한 데이터 -> 파이썬으로 전송
+
+            // 팀 스탯 기반으로 weight 계산
+            // weight 저장하는 DTO는 그냥 teamstat 갖다 씀 (어차피 둘 다 각 스탯에 대한 float값 저장하는 거라...)
+            TeamStat weight = new TeamStat();
+            weight.setTeam_id(data.getTeam_id());
+            switch (option){
+                case 1:
+                    weight.setPower(2 * (1 - data.getPower()) + 1);
+                    weight.setSpeed(2 * (1 - data.getSpeed()) + 1);
+                    weight.setContact(2 * (1 - data.getContact()) + 1);
+                    weight.setDefense(2 * (1 - data.getDefense()) + 1);
+                    weight.setShoulder(2 * (1 - data.getShoulder()) + 1);
+                    weight.setEra(2 * (1 - data.getEra()) + 1);
+                    weight.setHealth(2 * (1 - data.getHealth()) + 1);
+                    weight.setControl(2 * (1 - data.getControl()) + 1);
+                    weight.setStability(2 * (1 - data.getStability()) + 1);
+                    weight.setDeterrent(2 * (1 - data.getDeterrent()) + 1);
+                    break;
+                case 2:
+                    weight.setPower(2 * (data.getPower()) + 1);
+                    weight.setSpeed(2 * (data.getSpeed()) + 1);
+                    weight.setContact(2 * (data.getContact()) + 1);
+                    weight.setDefense(2 * (data.getDefense()) + 1);
+                    weight.setShoulder(2 * (data.getShoulder()) + 1);
+                    weight.setEra(2 * (data.getEra()) + 1);
+                    weight.setHealth(2 * (data.getHealth()) + 1);
+                    weight.setControl(2 * (data.getControl()) + 1);
+                    weight.setStability(2 * (data.getStability()) + 1);
+                    weight.setDeterrent(2 * (data.getDeterrent()) + 1);
+                    break;
+                case 3:
+                    break;
+            }
+
+
             try {
-                List<Integer> dat = (List<Integer>) sendToPython(data).getBody().data;
+                List<Integer> dat = (List<Integer>) sendToPython(weight).getBody().data;
                 // HashMap<String,Object>res = new HashMap<String,Object>();
                 for(int player_num : dat){
                     // 각 선수의 번호, 이름, 나이, 포지션, 팀
@@ -194,14 +230,15 @@ public class TeamController {
     }
 
     // 파이썬에 팀 스탯 보내는 메소드
-    private ResponseEntity<RestResponse> sendToPython(TeamStat data) throws IOException {
+    // 가중치 옵션을 줄 수 있게 되어 요청 파라미터에 weight도 추가됨
+    private ResponseEntity<RestResponse> sendToPython(TeamStat weight) throws IOException {
         final RestResponse result = new RestResponse();
 
         // 파이썬에 데이터 전송
-        URL url = new URL("http://127.0.0.1:8000/api/recommend1?team_id=" + data.getTeam_id() +"&power=" + data.getPower()+ "&speed=" + data.getSpeed()
-            + "&contact=" + data.getContact() + "&defense=" + data.getDefense() + "&shoulder=" + data.getShoulder()
-            + "&era=" + data.getEra() + "&health=" + data.getHealth() + "&control=" + data.getControl()
-            + "&stability=" + data.getStability() + "&deterrent=" + data.getDeterrent());
+        URL url = new URL("http://127.0.0.1:8000/api/recommend1?team_id=" + weight.getTeam_id() +"&power=" + weight.getPower()+ "&speed=" + weight.getSpeed()
+            + "&contact=" + weight.getContact() + "&defense=" + weight.getDefense() + "&shoulder=" + weight.getShoulder()
+            + "&era=" + weight.getEra() + "&health=" + weight.getHealth() + "&control=" + weight.getControl()
+            + "&stability=" + weight.getStability() + "&deterrent=" + weight.getDeterrent());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");

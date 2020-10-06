@@ -113,6 +113,17 @@
                 <i class="ni ni-cloud-upload-96" />
                 팀에 필요한 선수
               </span>
+
+              <base-radio name="1" class="mb-3" value="1" v-model="radiopicked">
+                  팀의 약점을 보완할 수 있는 선수
+              </base-radio>
+              <base-radio name="2" class="mb-3" value="2" v-model="radiopicked">
+                  팀의 강점을 더 극대화할 수 있는 선수
+              </base-radio>
+              <base-radio name="3" class="mb-3" value="3" v-model="radiopicked">
+                  직접 가중치 선택
+              </base-radio>
+
               <div class="card custom-table mt-2">
                 <div class="card-header border-0">
                   <div class="row align-items-center">
@@ -266,6 +277,22 @@ export default {
   },
   data() {
     return {
+
+      radiopicked: "1",
+
+      recommendWeights: {
+          era: 1
+          , health: 1
+          , control: 1
+          , stability: 1
+          , deterrent: 1
+          , power: 1
+          , speed: 1
+          , contact: 1
+          , defense: 1
+          , shoulder: 1
+      },
+
       // 팀 스탯
       teamStats: {
         era: 0
@@ -383,6 +410,10 @@ export default {
     }
   },
   watch: {
+    radiopicked(){
+      this.changeLineup(this.lineupId, this.lineupName)
+    },
+
     pageVal(newVal) {
       // 1: 0 to 5
       // 2: 5 to 10
@@ -415,6 +446,12 @@ export default {
     this.playerStatData = this.computePlayerStatData();
   },
   methods: {
+    clickRecommendOption(option){
+      this.recommendOption = option
+      console.log(option)
+      console.log(this.recommendOption)
+    },
+
     computeTeamStatData() {
       let obj = {};
       let label = [];
@@ -479,7 +516,7 @@ export default {
       this.lineupName = name;
 
       PlayerAPI.getTeamStatWithRecommend(
-        "lineup=" + id,
+        "lineup=" + id + "&option=" + this.radiopicked,
         res => {
           this.lineupPlayers = res.playerList;
           this.recommendPlayers = res.recommendList;
