@@ -180,21 +180,13 @@
     </div>
 
     <!-- loading modal -->
-    <modal
-      :show.sync="modals.loading"
-      :showClose="false"
-      modal-classes="modal-dialog-centered modal-sm">
-      <template slot="header">
-          <h2 class="modal-title" id="exampleModalLabel">잠시만 기다려주세요!</h2>
-      </template>
-      
-      <!-- 콘솔에 오류가 왜이렇게 많이 찍히죠? 이거 만든사람이 제대로 안했네 -->
-      <vue-loading
-        type="spiningDubbles"
-        :size="{ width: '50px', height: '50px' }">
-      </vue-loading>
-
-    </modal>
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
   </div>
 </template>
 
@@ -214,7 +206,8 @@ import PlayerAPI from "@/api/PlayerAPI";
 import swal from 'sweetalert';
 
 // Loading
-import { VueLoading } from 'vue-loading-template';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
   components: {
@@ -224,7 +217,7 @@ export default {
     // CustomTable,
     PlayerStatTable,
 
-    VueLoading,
+    Loading,
   },
   data() {
     return {
