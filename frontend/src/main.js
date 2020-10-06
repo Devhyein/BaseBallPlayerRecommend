@@ -21,10 +21,22 @@ import router from './router'
 import './registerServiceWorker'
 import ArgonDashboard from './plugins/argon-dashboard'
 
+import store from './vuex/store'
+
 Vue.config.productionTip = false
+
+// Google Social Login
+import GAuth from 'vue-google-oauth2'
+const gauthOption = {
+  clientId: '420822944998-spsnvgec0jsolelhv29ui190blc2j92t.apps.googleusercontent.com',
+  scope: 'profile email',
+  prompt: 'select_account'
+}
+Vue.use(GAuth, gauthOption)
 
 Vue.use(ArgonDashboard)
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
