@@ -3,5 +3,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.bigdata.dao.simulation.SimulationDao">
-    
+    <!-- 시뮬레이션 -->
+    <insert id = "createSimulation">
+        INSERT INTO simulation(user_id, my_lineup_id, your_lineup_id, is_attack, innings, is_top, out_count, base_info, my_score, your_score, hit_order, game_status)
+        VALUES (#{user_id}, #{my_lineup_id}, #{your_lineup_id}, #{is_attack}, #{innings}, #{is_top}, #{out_count}, #{base_info}, #{my_score}, #{your_score}, #{hit_order}, #{game_status})
+    </insert>
+
+    <select id="searchSimulation" resultType="Simulation" parameterType="int">
+        SELECT * FROM simulation WHERE simulation_id = #{simulation_id};
+    </select>
+
+    <select id="searchSimulationByUserId" resultType="int" parameterType="int">
+        SELECT * FROM simulation WHERE user_id=#{user_id} ORDER BY simulation_id desc LIMIT 1;
+    </select>
+
+    <update id = "updateSimulation" parameterType="Simulation">
+        UPDATE simulation
+        SET is_attack = #{is_attack}, innings = #{innings}, is_top = #{is_top}, 
+        out_count = #{out_count}, base_info = #{base_info}, my_score = #{my_score}, 
+        your_score = #{your_score}, hit_order = #{hit_order} 
+        WHERE simulation_id = #{simulation_id}
+    </update>
+
+    <delete id = "deleteSimulation" parameterType="int">
+        DELETE 
+        FROM simulation
+        WHERE simulation_id = #{simulation_id}
+    </delete>
+
+    <update id = "endSimulation" parameterType="int">
+        UPDATE simulation
+        SET game_status = true
+        WHERE simulation_id = #{simulation_id}
+    </update>
+
+    <!-- 스코어 -->
+    <insert id = "createScore" parameterType="int">
+        INSERT INTO score(simulation_id, my_score, your_score)  
+        VALUES (#{simulation_id}, 0, 0);
+    </insert>
+
+    <select id = "searchScore" parameterType="int" resultType="Score">
+        select * from score where simulation_id = #{simulation_id}
+    </select>
+
+    <update id = "updateScore" parameterType="Score">
+        UPDATE score 
+        SET my_score = #{my_score}, your_score = #{your_score}
+        WHERE simulation_id = #{simulation_id};
+    </update>
+
+    <!-- 타석정보 -->
+    <insert id = "createHitInfo">
+        INSERT INTO hit_info(simulation_id, player_id, at_bat_count, homerun_count, hit1_count, hit2_count, hit3_count, foul_count)
+        VALUES (#{simulation_id}, #{player_id}, 0, 0, 0, 0, 0, 0);
+    </insert>
+
+    <select id = "searchHitInfo" resultType="HitInfo">
+        SELECT * from hit_info 
+        WHERE simulation_id = #{simulation_id} AND player_id = #{player_id}
+    </select>
+
+    <update id = "updateHitInfo" parameterType="HitInfo">
+        Update hit_info
+        SET at_bat_count = #{at_bat_count}, homerun_count = #{homerun_count}, 
+        hit1_count = #{hit1_count}, hit2_count = #{hit2_count}, 
+        hit3_count = #{hit3_count}, foul_count = #{foul_count}
+        WHERE simulation_id = #{simulation_id} AND player_id = #{player_id}
+    </update>
+
 </mapper>
