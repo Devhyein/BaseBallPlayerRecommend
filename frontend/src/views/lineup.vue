@@ -321,6 +321,23 @@
       </card>
     </tabs>
 
+    <!-- loading modal -->
+    <modal
+      :show.sync="modals.loading"
+      :showClose="false"
+      modal-classes="modal-dialog-centered modal-sm">
+      <template slot="header">
+          <h2 class="modal-title" id="exampleModalLabel">잠시만 기다려주세요!</h2>
+      </template>
+      
+      <!-- 콘솔에 오류가 왜이렇게 많이 찍히죠? 이거 만든사람이 제대로 안했네 -->
+      <vue-loading
+        type="spiningDubbles"
+        :size="{ width: '50px', height: '50px' }">
+      </vue-loading>
+
+    </modal>
+
   </div>
 </template>
 
@@ -337,10 +354,15 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Drag and Drop
 import draggable from 'vuedraggable'
 
+// Loading
+import { VueLoading } from 'vue-loading-template';
+
 export default {
   components: {
     CustomRadarChart,
-    draggable
+    draggable,
+
+    VueLoading
   },
   data() {
     return {
@@ -445,6 +467,7 @@ export default {
       modals: {
         position: false,
         team: false,
+        loading: false,
       },
       
       // 포지션 필터링용 리스트
@@ -481,6 +504,7 @@ export default {
     }
 
     // 라인업 리스트 가져오기
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
@@ -497,9 +521,11 @@ export default {
       res => {
         this.favoritePlayers = res;
         this.favoritePlayerTableData = this.computeFavoritePlayerTableData();
+        this.modals.loading = false;
       },
       err => {
         console.log(err);
+        this.modals.loading = false;
       }
     )
 
@@ -598,6 +624,7 @@ export default {
       this.lineupName = name;
       this.isNewLineup = false;
 
+      this.modals.loading = true;
       PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         res => {
@@ -609,10 +636,11 @@ export default {
 
           this.teamStatData = this.computeTeamStatData();
 
-          console.log(res);
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
@@ -647,15 +675,18 @@ export default {
       console.log(id);
       if(id == -1) return;
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
         }
       )
     },
@@ -886,6 +917,7 @@ export default {
       teams = teams.slice(0, -1);
       console.log(teams);
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerList(
         {
           searchText: searchText,
@@ -895,9 +927,11 @@ export default {
         res => {
           this.searchedPlayers = res;
           this.resetSearchedPlayerTableData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },

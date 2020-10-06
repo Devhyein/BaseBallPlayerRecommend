@@ -243,6 +243,23 @@
       </div>
     </div>
 
+    <!-- loading modal -->
+    <modal
+      :show.sync="modals.loading"
+      :showClose="false"
+      modal-classes="modal-dialog-centered modal-sm">
+      <template slot="header">
+          <h2 class="modal-title" id="exampleModalLabel">잠시만 기다려주세요!</h2>
+      </template>
+      
+      <!-- 콘솔에 오류가 왜이렇게 많이 찍히죠? 이거 만든사람이 제대로 안했네 -->
+      <vue-loading
+        type="spiningDubbles"
+        :size="{ width: '50px', height: '50px' }">
+      </vue-loading>
+
+    </modal>
+
   </div>
 </template>
 
@@ -259,10 +276,15 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from 'sweetalert';
 
+// Loading
+import { VueLoading } from 'vue-loading-template';
+
 export default {
   components: {
     CustomRadarChart,
     // CustomTable
+
+    VueLoading,
   },
   data() {
     return {
@@ -380,6 +402,10 @@ export default {
       removedTableRenderKey: 0,
 
       similarTab: false,
+
+      modals: {
+        loading: false,
+      },
     }
   },
   watch: {
@@ -400,14 +426,19 @@ export default {
       return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
         this.lineupList = res;
         console.log(res);
+
+        this.modals.loading = false;
       },
       err => {
         console.log(err);
+
+        this.modals.loading = false;
       }
     );
 
@@ -478,6 +509,7 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
+      this.modals.loading = true;
       PlayerAPI.getTeamStatWithRecommend(
         "lineup=" + id,
         res => {
@@ -489,21 +521,33 @@ export default {
           delete this.teamStats.team_id;
 
           this.teamStatData = this.computeTeamStatData();
+
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
     getPlayerStat(id) {
+
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
         },
         err => {
           console.log(err);
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
         }
       )
 
@@ -515,9 +559,11 @@ export default {
             this.similarPlayers = res.recommendList;
             
             this.resetSimilarPlayerShowData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
           }
         )
       }
@@ -560,14 +606,17 @@ export default {
         this.removedSel = -1;
 
         // 이땐 오직 플레이어의 스탯만 가져오기
+        this.modals.loading = true;
         PlayerAPI.getPlayerStat(
           'num=' + this.similarPlayerListShowData[index].player_id,
           res => {
             this.playerStats = res;
             this.playerStatData = this.computePlayerStatData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
           }
         )
         this.playerName = this.similarPlayerListShowData[index].player_name;
@@ -648,15 +697,19 @@ export default {
       for(let player of this.lineupPlayers) {
         idList.push(player.player_id);
       }
+
+      this.modals.loading = true;
       PlayerAPI.getTeamStat(
         {playerList: idList},
         res => {
           this.modifiedTeamStat = res;
           this.isModifiedTeamStat = true;
           this.teamStatData = this.computeTeamStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
         }
       )
     },
