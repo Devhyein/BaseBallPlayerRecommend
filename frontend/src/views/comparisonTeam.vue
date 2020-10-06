@@ -93,6 +93,24 @@
         </div>
       </div>
     </div>
+
+    <!-- loading modal -->
+    <modal
+      :show.sync="modals.loading"
+      :showClose="false"
+      modal-classes="modal-dialog-centered modal-sm">
+      <template slot="header">
+          <h2 class="modal-title" id="exampleModalLabel">잠시만 기다려주세요!</h2>
+      </template>
+      
+      <!-- 콘솔에 오류가 왜이렇게 많이 찍히죠? 이거 만든사람이 제대로 안했네 -->
+      <vue-loading
+        type="spiningDubbles"
+        :size="{ width: '50px', height: '50px' }">
+      </vue-loading>
+
+    </modal>
+
   </div>
 </template>
 
@@ -110,11 +128,15 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from "sweetalert";
 
+// Loading
+import { VueLoading } from 'vue-loading-template';
+
 export default {
   components: {
     CustomRadarChart,
     CustomTable,
     TeamComparisonTable,
+    VueLoading
   },
   data() {
     return {
@@ -228,23 +250,30 @@ export default {
         defenseDif: 0,
         shoulderDif: 0,
       },
+
+      modals: {
+        loading: false,
+      },
     };
   },
   created() {
-    if (this.$store.state.userInfo.user_id == undefined) {
+    if (this.$store.state.userInfo.id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({ name: "Login" });
       return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       (res) => {
         this.lineupList = res;
         this.MyLineupList = res;
+        this.modals.loading = false;
       },
       (err) => {
         console.log(err);
+        this.modals.loading = false;
       }
     );
 
@@ -418,7 +447,8 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.lineupPlayers = res.playerList;
@@ -443,9 +473,12 @@ export default {
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
           this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
@@ -453,7 +486,8 @@ export default {
       this.MyLineupId = id;
       this.MyLineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.MyLineupPlayers = res.playerList;
@@ -479,35 +513,43 @@ export default {
             shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
           this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
     getPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
     getMyPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.MyplayerStats = res;
           this.MyPlayerStatData = this.computeMyPlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
         }
       );
     },
