@@ -9,6 +9,7 @@ import com.ssafy.bigdata.jwt.*;
 
 import java.util.HashMap;
 
+import com.ssafy.bigdata.dao.user.UserRepository;
 import com.ssafy.bigdata.dto.LoginRequest;
 import com.ssafy.bigdata.dto.LoginResponse;
 import com.ssafy.bigdata.dto.RestResponse;
