@@ -206,15 +206,15 @@ export default {
       lineupId: 0,
 
       // 라인업 선수 테이블 컬럼들
-      tableColumns: ["At bat", "Position", "Name"],
-      MytableColumns: ["At bat", "Position", "Name"],
+      tableColumns: ["타순", "포지션", "이름"],
+      MytableColumns: ["타순", "포지션", "이름"],
 
       // 팀 특징 데이터
       compareTableData: [],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
-      playerName: "Select player",
-      MyplayerName: "Select player",
+      playerName: "선수 선택",
+      MyplayerName: "선수 선택",
 
       // 그래프 타입(배경 색)
       chartType: "secondary",
@@ -449,7 +449,7 @@ export default {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
-        label: "Player stat",
+        label: "상대 팀 선수 스탯",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
@@ -471,7 +471,7 @@ export default {
         data.push(this.MyPlayerStats.five_tool[key]);
       }
       obj.data = {
-        label: "MyPlayer stat",
+        label: "내 팀 선수 스탯",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
