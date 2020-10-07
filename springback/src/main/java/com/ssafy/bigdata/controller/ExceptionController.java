@@ -95,6 +95,9 @@ public class ExceptionController {
         RestResponse response = new RestResponse();
         response.status = false;
         response.msg = returnMsg;
+
+        e.printStackTrace();
+        
         return response;
     }
 }

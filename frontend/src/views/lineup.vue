@@ -27,18 +27,11 @@
             <div class="dropdown-divider"></div>
             <span class="dropdown-item" @click="newLineUp">라인업 추가</span>
           </base-dropdown>
-          <!-- 초기화, 저장 버튼 -->
-          <!-- <base-button
-            slot="title"
-            type="secondary"
-            class="ml-2"
-            @click="resetLineup">
-            초기화
-          </base-button> -->
+          <!-- 저장 버튼 -->
           <base-button
             slot="title"
             type="secondary"
-            class="ml-2 col"
+            class="ml-4 col"
             @click="saveLineup">
             라인업 저장
           </base-button>
@@ -126,7 +119,6 @@
       <card shadow>
           <tab-pane title="searchPlayer">
               <span slot="title">
-                  <i class="ni ni-cloud-upload-96" />
                   선수 검색
               </span>
               <div class="container-fluid mt-2 row">
@@ -277,7 +269,6 @@
 
           <tab-pane title="favoritePlayer">
               <span slot="title">
-                  <i class="ni ni-bell-55 mr-2" />
                   즐겨찾기한 선수
               </span>
               <div class="container-fluid mt-2 row">
@@ -421,22 +412,21 @@ export default {
 
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
-        "At bat"
+        "타순"
         // , "Position"
-        , "Name"
+        , "이름"
       ],
 
       // 검색된 선수 테이블 컬럼들
       tableColumnsForSearch: [
-        "Name"
-        , "Team"
-        , "Position"
-        , "Number"
-        , "Age"
+        "이름"
+        , "팀"
+        , "포지션"
+        , "나이"
       ],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
-      playerName: "Select player",
+      playerName: "선수 선택",
 
       // 그래프 타입(배경 색)
       chartType: "secondary",
@@ -546,7 +536,6 @@ export default {
           player.player_name, 
           player.player_team, 
           player.position,
-          player.player_num,
           player.player_age
         ]);
       }
@@ -559,7 +548,6 @@ export default {
           player.player_name, 
           player.player_team, 
           player.position,
-          player.player_num,
           player.player_age
         ]);
       }
@@ -614,7 +602,7 @@ export default {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
-        label: 'Player stat',
+        label: '선수 스탯',
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,

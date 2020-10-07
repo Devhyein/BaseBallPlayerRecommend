@@ -3,7 +3,7 @@
     <div slot="header" class="row align-items-center">
       <div class="col">
         <h6 class="text-uppercase text-muted ls-1 mb-1">Stat graph</h6>
-        <h5 class="h3 mb-0 text-default">All Stats</h5>
+        <h5 class="h3 mb-0 text-default">전체 스탯</h5>
       </div>
     </div>
 

@@ -62,7 +62,7 @@
           <custom-radar-chart
             class="col"
             title="Team Stat"
-            :subTitle="lineupName"
+            :subTitle="radarChartTitle"
             :data="CommonTeamStatData"
             :type="chartType"
           />
@@ -206,15 +206,15 @@ export default {
       lineupId: 0,
 
       // 라인업 선수 테이블 컬럼들
-      tableColumns: ["At bat", "Position", "Name"],
-      MytableColumns: ["At bat", "Position", "Name"],
+      tableColumns: ["타순", "포지션", "이름"],
+      MytableColumns: ["타순", "포지션", "이름"],
 
       // 팀 특징 데이터
       compareTableData: [],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
-      playerName: "Select player",
-      MyplayerName: "Select player",
+      playerName: "선수 선택",
+      MyplayerName: "선수 선택",
 
       // 그래프 타입(배경 색)
       chartType: "secondary",
@@ -247,6 +247,8 @@ export default {
       modals: {
         loading: false,
       },
+
+      radarChartTitle: ''
     };
   },
   created() {
@@ -296,6 +298,23 @@ export default {
       this.comparisonContent
     );
     console.log(this.compareTableData)
+  },
+  watch: {
+    lineupName() {
+      let left = this.lineupName;
+      let right = this.MyLineupName;
+
+      if(left == '상대 라인업 선택') {
+        left = '';
+      }
+      if(right == '나의 라인업 선택') {
+        right = '';
+      }
+      this.radarChartTitle = left + " vs " + right;
+    },
+    MyLineupName() {
+      this.radarChartTitle = this.lineupName + " vs " + this.MyLineupName;
+    }
   },
 
   methods: {
@@ -430,7 +449,7 @@ export default {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
-        label: "Player stat",
+        label: "상대 팀 선수 스탯",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
@@ -452,7 +471,7 @@ export default {
         data.push(this.MyPlayerStats.five_tool[key]);
       }
       obj.data = {
-        label: "MyPlayer stat",
+        label: "내 팀 선수 스탯",
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
@@ -492,7 +511,7 @@ export default {
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
 
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(this.comparisonContent);
 
           this.modals.loading = false;
         },
@@ -539,7 +558,7 @@ export default {
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
 
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(this.comparisonContent);
           this.modals.loading = false;
         },
         (err) => {

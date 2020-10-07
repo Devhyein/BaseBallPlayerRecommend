@@ -108,7 +108,7 @@
             <div class="card-header border-0">
               <div class="row align-items-center">
                 <div class="col">
-                  <h3 class="mb-0">Player List</h3>
+                  <h3 class="mb-0">선수 목록</h3>
                 </div>
               </div>
             </div>
@@ -128,7 +128,6 @@
                       <td @click="selectPlayer(rowIdx)">{{player.player_name}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.player_team}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.position}}</td>
-                      <td @click="selectPlayer(rowIdx)">{{player.player_num}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.player_age}}</td>
                   </tr>
                 </tbody>
@@ -225,11 +224,10 @@ export default {
       playerList: [],
       playerListTableCols: [
         ""
-        , "Name"
-        , "Team"
-        , "Position"
-        , "Number"
-        , "Age"
+        , "이름"
+        , "팀"
+        , "포지션"
+        , "나이"
       ],
 
       playerListShowData: [],
@@ -253,7 +251,7 @@ export default {
       searchType: "Name",
       searchVal: "",
 
-      playerName: "Select player",
+      playerName: "선수 선택",
 
       chartType: "secondary",
 
@@ -359,7 +357,7 @@ export default {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
-        label: 'Player stat',
+        label: '선수 선택',
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
