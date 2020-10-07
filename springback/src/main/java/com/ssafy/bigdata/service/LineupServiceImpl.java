@@ -19,6 +19,8 @@ public class LineupServiceImpl implements LineupService {
     @Autowired
     private TeamDao teamDao;
 
+    @Autowired
+    private UserDao userDao;
 
     // 라인업리스트 가져오기
     @Override
