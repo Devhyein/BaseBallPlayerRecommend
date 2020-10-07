@@ -65,14 +65,14 @@
     </div>
 
     <!-- loading modal -->
-    <loading
+    <!-- <loading
         :active.sync="model.isInit"
         loader="bars"
         color="#007bff"
         :height="128"
         :width="128"
         :can-cancel="false" 
-        :is-full-page="true"></loading>
+        :is-full-page="true"></loading> -->
 
   </div>
 </template>
@@ -81,13 +81,13 @@ import swal from "sweetalert";
 import PlayerAPI from "@/api/PlayerAPI";
 
 // Loading
-import Loading from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/vue-loading.css';
+// import Loading from 'vue-loading-overlay';
+// import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
   name: "login",
   components: {
-    Loading
+    // Loading
   },
   data() {
     return {
