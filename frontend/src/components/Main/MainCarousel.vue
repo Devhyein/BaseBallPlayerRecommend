@@ -20,18 +20,28 @@
           {
             img: true,
             src:
-              "/img/news1.jpg"
+              "/img/Service1.png"
           },
           {
             img: true,
             src:
-              "/img/news2.jpg"
+              "/img/Service2.png"
           },
           {
             img: true,
             src:
-              "/img/news3.jpg"
-          }
+              "/img/Service3.png"
+          },
+          {
+            img: true,
+            src:
+              "/img/Service4.png"
+          },
+          {
+            img: true,
+            src:
+              "/img/Service5.png"
+          },
         ]
       };
     }
