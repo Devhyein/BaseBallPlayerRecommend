@@ -1052,6 +1052,33 @@ export default {
 
       // 라인업에 추가
       this.lineupPlayers.push(this.searchedPlayerListShowData[idx]);
+
+      // 라인업에 추가 후 팀스텟 다시 계산
+      let idList = [];
+      for(let player of this.lineupPlayers) {
+        idList.push(player.player_id);
+      }
+
+      this.modals.loading = true;
+      PlayerAPI.getTeamStat(
+        {playerList: idList},
+        res => {
+          this.teamStats = res.teamStat;
+          this.teamStatData = this.computeTeamStatData();
+
+          this.modals.loading = false;
+        },
+        err => {
+          console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
+        }
+      )
     },
     addToLineupFromFavorite(idx) {
       // 라인업을 먼저 선택해야함
@@ -1089,6 +1116,33 @@ export default {
 
     deleteFromLineup(idx) {
       this.lineupPlayers.splice(idx, 1);
+
+      // 라인업에 추가 후 팀스텟 다시 계산
+      let idList = [];
+      for(let player of this.lineupPlayers) {
+        idList.push(player.player_id);
+      }
+
+      this.modals.loading = true;
+      PlayerAPI.getTeamStat(
+        {playerList: idList},
+        res => {
+          this.teamStats = res.teamStat;
+          this.teamStatData = this.computeTeamStatData();
+
+          this.modals.loading = false;
+        },
+        err => {
+          console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
+        }
+      )
     }
   }
 };
