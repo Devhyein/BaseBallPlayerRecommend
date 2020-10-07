@@ -1,7 +1,5 @@
 package com.ssafy.bigdata.dto.simulation;
 
-import java.util.Arrays;
-
 public class Simulation {
 
     private int simulation_id;
@@ -16,14 +14,17 @@ public class Simulation {
     private int[] base_info_array;
     private int my_score;
     private int your_score;
-    private int hit_order;
+    private int my_hit_order;
+    private int your_hit_order;
+    private boolean game_status;
 
     public Simulation() {
 
     }
 
     public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
-            int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score, int hit_order) {
+            int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score,
+            int my_hit_order, int your_hit_order, boolean game_status) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
         this.my_lineup_id = my_lineup_id;
@@ -35,12 +36,14 @@ public class Simulation {
         this.base_info = base_info;
         this.my_score = my_score;
         this.your_score = your_score;
-        this.hit_order = hit_order;
+        this.my_hit_order = my_hit_order;
+        this.your_hit_order = your_hit_order;
+        this.game_status = game_status;
     }
 
     public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
             int innings, boolean is_top, int out_count, int[] base_info_array, int my_score, int your_score,
-            int hit_order) {
+            int my_hit_order, int your_hit_order, boolean game_status) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
         this.my_lineup_id = my_lineup_id;
@@ -52,7 +55,9 @@ public class Simulation {
         this.base_info_array = base_info_array;
         this.my_score = my_score;
         this.your_score = your_score;
-        this.hit_order = hit_order;
+        this.my_hit_order = my_hit_order;
+        this.your_hit_order = your_hit_order;
+        this.game_status = game_status;
     }
 
     public int getSimulation_id() {
@@ -151,21 +156,28 @@ public class Simulation {
         this.your_score = your_score;
     }
 
-    public int getHit_order() {
-        return hit_order;
+    public int getMy_hit_order() {
+        return my_hit_order;
     }
 
-    public void setHit_order(int hit_order) {
-        this.hit_order = hit_order;
+    public void setMy_hit_order(int my_hit_order) {
+        this.my_hit_order = my_hit_order;
     }
 
-    @Override
-    public String toString() {
-        return "Simulation [base_info=" + base_info + ", base_info_array=" + Arrays.toString(base_info_array)
-                + ", hit_order=" + hit_order + ", innings=" + innings + ", is_attack=" + is_attack + ", is_top="
-                + is_top + ", my_lineup_id=" + my_lineup_id + ", my_score=" + my_score + ", out_count=" + out_count
-                + ", simulation_id=" + simulation_id + ", user_id=" + user_id + ", your_lineup_id=" + your_lineup_id
-                + ", your_score=" + your_score + "]";
+    public int getYour_hit_order() {
+        return your_hit_order;
+    }
+
+    public void setYour_hit_order(int your_hit_order) {
+        this.your_hit_order = your_hit_order;
+    }
+
+    public boolean isGame_status() {
+        return game_status;
+    }
+
+    public void setGame_status(boolean game_status) {
+        this.game_status = game_status;
     }
 
 }
