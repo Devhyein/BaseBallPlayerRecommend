@@ -492,7 +492,7 @@ export default {
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
 
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(this.comparisonContent);
 
           this.modals.loading = false;
         },
@@ -539,7 +539,7 @@ export default {
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
 
-          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.compareTableData = this.sortObjectEntries(this.comparisonContent);
           this.modals.loading = false;
         },
         (err) => {
