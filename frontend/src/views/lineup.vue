@@ -412,21 +412,21 @@ export default {
 
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
-        "At bat"
+        "타순"
         // , "Position"
-        , "Name"
+        , "이름"
       ],
 
       // 검색된 선수 테이블 컬럼들
       tableColumnsForSearch: [
-        "Name"
-        , "Team"
-        , "Position"
-        , "Age"
+        "이름"
+        , "팀"
+        , "포지션"
+        , "나이"
       ],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
-      playerName: "Select player",
+      playerName: "선수 선택",
 
       // 그래프 타입(배경 색)
       chartType: "secondary",
@@ -602,7 +602,7 @@ export default {
         data.push(this.playerStats.five_tool[key]);
       }
       obj.data = {
-        label: 'Player stat',
+        label: '선수 스탯',
         backgroundColor: "rgba(255, 0, 0, 0.2)",
         borderColor: "rgb(255, 0, 0)",
         borderWidth: 1,
