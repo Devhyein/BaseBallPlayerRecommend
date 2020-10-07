@@ -63,14 +63,32 @@
         </div>-->
         </div>
     </div>
+
+    <!-- loading modal -->
+    <loading
+        :active.sync="model.isInit"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 <script>
 import swal from "sweetalert";
 import PlayerAPI from "@/api/PlayerAPI";
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   name: "login",
+  components: {
+    Loading
+  },
   data() {
     return {
       model: {
@@ -84,14 +102,17 @@ export default {
     let checkGauthLoad = setInterval(function () {
       that.isInit = that.$gAuth.isInit;
       // 준비 되었으면 확인 그만하기
-      if (that.isInit) clearInterval(checkGauthLoad);
+      if (that.isInit) {
+        that.model.isInit = true;
+        clearInterval(checkGauthLoad);
+      }
     }, 1000);
   },
   methods: {
     googleLogin() {
       console.log("Google Login Button Clicked");
       if (!this.isInit) {
-        swal("경고", "구글 로그인이 아직 준비되지 않았습니다.", "warning");
+        swal("경고", "아직 준비되지 않았습니다. 잠시만 기다려주세요!", "warning");
         return;
       }
 
