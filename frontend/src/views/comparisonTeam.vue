@@ -92,6 +92,16 @@
         </div>
       </div>
     </div>
+
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -109,11 +119,16 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from "sweetalert";
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     CustomRadarChart,
     CustomTable,
     TeamComparisonTable,
+    Loading
   },
   data() {
     return {
@@ -228,36 +243,36 @@ export default {
         DEFENSE: 0,
         SHOULDER: 0,
       },
+
+      modals: {
+        loading: false,
+      },
     };
   },
   created() {
-    if (this.$store.state.userInfo.user_id == undefined) {
-      if (this.$store.state.userInfo.id == undefined) {
-        swal("경고", "로그인이 필요한 서비스입니다.", "warning");
-        this.$router.push({ name: "Login" });
-        return;
-      }
-
-      // 라인업 리스트 가져오기
-      PlayerAPI.getLineupList(
-        "none=none",
-        (res) => {
-          this.lineupList = res;
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
+    if (this.$store.state.userInfo.id == undefined) {
+      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+      this.$router.push({ name: "Login" });
+      return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       (res) => {
-        this.lineupList = res;
-        this.MyLineupList = res;
+        this.lineupList = res.lineupList;
+        this.MyLineupList = res.lineupList;
+        this.modals.loading = false;
       },
       (err) => {
         console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -451,7 +466,8 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.lineupPlayers = res.playerList;
@@ -475,13 +491,20 @@ export default {
             DEFENSE: this.MyTeamStats.defense - this.teamStats.defense,
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEntries(
-            this.comparisonContent
-          );
-          console.log(this.compareTableData);
+
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -489,7 +512,8 @@ export default {
       this.MyLineupId = id;
       this.MyLineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.MyLineupPlayers = res.playerList;
@@ -514,39 +538,63 @@ export default {
             DEFENSE: this.MyTeamStats.defense - this.teamStats.defense,
             SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          this.compareTableData = this.sortObjectEntries(
-            this.comparisonContent
-          );
-          console.log(this.compareTableData);
+
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getMyPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.MyplayerStats = res;
           this.MyPlayerStatData = this.computeMyPlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },

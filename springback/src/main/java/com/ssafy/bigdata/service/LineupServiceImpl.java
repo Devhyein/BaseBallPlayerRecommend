@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.ssafy.bigdata.dao.lineup.LineupDao;
 import com.ssafy.bigdata.dao.team.TeamDao;
-import com.ssafy.bigdata.dao.user.UserDao;
 import com.ssafy.bigdata.dto.Lineup;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ public class LineupServiceImpl implements LineupService {
     @Autowired
     private UserDao userDao;
 
-//test
     // 라인업리스트 가져오기
     @Override
     public List<Lineup> getLineupList() {
@@ -87,6 +85,8 @@ public class LineupServiceImpl implements LineupService {
         }
     }
 
-
-
+    @Override
+    public int modifyLineupName(Lineup lineup) {
+        return lineupDao.modifyLineupName(lineup);
+    }
 }

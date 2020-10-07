@@ -5,7 +5,9 @@
     <!--Content-->
     <div class="container-fluid mt-4">
       <!--Search form-->
-        <form class="navbar-search form-inline">
+        <form
+          class="navbar-search form-inline"
+          onsubmit="return false;">
           <base-button
             slot="title"
             type="secondary"
@@ -102,12 +104,43 @@
       <!--Table-->
       <div class="row mt-5">
         <div class="col mb-5">
-          <custom-table
+          <div class="card custom-table mt-2">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Player List</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table tablesorter table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th v-for="column in playerListTableCols" :key="column">{{ column }}</th>
+                  </tr>
+                </thead>
+                <tbody :key="tableRenderKey">
+                  <tr v-for="(player, rowIdx) in playerListShowData" :key="rowIdx">
+                      <td :class="{'text-yellow': playerListShowData[rowIdx].isFavorite}">
+                        <i  class="fa fa-star" aria-hidden="true" @click="clickFavorite(rowIdx)"></i>
+                      </td>
+                      
+                      <td @click="selectPlayer(rowIdx)">{{player.player_name}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_team}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.position}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_num}}</td>
+                      <td @click="selectPlayer(rowIdx)">{{player.player_age}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- <custom-table
             tableTitle="Player List"
             :tableData="playerListTableData"
             :cols="playerListTableCols"
             @clickRow="selectPlayer"
-          />
+          /> -->
           <div>
             <base-pagination
               :page-count="pageCount"
@@ -145,6 +178,15 @@
       </div>
       <!--End table-->
     </div>
+
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
   </div>
 </template>
 
@@ -154,7 +196,7 @@ import PlayerStatChart from "@/components/Player/PlayerStatChart";
 import CustomRadarChart from "@/components/Player/CustomRadarChart";
 
 // Tables
-import CustomTable from "@/views/Tables/CustomTable";
+// import CustomTable from "@/views/Tables/CustomTable";
 import PlayerStatTable from "./Tables/PlayerStatTable";
 
 // API
@@ -163,20 +205,27 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from 'sweetalert';
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     PlayerStatChart,
     CustomRadarChart,
 
-    CustomTable,
+    // CustomTable,
     PlayerStatTable,
+
+    Loading,
   },
   data() {
     return {
       ////////////////////////////////////////////////////////////////////////////
       playerList: [],
       playerListTableCols: [
-        "Name"
+        ""
+        , "Name"
         , "Team"
         , "Position"
         , "Number"
@@ -197,7 +246,6 @@ export default {
           defense: 0,
           shoulder: 0,
         },
-        // 투수 스탯이라고 가정
         stats: [],
       },
       ////////////////////////////////////////////////////////////////////////////
@@ -213,6 +261,7 @@ export default {
       modals: {
         position: false,
         team: false,
+        loading: false,
       },
       // 포지션 필터링용 리스트
       positionFilter: [false,
@@ -224,7 +273,16 @@ export default {
         false],
       
       positionRenderKey: 0,
-      teamRenderKey: 0
+      teamRenderKey: 0,
+
+      tableRenderKey: 0,
+    }
+  },
+  created() {
+    if(this.$store.state.userInfo.id == undefined) {
+      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+      this.$router.push({name: "Login"});
+      return;
     }
   },
   computed: {
@@ -366,6 +424,7 @@ export default {
       }
       teams = teams.slice(0, -1);
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerList(
         {
           searchText: searchText,
@@ -373,11 +432,19 @@ export default {
           positions: positions
         },
         res => {
-          this.playerList = res;
+          this.playerList = res.playerList;
           this.resetPlayerListTable();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -420,6 +487,12 @@ export default {
         },
         err => {
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -457,6 +530,57 @@ export default {
       }
       this.teamRenderKey += 1;
     },
+
+    clickFavorite(idx) {
+      this.playerListShowData[idx].isFavorite = !this.playerListShowData[idx].isFavorite;
+      this.tableRenderKey += 1;
+
+      this.modifyFavorite(this.playerListShowData[idx].player_id, this.playerListShowData[idx].isFavorite);
+    },
+    modifyFavorite(id, s) {
+      // 로그인이 안되어있다면 동작하지 않음
+      if(this.$store.state.userInfo.id == undefined) {
+        swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+        return;
+      }
+
+      // 별에 불들어왔다면 즐겨찾기에 추가
+      if(s) {
+        PlayerAPI.addFavorite(
+          {
+            player_id: id
+          },
+          res => {
+            console.log('add favorites success', res);
+          },
+          err => {
+            console.log(err);
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
+          }
+        )
+      }
+      // 별에 불 꺼졌다면 즐겨찾기에서 제거
+      else {
+        PlayerAPI.deleteFavorite(
+          'player_id=' + id,
+          res => {
+            console.log('delete favorites success', res);
+          },
+          err => {
+            console.log(err);
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
+          }
+        )
+      }
+    }
   },
   mounted() {},
 };

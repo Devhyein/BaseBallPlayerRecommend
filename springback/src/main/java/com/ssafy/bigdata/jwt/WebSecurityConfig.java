@@ -3,7 +3,7 @@ package com.ssafy.bigdata.jwt;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -11,11 +11,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private final JwtTokenProvider jwtTokenProvider;
 
     // 암호화에 필요한 PasswordEncoder 를 Bean 등록합니다.
     @Bean
@@ -41,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .anyRequest().permitAll() // 그외 나머지 요청은 누구나 접근 가능
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(),
                         UsernamePasswordAuthenticationFilter.class);
                 // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
     }

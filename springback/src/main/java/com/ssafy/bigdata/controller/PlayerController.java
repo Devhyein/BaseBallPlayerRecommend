@@ -10,21 +10,27 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
+import com.ssafy.bigdata.dto.Favorites;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.SearchRequest;
 import com.ssafy.bigdata.dto.StatForChart;
 import com.ssafy.bigdata.dto.TeamStat;
+import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.service.FavoritesService;
 import com.ssafy.bigdata.service.PlayerService;
 import com.ssafy.bigdata.service.TeamService;
+import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,37 +42,59 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/spring")
 public class PlayerController {
 
+    @Autowired
     private PlayerService playerService;
+    @Autowired
     private TeamService teamService;
+    @Autowired
     private PlayerDao playerDao;
-
     @Autowired
-    public void setPlayerDao(PlayerDao playerDao) {
-        this.playerDao = playerDao;
-    }
-    
+    private FavoritesService favoritesService;
     @Autowired
-    public void setTeamService(TeamService teamService) {
-        this.teamService = teamService;
-    }
-
-    @Autowired
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
-    }
+    private UserService userService;
     
     @ApiOperation(value = "선수 검색 리스트")
     @PostMapping("/info/playerlist")
     // 선수 이름 검색 시 해당 검색어 들어가는 선수 반환
-    public Object search_player(@RequestBody final SearchRequest search) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestBody final SearchRequest search) {
         final RestResponse response = new RestResponse();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+        //////////////////////////////////////////////////////////////////////
         
         List<Player> res = new ArrayList<Player>();
         try {
             res = playerService.searchPlayerList(search);
+
+            for(Player player : res) {
+                // 로그인이 안되어있으면 즐겨찾기 정보는 안줌
+                if(user == null) {
+                    player.setIsFavorite(false);
+                } else {
+                    Favorites favorites = new Favorites();
+                    favorites.setPlayer_id(player.getPlayer_id());
+                    favorites.setUser_id(user.getUser_id());
+    
+                    player.setIsFavorite(favoritesService.isFavorite(favorites));
+                }
+            }
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("playerList", res);
+            data.put("isUser", user != null);
+            
+            // 로그인 된 유저면 토큰 새로만들어서 넘겨주기
+            if(user != null) {
+                data.put("token", userService.getTokenByEmail(user.getEmail()));
+            } else {
+                data.put("token", null);
+            }
+
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         } catch (Exception e){
             response.status = false;
             response.msg = "search player list error";
@@ -77,9 +105,13 @@ public class PlayerController {
 
     @ApiOperation(value = "선수 스탯")
     @GetMapping("/info/player")
-    // 선수 이름 검색 시 해당 검색어 들어가는 선수 반환
-    public Object playerStat(@RequestParam int num) {
+    public Object playerStat(@RequestHeader final HttpHeaders header, @RequestParam int num) {
         final RestResponse response = new RestResponse();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+        //////////////////////////////////////////////////////////////////////
         
         // 선수 번호를 가지고 선수의 포지션 알아옴.
         String position = playerService.findPlayerPosition(num);
@@ -97,7 +129,14 @@ public class PlayerController {
                 statList.addAll(playerService.getPlayerStatsFielder(num));
     
                 res.put("stats", statList);
-            }   
+            }
+
+            // 로그인된 유저라면 새로운 토큰 발급
+            if(user != null) {
+                res.put("token", userService.getTokenByEmail(user.getEmail()));
+            } else {
+                res.put("token", null);
+            }
         } catch (Exception e) {
             response.status = false;
             response.msg = "No data";
@@ -112,10 +151,23 @@ public class PlayerController {
 
     @ApiOperation(value = "플레이어별 추천 탭 석택시 라인업리스트, 팀스탯정보 제공")
     @GetMapping("/recommend2")
-    public Object search_player(@RequestParam int lineup) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
 
         // 라인업의 선수 반환
         try {
@@ -131,6 +183,12 @@ public class PlayerController {
                             p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                             p.setPlayer_age(playerService.getAgeWithBirth(p.getPlayer_birth()));
                             p.setPlayer_position(index++);
+
+                            Favorites favorites = new Favorites();
+                            favorites.setPlayer_id(p.getPlayer_id());
+                            favorites.setUser_id(user.getUser_id());
+
+                            p.setIsFavorite(favoritesService.isFavorite(favorites));
                         }
                     }
                 } catch (Exception e) {
@@ -149,6 +207,8 @@ public class PlayerController {
             e.printStackTrace();
         }
         
+        // 새로운 토큰 발급
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
         res.put("playerList", playerlist);
         res.put("teamStat", data);
 
@@ -160,10 +220,23 @@ public class PlayerController {
 
     @ApiOperation(value = "플레이어별 추천 탭 석택시 라인업리스트, 팀스탯정보 제공")
     @GetMapping("/recommend/player")
-    public Object recommend_player(@RequestParam int player_id) {
+    public Object recommend_player(@RequestHeader final HttpHeaders header, @RequestParam int player_id) {
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> recommendlist = new ArrayList<Player>();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
 
         try {
             List<Integer> dat = (List<Integer>) sendToPython(player_id).getBody().data;
@@ -176,6 +249,12 @@ public class PlayerController {
                             p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
                             p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                             p.setPlayer_age(playerService.getAgeWithBirth(p.getPlayer_birth()));
+
+                            Favorites favorites = new Favorites();
+                            favorites.setPlayer_id(p.getPlayer_id());
+                            favorites.setUser_id(user.getUser_id());
+
+                            p.setIsFavorite(favoritesService.isFavorite(favorites));
                         }
                     }
                 } catch (Exception e) {
@@ -189,6 +268,7 @@ public class PlayerController {
             response.data = null;
         }
       
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
         res.put("recommendList", recommendlist);
 
         response.status = true;
