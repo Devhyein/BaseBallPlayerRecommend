@@ -2,8 +2,12 @@
   <div>
     <base-header type="translucent-default" class="pb-5 pt-5">
     </base-header>
-    <div class="p-3 mt-5">
-      <main-carousel/>
+    <div class="pl-5 pr-5 pt-5">
+      <div class="pl-5 pr-5 pt-2">
+        <div class="pl-3 pl-3">
+          <main-carousel/>
+        </div>
+      </div>
     </div>
     <br>
      <!-- Card stats -->
@@ -27,7 +31,7 @@
 
       <div class="col-xl-3 col-lg-6">
         <stats-card
-          title="Player Recommendation"
+          title="Recommendation"
           type="gradient-red"
           sub-title="35,390명의 선수"
           icon="ni ni-user-run"
@@ -36,7 +40,7 @@
           <template slot="footer">
             <span class="text-success mr-2">
               Recommendation service
-              <br />according to position and specific player
+              <br />according to team stat
             </span>
           </template>
         </stats-card>
@@ -46,7 +50,7 @@
         <stats-card
           title="Lineup service"
           type="gradient-green"
-          sub-title="비교할 수 있는 라인업"
+          sub-title="라인업 비교"
           icon="ni ni-align-left-2"
           class="mb-4 mb-xl-0"
         >
@@ -63,7 +67,7 @@
         <stats-card
           title="Custom service"
           type="gradient-info"
-          sub-title="당신이 찾는 그 선수"
+          sub-title="선수 검색"
           icon="ni ni-circle-08"
           class="mb-4 mb-xl-0"
         >
@@ -90,5 +94,5 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 </style>
