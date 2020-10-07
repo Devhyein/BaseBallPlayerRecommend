@@ -292,9 +292,9 @@
         </div>
         <!-- 2. 선수 목록에서 제외된 선수 목록 테이블 -->
         <div class="row mt-2" v-if="removedPlayers.length > 0">
-          <div class="card custom-table mt-2">
+          <div class="card mt-2">
             <div class="card-header border-0">
-              <div class="row align-items-center">
+              <div class="row">
                 <div class="col">
                   <h3 class="mb-0">제외된 선수</h3>
                 </div>
