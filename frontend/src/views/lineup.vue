@@ -27,18 +27,11 @@
             <div class="dropdown-divider"></div>
             <span class="dropdown-item" @click="newLineUp">라인업 추가</span>
           </base-dropdown>
-          <!-- 초기화, 저장 버튼 -->
-          <!-- <base-button
-            slot="title"
-            type="secondary"
-            class="ml-2"
-            @click="resetLineup">
-            초기화
-          </base-button> -->
+          <!-- 저장 버튼 -->
           <base-button
             slot="title"
             type="secondary"
-            class="ml-2 col"
+            class="ml-4 col"
             @click="saveLineup">
             라인업 저장
           </base-button>
@@ -126,7 +119,6 @@
       <card shadow>
           <tab-pane title="searchPlayer">
               <span slot="title">
-                  <i class="ni ni-cloud-upload-96" />
                   선수 검색
               </span>
               <div class="container-fluid mt-2 row">
@@ -277,7 +269,6 @@
 
           <tab-pane title="favoritePlayer">
               <span slot="title">
-                  <i class="ni ni-bell-55 mr-2" />
                   즐겨찾기한 선수
               </span>
               <div class="container-fluid mt-2 row">
@@ -431,7 +422,6 @@ export default {
         "Name"
         , "Team"
         , "Position"
-        , "Number"
         , "Age"
       ],
 
@@ -546,7 +536,6 @@ export default {
           player.player_name, 
           player.player_team, 
           player.position,
-          player.player_num,
           player.player_age
         ]);
       }
