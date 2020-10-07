@@ -501,10 +501,16 @@ export default {
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
+        this.lineupList = res.lineupList;
       },
       err => {
         console.log(err);
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -512,13 +518,19 @@ export default {
     PlayerAPI.readFavorite(
       "none=none",
       res => {
-        this.favoritePlayers = res;
+        this.favoritePlayers = res.playerList;
         this.favoritePlayerTableData = this.computeFavoritePlayerTableData();
         this.modals.loading = false;
       },
       err => {
         console.log(err);
         this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     )
 
@@ -634,6 +646,12 @@ export default {
         err => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -680,6 +698,12 @@ export default {
         err => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -748,7 +772,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -785,6 +809,12 @@ export default {
         err => {
           swal('실패', '라인업 저장 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -823,7 +853,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -835,6 +865,12 @@ export default {
         },
         err => {
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -854,7 +890,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -864,6 +900,12 @@ export default {
         err => {
           swal('실패', '라인업 삭제 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -918,13 +960,19 @@ export default {
           positions: positions
         },
         res => {
-          this.searchedPlayers = res;
+          this.searchedPlayers = res.playerList;
           this.resetSearchedPlayerTableData();
           this.modals.loading = false;
         },
         err => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
