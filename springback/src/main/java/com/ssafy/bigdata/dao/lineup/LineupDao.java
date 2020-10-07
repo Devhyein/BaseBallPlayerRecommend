@@ -22,6 +22,9 @@ public interface LineupDao {
 
 	public List<Lineup> getUserLineup(int id);
 
-	public List<Lineup> getDefaultLineup();
+     public List<Lineup> getDefaultLineup();
+     
+     // 라인업 이름 변경
+     public int modifyLineupName(Lineup lineup);
 
 }

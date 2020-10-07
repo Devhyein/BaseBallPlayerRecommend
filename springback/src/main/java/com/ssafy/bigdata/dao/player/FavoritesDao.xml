@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.bigdata.dao.player.FavoritesDao">
+    <select id="getFavoritesPlayer" resultType="Player" parameterType="int">
+        SELECT * from (SELECT player_id from favorites
+        where user_id = #{user_id}) f JOIN player p ON f.player_id = p.player_id
+    </select>
+
+    <insert id = "insertFavorites">
+        INSERT INTO favorites(user_id, player_id)
+        VALUES (#{user_id},#{player_id})
+    </insert>
+
+    <delete id = "deleteFavorites">
+        DELETE FROM favorites
+        WHERE user_id = #{user_id} AND player_id = #{player_id}
+    </delete>
+
+    <select id="isFavorite" resultType="int">
+        select count(*) 
+        from favorites 
+        where user_id = #{user_id} and player_id = #{player_id}
+    </select>
+
+</mapper>
+

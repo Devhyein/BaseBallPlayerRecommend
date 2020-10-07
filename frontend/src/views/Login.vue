@@ -21,7 +21,7 @@
                   </span>
                   <span class="btn-inner--text">Google</span>
                 </button>
-                <button class="btn btn-neutral btn-icon mt-4" @click="testLogin">
+                <button class="btn btn-neutral btn-icon" @click="testLogin">
                   <span class="btn-inner--text">Test Login</span>
                 </button>
             </div>
@@ -126,6 +126,7 @@ export default {
         (res) => {
           console.log(res);
           this.$store.commit("addUserInfo", res);
+
           this.$router.push({name: "main"});
         },
         (err) => {
@@ -139,7 +140,9 @@ export default {
       PlayerAPI.testLogin(
         null,
         res => {
+          console.log(res);
           this.$store.commit("addUserInfo", res);
+
           this.$router.push({name: "main"});
         },
         err => {

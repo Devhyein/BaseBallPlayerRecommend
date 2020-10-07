@@ -1,11 +1,9 @@
 <template>
-  <div class="card shadow"
-       :class="type === 'dark' ? 'bg-default': ''">
-    <div class="card-header border-0"
-         :class="type === 'dark' ? 'bg-transparent': ''">
+  <div class="card shadow">
+    <div class="card-header border-0">
       <div class="row align-items-center">
         <div class="col">
-          <h3 class="mb-0" :class="type === 'dark' ? 'text-white': ''">
+          <h3 class="mb-0">
             {{title}}
           </h3>
         </div>
@@ -16,12 +14,23 @@
 
     <div class="table-responsive">
       <base-table class="table align-items-center table-flush"
-                  :class="type === 'dark' ? 'table-dark': ''"
-                  :thead-classes="type === 'dark' ? 'thead-dark': 'thead-light'"
                   tbody-classes="list"
                   :data="tableData">
 
-        <template slot-scope="{row}">
+              <template slot="columns">
+                <template v-for="(c,idx) in cols">
+                  <th :key="idx">{{c}}</th>
+                </template>
+              </template>        
+              <template slot-scope="{row}">
+                <template v-for="(r, idx) in row">
+                  <td :key="idx">
+                    {{r}}
+                  </td>
+                </template>
+              </template>
+
+        <!-- <template slot-scope="{row}">
           <th scope="row">
             <div class="media align-items-center">
               <div class="media-body">
@@ -38,7 +47,7 @@
             </div>
           </td>
 
-        </template>
+        </template> -->
 
       </base-table>
     </div>
@@ -50,43 +59,18 @@
   export default {
     name: 'team-comparison-table',
     props: {
-      type: {
-        type: String
-      },
       title: String
+      , tableData: Array
+      , cols: Array
+      ,comparisonContent: Array
     },
     data() {
       return {
-        tableData: [
-          {
-            title: '상대팀보다 스피드가 매우 뛰어납니다',
-            status: 'pending',
-            completion: 60
-          },
-          {
-            title: '상대팀보다 파워가 매우 떨어집니다.',
-            status: 'completed',
-            completion: 100
-          },
-          {
-            title: '상대팀보다 안타율이 다소 낮습니다.',
-            status: 'delayed',
-            completion: 72
-          },
-          {
-            title: '상대팀보다 장타율이 다소 높습니다.',
-            status: 'on schedule',
-            completion: 90
-          },
-          {
-            title: '상대팀보다 수비가 다소 견고합니다.',
-            status: 'completed',
-            completion: 100
-          }
-        ]
+
       }
     }
   }
+
 </script>
 <style>
 </style>

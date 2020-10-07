@@ -27,23 +27,23 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Dashboard.vue')
         },
         {
-          path: '/search/player',
-          name: 'search_player',
+          path: '/search',
+          name: '선수 검색',
           component: () => import(/* webpackChunkName: "demo" */ './views/SearchPlayer.vue')
         },
         {
           path: '/recommend',
-          name: 'recommend',
+          name: '선수 추천',
           component: () => import('./views/RecommendPlayer.vue')
         },
         {
           path: '/comparisonTeam',
-          name: 'comparisonTeam',
+          name: '라인업 비교',
           component: () => import('./views/comparisonTeam.vue')
         },
         {
           path: '/lineup',
-          name: 'lineup',
+          name: '라인업 편집',
           component: () => import('./views/lineup.vue')
         },
         {

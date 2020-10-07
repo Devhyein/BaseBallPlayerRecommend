@@ -8,11 +8,20 @@
 from django.db import models
 
 
+class Favorites(models.Model):
+    favorites_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    player = models.ForeignKey('Player', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'favorites'
+
+
 class Lineup(models.Model):
     lineup_id = models.AutoField(primary_key=True)
     lineup_name = models.CharField(max_length=50)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
     hitter1 = models.IntegerField(blank=True, null=True)
     hitter2 = models.IntegerField(blank=True, null=True)
     hitter3 = models.IntegerField(blank=True, null=True)
@@ -157,6 +166,15 @@ class RecordPitcher(models.Model):
         db_table = 'record_pitcher'
 
 
+class Salary(models.Model):
+    player_id = models.IntegerField(primary_key=True)
+    salary = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'salary'
+
+
 class Stadium(models.Model):
     stadium_id = models.IntegerField(primary_key=True)
     stadium_name = models.CharField(max_length=100, blank=True, null=True)
@@ -175,12 +193,12 @@ class Team(models.Model):
         managed = False
         db_table = 'team'
 
+
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     email = models.CharField(max_length=200, blank=True, null=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     picture = models.CharField(max_length=200, blank=True, null=True)
-    role = models.CharField(max_length=200, blank=True, null=True)
     team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
