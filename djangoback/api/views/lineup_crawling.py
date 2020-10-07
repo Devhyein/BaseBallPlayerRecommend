@@ -26,11 +26,11 @@ def getLineup(request):
     2020년 개막전 (5월 5일) 의 라인업을 기반으로 각 팀별 기본 라인업을 크롤링하여 lineup 테이블에 삽입
     """
 
-    urls = ["http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EB%9D%BC%EC%9D%B4%EC%98%A8%EC%A6%88%ED%8C%8C%ED%81%AC&hour=14",
-            "http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EC%9D%B8%EC%B2%9C%EB%AC%B8%ED%95%99&hour=14",
-            "http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EC%9E%A0%EC%8B%A4&hour=14",
-            "http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EC%B1%94%ED%94%BC%EC%96%B8%EC%8A%A4%ED%95%84%EB%93%9C&hour=14",
-            "http://www.statiz.co.kr/boxscore.php?opt=5&date=2020-05-05&stadium=%EC%BC%80%EC%9D%B4%ED%8B%B0%EC%9C%84%EC%A6%88%ED%8C%8C%ED%81%AC&hour=14"]
+    urls = ["http://www.statiz.co.kr/boxscore.php?date=2020-10-06&stadium=%EC%9E%A0%EC%8B%A4&hour=18&opt=5",
+            "http://www.statiz.co.kr/boxscore.php?date=2020-10-06&stadium=%EA%B3%A0%EC%B2%99%EB%8F%94&hour=18&opt=5",
+            "http://www.statiz.co.kr/boxscore.php?date=2020-10-06&stadium=%EC%9D%B8%EC%B2%9C%EB%AC%B8%ED%95%99&hour=18&opt=5",
+            "http://www.statiz.co.kr/boxscore.php?date=2020-10-06&stadium=%EC%B1%94%ED%94%BC%EC%96%B8%EC%8A%A4%ED%95%84%EB%93%9C&hour=18&opt=5",
+            "http://www.statiz.co.kr/boxscore.php?date=2020-10-06&stadium=%EB%B6%80%EC%82%B0%EC%82%AC%EC%A7%81&hour=18&opt=5"]
 
     for url in urls:
         driver = webdriver.Chrome('chromedriver.exe') # 이걸 for문 밖으로 빼는게 나을 것 같지만, 로딩속도 문제때문에 제대로 못 긁더라
