@@ -12,6 +12,10 @@ import java.util.Collection;
 @Entity
 public class User implements UserDetails {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private int user_id;
     private String email;
     private String name;

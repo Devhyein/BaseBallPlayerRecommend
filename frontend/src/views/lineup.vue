@@ -321,6 +321,15 @@
       </card>
     </tabs>
 
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -337,10 +346,16 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Drag and Drop
 import draggable from 'vuedraggable'
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     CustomRadarChart,
-    draggable
+    draggable,
+
+    Loading
   },
   data() {
     return {
@@ -445,6 +460,7 @@ export default {
       modals: {
         position: false,
         team: false,
+        loading: false,
       },
       
       // 포지션 필터링용 리스트
@@ -481,13 +497,20 @@ export default {
     }
 
     // 라인업 리스트 가져오기
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
+        this.lineupList = res.lineupList;
       },
       err => {
         console.log(err);
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -495,11 +518,19 @@ export default {
     PlayerAPI.readFavorite(
       "none=none",
       res => {
-        this.favoritePlayers = res;
+        this.favoritePlayers = res.playerList;
         this.favoritePlayerTableData = this.computeFavoritePlayerTableData();
+        this.modals.loading = false;
       },
       err => {
         console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     )
 
@@ -598,6 +629,7 @@ export default {
       this.lineupName = name;
       this.isNewLineup = false;
 
+      this.modals.loading = true;
       PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         res => {
@@ -609,10 +641,17 @@ export default {
 
           this.teamStatData = this.computeTeamStatData();
 
-          console.log(res);
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -647,15 +686,24 @@ export default {
       console.log(id);
       if(id == -1) return;
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -724,7 +772,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -761,6 +809,12 @@ export default {
         err => {
           swal('실패', '라인업 저장 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -799,7 +853,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -811,6 +865,12 @@ export default {
         },
         err => {
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -830,7 +890,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -840,6 +900,12 @@ export default {
         err => {
           swal('실패', '라인업 삭제 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -886,6 +952,7 @@ export default {
       teams = teams.slice(0, -1);
       console.log(teams);
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerList(
         {
           searchText: searchText,
@@ -893,11 +960,19 @@ export default {
           positions: positions
         },
         res => {
-          this.searchedPlayers = res;
+          this.searchedPlayers = res.playerList;
           this.resetSearchedPlayerTableData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },

@@ -42,30 +42,16 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/spring")
 public class PlayerController {
 
+    @Autowired
     private PlayerService playerService;
+    @Autowired
     private TeamService teamService;
+    @Autowired
     private PlayerDao playerDao;
-
     @Autowired
     private FavoritesService favoritesService;
-
     @Autowired
     private UserService userService;
-
-    @Autowired
-    public void setPlayerDao(PlayerDao playerDao) {
-        this.playerDao = playerDao;
-    }
-    
-    @Autowired
-    public void setTeamService(TeamService teamService) {
-        this.teamService = teamService;
-    }
-
-    @Autowired
-    public void setPlayerService(PlayerService playerService) {
-        this.playerService = playerService;
-    }
     
     @ApiOperation(value = "선수 검색 리스트")
     @PostMapping("/info/playerlist")
@@ -76,14 +62,6 @@ public class PlayerController {
         ////////////////////////////////////////////////////////////////////
         ///////            토큰 해석
         User user = userService.getUserByToken(header.get("token").get(0));
-     
-        if (user == null) {
-            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
-            response.status = false;
-            response.msg = "Token Failed";
-            response.data = null;
-            return response;
-        }
         //////////////////////////////////////////////////////////////////////
         
         List<Player> res = new ArrayList<Player>();
@@ -91,16 +69,32 @@ public class PlayerController {
             res = playerService.searchPlayerList(search);
 
             for(Player player : res) {
-                Favorites favorites = new Favorites();
-                favorites.setPlayer_id(player.getPlayer_id());
-                favorites.setUser_id(user.getUser_id());
+                // 로그인이 안되어있으면 즐겨찾기 정보는 안줌
+                if(user == null) {
+                    player.setIsFavorite(false);
+                } else {
+                    Favorites favorites = new Favorites();
+                    favorites.setPlayer_id(player.getPlayer_id());
+                    favorites.setUser_id(user.getUser_id());
+    
+                    player.setIsFavorite(favoritesService.isFavorite(favorites));
+                }
+            }
 
-                player.setIsFavorite(favoritesService.isFavorite(favorites));
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("playerList", res);
+            data.put("isUser", user != null);
+            
+            // 로그인 된 유저면 토큰 새로만들어서 넘겨주기
+            if(user != null) {
+                data.put("token", userService.getTokenByEmail(user.getEmail()));
+            } else {
+                data.put("token", null);
             }
 
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         } catch (Exception e){
             response.status = false;
             response.msg = "search player list error";
@@ -111,8 +105,13 @@ public class PlayerController {
 
     @ApiOperation(value = "선수 스탯")
     @GetMapping("/info/player")
-    public Object playerStat(@RequestParam int num) {
+    public Object playerStat(@RequestHeader final HttpHeaders header, @RequestParam int num) {
         final RestResponse response = new RestResponse();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+        //////////////////////////////////////////////////////////////////////
         
         // 선수 번호를 가지고 선수의 포지션 알아옴.
         String position = playerService.findPlayerPosition(num);
@@ -130,7 +129,14 @@ public class PlayerController {
                 statList.addAll(playerService.getPlayerStatsFielder(num));
     
                 res.put("stats", statList);
-            }   
+            }
+
+            // 로그인된 유저라면 새로운 토큰 발급
+            if(user != null) {
+                res.put("token", userService.getTokenByEmail(user.getEmail()));
+            } else {
+                res.put("token", null);
+            }
         } catch (Exception e) {
             response.status = false;
             response.msg = "No data";
@@ -157,7 +163,7 @@ public class PlayerController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -201,6 +207,8 @@ public class PlayerController {
             e.printStackTrace();
         }
         
+        // 새로운 토큰 발급
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
         res.put("playerList", playerlist);
         res.put("teamStat", data);
 
@@ -224,7 +232,7 @@ public class PlayerController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -260,6 +268,7 @@ public class PlayerController {
             response.data = null;
         }
       
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
         res.put("recommendList", recommendlist);
 
         response.status = true;
