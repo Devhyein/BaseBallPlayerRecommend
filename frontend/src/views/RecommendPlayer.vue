@@ -113,6 +113,102 @@
                 <i class="ni ni-cloud-upload-96" />
                 팀에 필요한 선수
               </span>
+
+              <base-radio name="1" class="mb-3" value="1" v-model="radiopicked">
+                  팀의 약점을 보완할 수 있는 선수
+              </base-radio>
+              <base-radio name="2" class="mb-3" value="2" v-model="radiopicked">
+                  팀의 강점을 더 극대화할 수 있는 선수
+              </base-radio>
+              <base-radio name="3" class="mb-3" value="3" v-model="radiopicked">
+                  직접 가중치 입력
+              </base-radio>
+
+              <modal :show.sync="modalopened">
+                <template slot="header">
+                    <h4 class="modal-title" id="exampleModalLabel">추천 가중치 입력</h4>
+                </template>
+                  추천 시 더 반영하고 싶은 능력에 높은 가중치를 부여하세요. <br> <br>
+                <div>
+                  <div class="row"> <!-- 가로로 배치하기 -->
+                    <div class="col-md-3">
+                      파워
+                    </div>
+                    <div class="col-md-3"> 
+                      <!-- argon 문서 및 noUISlider 문서 참고: options 중에 step이란게 있어서 이걸로 간격조정 가능 -->
+                      <!-- v-model -> 슬라이더가 갖는 값과 동기화됨 -->
+                      <base-slider v-model="sliders.power" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                    <div class="col-md-3">
+                      평균자책점
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.era" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                  </div>
+                  <div class="row"> 
+                    <div class="col-md-3">
+                      스피드
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.speed" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                    <div class="col-md-3">
+                      이닝소화력
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.health" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                  </div>
+                  <div class="row"> 
+                    <div class="col-md-3">
+                      컨택트
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.contact" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                    <div class="col-md-3">
+                      제구력
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.control" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                  </div>
+                  <div class="row"> 
+                    <div class="col-md-3">
+                      수비력
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.defense" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                    <div class="col-md-3">
+                      장타억제력
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.deterrent" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                  </div>
+                  <div class="row"> 
+                    <div class="col-md-3">
+                      어깨
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.shoulder" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                    <div class="col-md-3">
+                      안정성
+                    </div>
+                    <div class="col-md-3"> 
+                      <base-slider v-model="sliders.stability" :range="{min: 0, max: 5}" :options="{step: 1}"></base-slider>
+                    </div>
+                  </div>
+                </div>
+                <template slot="footer">
+                    <base-button type="secondary" @click="modalopened = false">취소</base-button>
+                    <base-button type="primary" @click="modalOKClicked()">설정 저장</base-button>
+                </template>
+            </modal>
+
               <div class="card custom-table mt-2">
                 <div class="card-header border-0">
                   <div class="row align-items-center">
@@ -243,6 +339,15 @@
       </div>
     </div>
 
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -259,13 +364,36 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from 'sweetalert';
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     CustomRadarChart,
     // CustomTable
+
+    Loading,
   },
   data() {
     return {
+
+      radiopicked: "1",
+      modalopened: false,
+
+        sliders: {
+          power: 0,
+          speed: 0,
+          contact: 0,
+          defense: 0,
+          shoulder: 0,
+          era: 0,
+          health: 0,
+          control: 0,
+          stability: 0,
+          deterrent: 0
+         },
+
       // 팀 스탯
       teamStats: {
         era: 0
@@ -380,9 +508,20 @@ export default {
       removedTableRenderKey: 0,
 
       similarTab: false,
+
+      modals: {
+        loading: false,
+      },
     }
   },
   watch: {
+    radiopicked(){
+        if (this.radiopicked < 3 && this.lineupId > 0) // 1, 2번 옵션, 이미 라인업 선택이 된 상태에서만 바로 다음 동작 수행
+          this.changeLineup(this.lineupId, this.lineupName);
+        else if (this.radiopicked == 3)  // 3번 옵션은 일단 모달창 띄우고 모달창에서 한번 더 확인 눌러야 changeLineup 실행
+          this.modalopened = true;
+    },
+
     pageVal(newVal) {
       // 1: 0 to 5
       // 2: 5 to 10
@@ -400,14 +539,24 @@ export default {
       return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
+        this.lineupList = res.lineupList;
         console.log(res);
+
+        this.modals.loading = false;
       },
       err => {
         console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -415,6 +564,17 @@ export default {
     this.playerStatData = this.computePlayerStatData();
   },
   methods: {
+    clickRecommendOption(option){
+      this.recommendOption = option
+      console.log(option)
+      console.log(this.recommendOption)
+    },
+
+    modalOKClicked(){
+      if (this.lineupId > 0) this.changeLineup(this.lineupId, this.lineupName);
+      this.modalopened = false;
+    },
+
     computeTeamStatData() {
       let obj = {};
       let label = [];
@@ -478,8 +638,19 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
+      this.modals.loading = true;
       PlayerAPI.getTeamStatWithRecommend(
-        "lineup=" + id,
+        "lineup=" + this.lineupId + "&option=" + this.radiopicked +
+        "&power=" + this.sliders.power +
+        "&speed=" + this.sliders.speed +
+        "&contact=" + this.sliders.contact +
+        "&defense=" + this.sliders.defense +
+        "&shoulder=" + this.sliders.shoulder +
+        "&era=" + this.sliders.era +
+        "&health=" + this.sliders.health +
+        "&control=" + this.sliders.control +
+        "&stability=" + this.sliders.stability +
+        "&deterrent=" + this.sliders.deterrent,
         res => {
           this.lineupPlayers = res.playerList;
           this.recommendPlayers = res.recommendList;
@@ -488,31 +659,46 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          ///////////////////////////////////////////////////////////////////////////////// 지울곳
-          for(let i in this.recommendPlayers) {
-            this.recommendPlayers[i].isFavorite = false;
-          }
-          for(let i in this.lineupPlayers) {
-            this.lineupPlayers[i].isFavorite = false;
-          }
-          ////////////////////////////////////////////////////////////////////////////////////////
-
           this.teamStatData = this.computeTeamStatData();
+
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getPlayerStat(id) {
+
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
         },
         err => {
           console.log(err);
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
 
@@ -523,16 +709,18 @@ export default {
           res => {
             this.similarPlayers = res.recommendList;
             
-            ///////////////////////////////////////////////////////////////////////////////// 지울곳
-            for(let i in this.similarPlayers) {
-              this.similarPlayers[i].isFavorite = false;
-            }
-            ////////////////////////////////////////////////////////////////////////////////////////
-
             this.resetSimilarPlayerShowData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }
@@ -575,14 +763,23 @@ export default {
         this.removedSel = -1;
 
         // 이땐 오직 플레이어의 스탯만 가져오기
+        this.modals.loading = true;
         PlayerAPI.getPlayerStat(
           'num=' + this.similarPlayerListShowData[index].player_id,
           res => {
             this.playerStats = res;
             this.playerStatData = this.computePlayerStatData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
         this.playerName = this.similarPlayerListShowData[index].player_name;
@@ -663,15 +860,25 @@ export default {
       for(let player of this.lineupPlayers) {
         idList.push(player.player_id);
       }
+
+      this.modals.loading = true;
       PlayerAPI.getTeamStat(
         {playerList: idList},
         res => {
-          this.modifiedTeamStat = res;
+          this.modifiedTeamStat = res.teamStat;
           this.isModifiedTeamStat = true;
           this.teamStatData = this.computeTeamStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -692,19 +899,68 @@ export default {
     clickLineupFavorite(idx) {
       this.lineupPlayers[idx].isFavorite = !this.lineupPlayers[idx].isFavorite;
       this.lineupTableRenderKey += 1;
+
+      this.modifyFavorite(this.lineupPlayers[idx].player_id, this.lineupPlayers[idx].isFavorite);
     },
     clickRecommendFavorite(idx) {
       this.recommendPlayers[idx].isFavorite = !this.recommendPlayers[idx].isFavorite;
       this.recommendTableRenderKey += 1;
+
+      this.modifyFavorite(this.recommendPlayers[idx].player_id, this.recommendPlayers[idx].isFavorite);
     },
     clickSimilarFavorite(idx) {
       this.similarPlayers[idx].isFavorite = !this.similarPlayers[idx].isFavorite;
       this.similarTableRenderKey += 1;
+
+      this.modifyFavorite(this.similarPlayers[idx].player_id, this.similarPlayers[idx].isFavorite);
     },
     clickRemovedFavorite(idx) {
       this.removedPlayers[idx].isFavorite = !this.removedPlayers[idx].isFavorite;
       this.removedTableRenderKey += 1;
+
+      this.modifyFavorite(this.removedPlayers[idx].player_id, this.removedPlayers[idx].isFavorite);
     },
+
+    modifyFavorite(id, s) {
+      // 별에 불들어왔다면 즐겨찾기에 추가
+      if(s) {
+        PlayerAPI.addFavorite(
+          {
+            player_id: id
+          },
+          res => {
+            console.log('add favorites success', res);
+          },
+          err => {
+            console.log(err);
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
+          }
+        )
+      }
+      // 별에 불 꺼졌다면 즐겨찾기에서 제거
+      else {
+        PlayerAPI.deleteFavorite(
+          'player_id=' + id,
+          res => {
+            console.log('delete favorites success', res);
+          },
+          err => {
+            console.log(err);
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
+          }
+        )
+      }
+    }
   }
 };
 </script>

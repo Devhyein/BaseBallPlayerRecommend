@@ -4,7 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
@@ -25,17 +25,17 @@ public class JwtTokenProvider {
     // 토큰 유효시간 30분
     private long tokenValidTime = 300 * 60 * 1000L;
 
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     // JWT 토큰 생성
     public String createToken(String userPk) {
-        Date now = new Date();
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
         Map<String, Object> payloads = new HashMap<>();
         payloads.put("data", "My First JWT");
-        Long expiredTime = 1000 * 60L * 60L * 2L; // 토큰 유효 시간 (2시간)
+        Long expiredTime = 1000 * 60L * 20L; // 토큰 유효 시간 (20분)
 
         Date ext = new Date(); // 토큰 만료 시간
         ext.setTime(ext.getTime() + expiredTime);

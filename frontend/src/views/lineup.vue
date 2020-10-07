@@ -256,6 +256,14 @@
                     </table>
                   </div>
                 </div>
+                <div class="container-fluid mt-1 row">
+                  <base-pagination
+                    class="col"
+                    :page-count="pageCount"
+                    v-model="pageVal"
+                    align="center"
+                  />
+                </div>
                 <!-- <custom-table
                   class="custom-table col mr-2 ml-2"
                   tableTitle="검색된 선수 목록"
@@ -290,9 +298,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(row, rowIdx) in searchedPlayerTableData" :key="rowIdx">
-                            <td class="text-blue" @click="addToLineup(rowIdx)"><i class="ni ni-fat-add"></i></td>
-                            <td v-for="(val, valIdx) in row" :key="valIdx" @click="clickSearchedPlayer(rowIdx)">
+                        <tr v-for="(row, rowIdx) in favoritePlayerTableData" :key="rowIdx">
+                            <td class="text-blue" @click="addToLineupFromFavorite(rowIdx)"><i class="ni ni-fat-add"></i></td>
+                            <td v-for="(val, valIdx) in row" :key="valIdx" @click="clickFavoritePlayer(rowIdx)">
                               {{val}}
                             </td>
                         </tr>
@@ -313,14 +321,14 @@
       </card>
     </tabs>
 
-    <div class="container-fluid mt-1 row">
-      <base-pagination
-        class="col"
-        :page-count="pageCount"
-        v-model="pageVal"
-        align="center"
-      />
-    </div>
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
 
   </div>
 </template>
@@ -338,10 +346,16 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Drag and Drop
 import draggable from 'vuedraggable'
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     CustomRadarChart,
-    draggable
+    draggable,
+
+    Loading
   },
   data() {
     return {
@@ -384,6 +398,9 @@ export default {
       // 검색된 선수 목록
       searchedPlayers: [],
 
+      // 즐겨찾기 선수 목록
+      favoritePlayers: [],
+
       // 검색된 선수 페이지네이션을 위한 것
       searchedPlayerListShowData: [],
       pageCount: 1,
@@ -395,6 +412,7 @@ export default {
       // 선택된 행을 기억하는 변수
       lineupSel: -1,
       searchedSel: -1,
+      favoriteSel: -1,
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
       lineupName: "라인업 선택",
@@ -429,6 +447,7 @@ export default {
         '6번 타자', '7번 타자', '8번 타자', '9번 타자', '투수'
       ],
       searchedPlayerTableData: [],
+      favoritePlayerTableData: [],
 
       // 차트를 위한 데이터
       teamStatData: {},
@@ -441,6 +460,7 @@ export default {
       modals: {
         position: false,
         team: false,
+        loading: false,
       },
       
       // 포지션 필터링용 리스트
@@ -477,15 +497,42 @@ export default {
     }
 
     // 라인업 리스트 가져오기
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
+        this.lineupList = res.lineupList;
       },
       err => {
         console.log(err);
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
+
+    // 즐겨찾기 리스트 가져오기
+    PlayerAPI.readFavorite(
+      "none=none",
+      res => {
+        this.favoritePlayers = res.playerList;
+        this.favoritePlayerTableData = this.computeFavoritePlayerTableData();
+        this.modals.loading = false;
+      },
+      err => {
+        console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
+      }
+    )
 
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
@@ -495,6 +542,19 @@ export default {
     computeSearchedPlayerTableData() {
       let arr = [];
       for(let player of this.searchedPlayerListShowData) {
+        arr.push([
+          player.player_name, 
+          player.player_team, 
+          player.position,
+          player.player_num,
+          player.player_age
+        ]);
+      }
+      return arr;
+    },
+    computeFavoritePlayerTableData() {
+      let arr = [];
+      for(let player of this.favoritePlayers) {
         arr.push([
           player.player_name, 
           player.player_team, 
@@ -569,6 +629,7 @@ export default {
       this.lineupName = name;
       this.isNewLineup = false;
 
+      this.modals.loading = true;
       PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         res => {
@@ -580,10 +641,17 @@ export default {
 
           this.teamStatData = this.computeTeamStatData();
 
-          console.log(res);
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -605,19 +673,37 @@ export default {
         this.playerName = this.searchedPlayerListShowData[index].player_name;
       }
     },
+    clickFavoritePlayer(index) {
+      if(this.favoriteSel != index) {
+        this.favoriteSel = index;
+        this.lineupSel = -1;
+
+        this.getPlayerStat(this.favoritePlayers[index].player_id);
+        this.playerName = this.favoritePlayers[index].player_name;
+      }
+    },
     getPlayerStat(id) {
       console.log(id);
       if(id == -1) return;
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -686,7 +772,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -702,7 +788,6 @@ export default {
     modifyLineup() {
       let data = {};
       data.lineup_id = this.lineupId;
-      data.user_id = this.$store.state.userInfo.id;
 
       data.hitter1 = this.lineupPlayers[0].player_id;
       data.hitter2 = this.lineupPlayers[1].player_id;
@@ -719,11 +804,17 @@ export default {
         data,
         res => {
           console.log(res);
-          swal('성공', '라인업 추가 성공!', 'success');
+          swal('성공', '라인업 수정 성공!', 'success');
         },
         err => {
           swal('실패', '라인업 저장 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -748,7 +839,40 @@ export default {
       });
     },
     changeLIneupNameAsync(name) {
-      console.log('수정할 이름: ', name);
+      let data = {};
+      data.lineup_id = this.lineupId;
+      data.lineup_name = name;
+
+      PlayerAPI.modifyLineupName(
+        data,
+        res => {
+          console.log(res);
+          swal('성공', '라인업 이름이 변경되었습니다.', 'success');
+          
+          // 라인업 리스트 가져와서 갱신하기
+          PlayerAPI.getLineupList(
+            "none=none",
+            res => {
+              this.lineupList = res.lineupList;
+            },
+            err => {
+              console.log(err);
+            }
+          );
+
+          // 라인업 이름 갱신하기
+          this.lineupName = name;
+        },
+        err => {
+          console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
+        }
+      )
     },
     deleteLineup() {
       PlayerAPI.deleteLineup(
@@ -766,7 +890,7 @@ export default {
           PlayerAPI.getLineupList(
             "none=none",
             res => {
-              this.lineupList = res;
+              this.lineupList = res.lineupList;
             },
             err => {
               console.log(err);
@@ -776,6 +900,12 @@ export default {
         err => {
           swal('실패', '라인업 삭제 실패ㅠ', 'error');
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -822,6 +952,7 @@ export default {
       teams = teams.slice(0, -1);
       console.log(teams);
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerList(
         {
           searchText: searchText,
@@ -829,11 +960,19 @@ export default {
           positions: positions
         },
         res => {
-          this.searchedPlayers = res;
+          this.searchedPlayers = res.playerList;
           this.resetSearchedPlayerTableData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -926,6 +1065,40 @@ export default {
       // 라인업에 추가
       this.lineupPlayers.push(this.searchedPlayerListShowData[idx]);
     },
+    addToLineupFromFavorite(idx) {
+      // 라인업을 먼저 선택해야함
+      if(this.lineupId == 0) {
+        swal("경고", "라인업을 먼저 선택해주세요", "warning");
+        return;
+      }
+      // 라인업이 꽉 찼으면 더 이상 추가 할 수 없음
+      let lineupLen = this.lineupPlayers.length;
+      if(lineupLen == 10) {
+        swal("경고", "라인업이 꽉 찼습니다, 선수를 비워주세요", "warning");
+        return;
+      }
+      
+      // 선택된 선수 정보 가져오기
+      let player = this.favoritePlayers[idx];
+      let playerId = player.player_id;
+
+      // 라인업에 이미 동일한 선수가 있다면 중복
+      let check = true;
+      for(let p of this.lineupPlayers) {
+        if(p.player_id == playerId) {
+          check = false;
+          break;
+        }
+      }
+      if(!check) {
+        swal("경고", "이미 라인업에 있는 선수입니다, 다른 선수를 선택해주세요", "warning");
+        return;
+      }
+
+      // 라인업에 추가
+      this.lineupPlayers.push(this.favoritePlayers[idx]);
+    },
+
     deleteFromLineup(idx) {
       this.lineupPlayers.splice(idx, 1);
     }

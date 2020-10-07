@@ -30,7 +30,13 @@
 
     <update id = "updateLineup">
         UPDATE lineup
-        SET lineup_name = #{lineup_name}, hitter1 = #{hitter1}, hitter2 =#{hitter2}, hitter3 = #{hitter3}, hitter4 = #{hitter4}, hitter5 = #{hitter5}, hitter6 = #{hitter6}, hitter7 = #{hitter7}, hitter8 = #{hitter8}, hitter9 = #{hitter9}, pitcher = #{pitcher}
+        SET hitter1 = #{hitter1}, hitter2 =#{hitter2}, hitter3 = #{hitter3}, hitter4 = #{hitter4}, hitter5 = #{hitter5}, hitter6 = #{hitter6}, hitter7 = #{hitter7}, hitter8 = #{hitter8}, hitter9 = #{hitter9}, pitcher = #{pitcher}
+        WHERE lineup_id = #{lineup_id}
+    </update>
+
+    <update id = "modifyLineupName">
+        UPDATE lineup
+        SET lineup_name = #{lineup_name}
         WHERE lineup_id = #{lineup_id}
     </update>
 
