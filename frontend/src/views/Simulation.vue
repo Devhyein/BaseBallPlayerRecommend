@@ -277,6 +277,9 @@ export default {
       // my_lineup_array : [],
       total_score : 0,
       your_total_score : 0,
+      // teamStatData : [],
+      // playerStatData : [],
+      // searchedPlayerTableData : []
     }
   },
 
@@ -298,9 +301,9 @@ export default {
       }
     );
 
-    this.teamStatData = this.computeTeamStatData();
-    this.playerStatData = this.computePlayerStatData();
-    this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
+    // this.teamStatData = this.computeTeamStatData();
+    // this.playerStatData = this.computePlayerStatData();
+    // this.searchedPlayerTableData = this.computeSearchedPlayerTableData();
   },
   methods: {
     changeLineup(id, name) {
@@ -317,7 +320,7 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          this.teamStatData = this.computeTeamStatData();
+          // this.teamStatData = this.computeTeamStatData();
 
           console.log(res);
         },
@@ -339,7 +342,7 @@ export default {
           // teamStats 에 team_id 가 포함되어있다 이거 빼야한다
           delete this.teamStats.team_id;
 
-          this.teamStatData = this.computeTeamStatData();
+          // this.teamStatData = this.computeTeamStatData();
 
           console.log(res);
         },
