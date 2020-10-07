@@ -293,8 +293,8 @@ export default {
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
-        this.yourLineupList = res;
+        this.lineupList = res.lineupList;
+        this.yourLineupList = res.lineupList;
       },
       err => {
         console.log(err);
