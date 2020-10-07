@@ -1,4 +1,4 @@
-package com.ssafy.bigdata.jwt;
+package com.ssafy.bigdata.dao.user;
 
 import com.ssafy.bigdata.dto.User;
 

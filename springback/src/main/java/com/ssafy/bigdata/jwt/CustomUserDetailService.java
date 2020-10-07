@@ -1,6 +1,6 @@
 package com.ssafy.bigdata.jwt;
 
-
+import com.ssafy.bigdata.dao.user.UserRepository;
 import com.ssafy.bigdata.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class CustomUserDetailService implements UserDetailsService {
         try {
             User user = userRepository.findByEmail(username);
             if(user!=null){
-               return user;
+               return null;
             }
         } catch (Exception e) {
             return null;
