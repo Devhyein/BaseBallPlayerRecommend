@@ -110,7 +110,6 @@
           <tabs fill class="" @activateTab="activateTab">
             <tab-pane title="searchPlayer">
               <span slot="title">
-                <i class="ni ni-cloud-upload-96" />
                 팀에 필요한 선수
               </span>
 
@@ -246,7 +245,6 @@
 
             <tab-pane title="favoritePlayer">
               <span slot="title">
-                <i class="ni ni-bell-55 mr-2" />
                 비슷한 선수
               </span>
               <div class="card custom-table mt-2">
@@ -708,6 +706,10 @@ export default {
           'player_id=' + id,
           res => {
             this.similarPlayers = res.recommendList;
+
+            if(this.similarPlayers.length == 0) {
+              swal("경고", "유사한 선수를 찾지 못했습니다.", "warning");
+            }
             
             this.resetSimilarPlayerShowData();
             this.modals.loading = false;
