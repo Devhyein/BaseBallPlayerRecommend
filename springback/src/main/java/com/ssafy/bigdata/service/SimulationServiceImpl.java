@@ -12,7 +12,9 @@ import com.ssafy.bigdata.dto.simulation.Score;
 import com.ssafy.bigdata.dto.simulation.Simulation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SimulationServiceImpl implements SimulationService {
 
     @Autowired
