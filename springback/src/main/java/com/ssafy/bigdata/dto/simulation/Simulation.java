@@ -1,5 +1,7 @@
 package com.ssafy.bigdata.dto.simulation;
 
+import java.util.Arrays;
+
 public class Simulation {
 
     private int simulation_id;
@@ -7,13 +9,15 @@ public class Simulation {
     private int my_lineup_id;
     private int your_lineup_id;
     private boolean is_attack;
-    private int innings;
+    public int innings;
     private boolean is_top;
     private int out_count;
     private String base_info;
     private int[] base_info_array;
-    private int my_score;
-    private int your_score;
+    private String my_score;
+    private int[] my_score_array;
+    private String your_score;
+    private int[] your_score_array;
     private int my_hit_order;
     private int your_hit_order;
     private boolean game_status;
@@ -23,7 +27,7 @@ public class Simulation {
     }
 
     public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
-            int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score,
+            int innings, boolean is_top, int out_count, String base_info, String my_score, String your_score,
             int my_hit_order, int your_hit_order, boolean game_status) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
@@ -42,8 +46,8 @@ public class Simulation {
     }
 
     public Simulation(int simulation_id, int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack,
-            int innings, boolean is_top, int out_count, int[] base_info_array, int my_score, int your_score,
-            int my_hit_order, int your_hit_order, boolean game_status) {
+            int innings, boolean is_top, int out_count, int[] base_info_array, int[] my_score_array,
+            int[] your_score_array, int my_hit_order, int your_hit_order, boolean game_status) {
         this.simulation_id = simulation_id;
         this.user_id = user_id;
         this.my_lineup_id = my_lineup_id;
@@ -53,8 +57,8 @@ public class Simulation {
         this.is_top = is_top;
         this.out_count = out_count;
         this.base_info_array = base_info_array;
-        this.my_score = my_score;
-        this.your_score = your_score;
+        this.my_score_array = my_score_array;
+        this.your_score_array = your_score_array;
         this.my_hit_order = my_hit_order;
         this.your_hit_order = your_hit_order;
         this.game_status = game_status;
@@ -140,20 +144,36 @@ public class Simulation {
         this.base_info_array = base_info_array;
     }
 
-    public int getMy_score() {
+    public String getMy_score() {
         return my_score;
     }
 
-    public void setMy_score(int my_score) {
+    public void setMy_score(String my_score) {
         this.my_score = my_score;
     }
 
-    public int getYour_score() {
+    public int[] getMy_score_array() {
+        return my_score_array;
+    }
+
+    public void setMy_score_array(int[] my_score_array) {
+        this.my_score_array = my_score_array;
+    }
+
+    public String getYour_score() {
         return your_score;
     }
 
-    public void setYour_score(int your_score) {
+    public void setYour_score(String your_score) {
         this.your_score = your_score;
+    }
+
+    public int[] getYour_score_array() {
+        return your_score_array;
+    }
+
+    public void setYour_score_array(int[] your_score_array) {
+        this.your_score_array = your_score_array;
     }
 
     public int getMy_hit_order() {
@@ -178,6 +198,17 @@ public class Simulation {
 
     public void setGame_status(boolean game_status) {
         this.game_status = game_status;
+    }
+
+    @Override
+    public String toString() {
+        return "Simulation [base_info=" + base_info + ", base_info_array=" + Arrays.toString(base_info_array)
+                + ", game_status=" + game_status + ", innings=" + innings + ", is_attack=" + is_attack + ", is_top="
+                + is_top + ", my_hit_order=" + my_hit_order + ", my_lineup_id=" + my_lineup_id + ", my_score="
+                + my_score + ", my_score_array=" + Arrays.toString(my_score_array) + ", out_count=" + out_count
+                + ", simulation_id=" + simulation_id + ", user_id=" + user_id + ", your_hit_order=" + your_hit_order
+                + ", your_lineup_id=" + your_lineup_id + ", your_score=" + your_score + ", your_score_array="
+                + Arrays.toString(your_score_array) + "]";
     }
 
 }

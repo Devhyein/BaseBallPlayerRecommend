@@ -45,7 +45,7 @@ public class SimulationController {
         try {
             // 시물레이션
             int simulation_status = simulationService.createSimulation(user_id, my_lineup_id, your_lineup_id, is_attack,
-                    1, true, 0, "000", 0, 0, 1); // 생성
+                    1, true, 0, "0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0", " 0,0,0,0,0,0,0,0,0,0,0,0", 1); // 생성
             simulation_id = simulationService.searchSimulationByUserId(user_id);// 시뮬레이션 아이디
 
             if (simulation_status == 1) {
@@ -75,24 +75,9 @@ public class SimulationController {
                 return response;
             }
 
-            // 타석 정보
-            try {
-                int hit_info_status = simulationService.createHitInfo(simulation_id); // 생성
-                try {
-                    hit_info = simulationService.searchHitInfo(simulation_id);
-                } catch (Exception e) {
-                    response.status = false;
-                    response.msg = "Fail to load hit_info board.";
-                    return response;
-                }
-            } catch (Exception e) {
-                response.status = false;
-                response.msg = "Fail to create hit_info board.";
-                return response;
-            }
-
             // simulate
-            simulation = simulationService.progressSimulation(simulation,simulation_id,score,hit_info,my_lineup,your_lineup); // 시뮬레이션 진행
+            simulation = simulationService.progressSimulation(simulation, simulation_id, score, my_lineup,
+                    your_lineup); // 시뮬레이션 진행
 
             // data
             SimulationData data = new SimulationData(simulation, score, hit_info);
