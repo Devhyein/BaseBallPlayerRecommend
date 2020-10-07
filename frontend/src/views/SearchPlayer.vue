@@ -128,7 +128,6 @@
                       <td @click="selectPlayer(rowIdx)">{{player.player_name}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.player_team}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.position}}</td>
-                      <td @click="selectPlayer(rowIdx)">{{player.player_num}}</td>
                       <td @click="selectPlayer(rowIdx)">{{player.player_age}}</td>
                   </tr>
                 </tbody>
@@ -228,7 +227,6 @@ export default {
         , "Name"
         , "Team"
         , "Position"
-        , "Number"
         , "Age"
       ],
 
