@@ -29,5 +29,10 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
+
+    @Override
+    public String getTokenByEmail(String email) {
+        return jwtTokenProvider.createToken(email);
+    }
     
 }

@@ -260,13 +260,19 @@ export default {
     PlayerAPI.getLineupList(
       "none=none",
       (res) => {
-        this.lineupList = res;
-        this.MyLineupList = res;
+        this.lineupList = res.lineupList;
+        this.MyLineupList = res.lineupList;
         this.modals.loading = false;
       },
       (err) => {
         console.log(err);
         this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -472,6 +478,12 @@ export default {
         (err) => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -511,6 +523,12 @@ export default {
         (err) => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -527,6 +545,12 @@ export default {
         (err) => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -543,6 +567,12 @@ export default {
         (err) => {
           console.log(err);
           this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },

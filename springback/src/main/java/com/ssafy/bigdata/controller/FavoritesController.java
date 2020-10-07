@@ -1,5 +1,6 @@
 package com.ssafy.bigdata.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
@@ -52,7 +53,7 @@ public class FavoritesController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -65,7 +66,11 @@ public class FavoritesController {
             p.setPlayer_age(playerService.getAgeWithBirth(p.getPlayer_birth()));
         }
 
-        response.data = res;
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+        data.put("playerList", res);
+
+        response.data = data;
         response.msg = "favorite player list";
         response.status = true;
 
@@ -83,7 +88,7 @@ public class FavoritesController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed 123";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -93,6 +98,10 @@ public class FavoritesController {
         favorites.setUser_id(user.getUser_id());
 
         int res = favoritesService.deleteFavorites(favorites);
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+        response.data = data;
        
         if(res!=0){
             response.status = true;
@@ -103,7 +112,6 @@ public class FavoritesController {
         }
 
         return response;
-
     }
 
     @ApiOperation(value = "즐겨찾기 선수 추가")
@@ -116,12 +124,16 @@ public class FavoritesController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
 
         favorites.setUser_id(user.getUser_id());
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+        response.data = data;
 
         int res = favoritesService.insertFavorites(favorites);
         if(res!=0){
@@ -146,7 +158,7 @@ public class FavoritesController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -154,6 +166,10 @@ public class FavoritesController {
         Favorites favorites = new Favorites();
         favorites.setPlayer_id(player_id);
         favorites.setUser_id(user.getUser_id());
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+        response.data = data;
 
         boolean res = favoritesService.isFavorite(favorites);
 
