@@ -103,7 +103,8 @@ export default {
         ...this.$listeners,
         input: this.updateValue,
         focus: this.onFocus,
-        blur: this.onBlur
+        blur: this.onBlur,
+        keydown: this.onKeyDown
       };
     },
     slotData() {
@@ -134,6 +135,11 @@ export default {
     onBlur(value) {
       this.focused = false;
       this.$emit("blur", value);
+    },
+    onKeyDown(evt) {
+      if(evt.keyCode == 13) {
+        this.clickIcon();
+      }
     },
     clickIcon() {
       this.$emit("clickIcon")

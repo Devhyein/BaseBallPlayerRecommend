@@ -70,11 +70,13 @@
         <!-- 구단에 대한 설명 -->
         <div class="row mt-2">
           <div class="col">
-            <team-comparison-table title="구단 특징" :tableData="compareTableData"></team-comparison-table>
+            <team-comparison-table
+              title="구단 특징"
+              :tableData="compareTableData"
+            ></team-comparison-table>
           </div>
         </div>
       </div>
-
       <!-- right -->
       <div class="col-xl mr-1 ml-1">
         <!-- 선택된 라인업 선수 목록 -->
@@ -90,6 +92,16 @@
         </div>
       </div>
     </div>
+
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -105,13 +117,18 @@ import TeamComparisonTable from "@/views/Tables/TeamComparisonTable";
 import PlayerAPI from "@/api/PlayerAPI";
 
 // Alert
-import swal from 'sweetalert';
+import swal from "sweetalert";
+
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
   components: {
     CustomRadarChart,
     CustomTable,
     TeamComparisonTable,
+    Loading
   },
   data() {
     return {
@@ -192,6 +209,7 @@ export default {
       tableColumns: ["At bat", "Position", "Name"],
       MytableColumns: ["At bat", "Position", "Name"],
 
+      // 팀 특징 데이터
       compareTableData: [],
 
       // 선택한 선수의 이름 저장(스탯 보여주기 용)
@@ -214,48 +232,47 @@ export default {
 
       // 특징을 위한 데이터
       comparisonContent: {
-        Dif: {
-          eraDif: 0,
-          healthDif: 0,
-          controlDif: 0,
-          stabilityDif: 0,
-          deterrentDif: 0,
-          powerDif: 0,
-          speedDif: 0,
-          contactDif: 0,
-          defenseDif: 0,
-          shoulderDif: 0,
-        },
-        absoluteValue: {
-          era: 0,
-          health: 0,
-          control: 0,
-          stability: 0,
-          deterrent: 0,
-          power: 0,
-          speed: 0,
-          contact: 0,
-          defense: 0,
-          shoulder: 0,
-        },
+        ERA: 0,
+        HEALTH: 0,
+        CONTROL: 0,
+        STABILITY: 0,
+        DETERRENT: 0,
+        POWER: 0,
+        SPEED: 0,
+        CONTACT: 0,
+        DEFENSE: 0,
+        SHOULDER: 0,
+      },
+
+      modals: {
+        loading: false,
       },
     };
   },
   created() {
-    if(this.$store.state.userInfo.id == undefined) {
+    if (this.$store.state.userInfo.id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
-      this.$router.push({name: "Login"});
+      this.$router.push({ name: "Login" });
       return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       (res) => {
-        this.lineupList = res;
-        this.MyLineupList = res;
+        this.lineupList = res.lineupList;
+        this.MyLineupList = res.lineupList;
+        this.modals.loading = false;
       },
       (err) => {
         console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -264,40 +281,47 @@ export default {
     this.teamStatData = this.computeTeamStatData();
     this.playerStatData = this.computePlayerStatData();
     this.comparisonContent = {
-      Dif: {
-        eraDif: this.MyTeamStatData.era - this.teamStatData.era,
-        healthDif: this.MyTeamStatData.health - this.teamStatData.health,
-        controlDif: this.MyTeamStatData.control - this.teamStatData.control,
-        stabilityDif:
-          this.MyTeamStatData.stability - this.teamStatData.stability,
-        deterrentDif:
-          this.MyTeamStatData.deterrent - this.teamStatData.deterrent,
-        powerDif: this.MyTeamStatData.power - this.teamStatData.power,
-        speedDif: this.MyTeamStatData.speed - this.teamStatData.speed,
-        contactDif: this.MyTeamStatData.contact - this.teamStatData.contact,
-        defenseDif: this.MyTeamStatData.defense - this.teamStatData.defense,
-        shoulderDif: this.MyTeamStatData.shoulder - this.teamStatData.shoulder,
-      },
-      absoluteValue: {
-        era: Math.abs(this.comparisonContent.Dif.eraDif),
-        health: Math.abs(this.comparisonContent.Dif.healthDif),
-        control: Math.abs(this.comparisonContent.Dif.controlDif),
-        stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-        deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-        power: Math.abs(this.comparisonContent.Dif.powerDif),
-        speed: Math.abs(this.comparisonContent.Dif.speedDif),
-        contact: Math.abs(this.comparisonContent.Dif.controlDif),
-        defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-        shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-      },
+      ERA: this.MyTeamStatData.era - this.teamStatData.era,
+      HEALTH: this.MyTeamStatData.health - this.teamStatData.health,
+      CONTROL: this.MyTeamStatData.control - this.teamStatData.control,
+      STABILITY: this.MyTeamStatData.stability - this.teamStatData.stability,
+      DETERRENT: this.MyTeamStatData.deterrent - this.teamStatData.deterrent,
+      POWER: this.MyTeamStatData.power - this.teamStatData.power,
+      SPEED: this.MyTeamStatData.speed - this.teamStatData.speed,
+      CONTACT: this.MyTeamStatData.contact - this.teamStatData.contact,
+      DEFENSE: this.MyTeamStatData.defense - this.teamStatData.defense,
+      SHOULDER: this.MyTeamStatData.shoulder - this.teamStatData.shoulder,
     };
-    console.log(this.comparisonContent);
+    this.compareTableData = this.sortObjectEntries(
+      this.comparisonContent
+    );
+    console.log(this.compareTableData)
   },
 
   methods: {
-    // sortArrays(arrays) {
-    //   return this.arrays.sort((a, b) => a - b );
-    // },
+    // 스텟이름
+    sortObjectEntries(obj) {
+      let res = Object.entries(obj)
+        .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+        .slice(0, 5);
+      // 나온 수를 가지고 -면 낮습니다. +면 높습니다.
+      for(let i=0; i<5; i++) {
+        if(res[i][1] > 0) {
+          res[i][1] = "상대팀보다 "+Math.floor(Math.abs(res[i][1]*100))+"% 높습니다.";
+        } else if(res[i][1] < 0) {
+          res[i][1] = "상대팀보다 "+Math.floor(Math.abs(res[i][1]*100))+"% 낮습니다.";
+        } else {
+          if(this.lineupId==0 && this.MyLineupId==0) {
+            res[i][1] = "팀 비교 수치가 나오는 열입니다."
+          }
+          else res[i][1] = "상대팀과 같은 수치입니다."
+        }
+      }
+      console.log("RES : "+res);
+      // console.log("RES : "+res[0][1]);
+      return res;
+      
+    },
     computeLineupPlayerTableData() {
       let arr = [];
       for (let player of this.lineupPlayers) {
@@ -442,7 +466,8 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.lineupPlayers = res.playerList;
@@ -455,38 +480,31 @@ export default {
           this.CommonTeamStatData = this.computeTeamStatData();
           this.isModifiedTeamStat = true;
           this.comparisonContent = {
-            Dif: {
-              eraDif: this.MyTeamStats.era - this.teamStats.era,
-              healthDif: this.MyTeamStats.health - this.teamStats.health,
-              controlDif: this.MyTeamStats.control - this.teamStats.control,
-              stabilityDif:
-                this.MyTeamStats.stability - this.teamStats.stability,
-              deterrentDif:
-                this.MyTeamStats.deterrent - this.teamStats.deterrent,
-              powerDif: this.MyTeamStats.power - this.teamStats.power,
-              speedDif: this.MyTeamStats.speed - this.teamStats.speed,
-              contactDif: this.MyTeamStats.contact - this.teamStats.contact,
-              defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
-              shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
-            },
-            absoluteValue: {
-              era: Math.abs(this.comparisonContent.Dif.eraDif),
-              health: Math.abs(this.comparisonContent.Dif.healthDif),
-              control: Math.abs(this.comparisonContent.Dif.controlDif),
-              stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-              deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-              power: Math.abs(this.comparisonContent.Dif.powerDif),
-              speed: Math.abs(this.comparisonContent.Dif.speedDif),
-              contact: Math.abs(this.comparisonContent.Dif.controlDif),
-              defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-              shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-            },
+            ERA: this.MyTeamStats.era - this.teamStats.era,
+            HEALTH: this.MyTeamStats.health - this.teamStats.health,
+            CONTROL: this.MyTeamStats.control - this.teamStats.control,
+            STABILITY: this.MyTeamStats.stability - this.teamStats.stability,
+            DETERRENT: this.MyTeamStats.deterrent - this.teamStats.deterrent,
+            POWER: this.MyTeamStats.power - this.teamStats.power,
+            SPEED: this.MyTeamStats.speed - this.teamStats.speed,
+            CONTACT: this.MyTeamStats.contact - this.teamStats.contact,
+            DEFENSE: this.MyTeamStats.defense - this.teamStats.defense,
+            SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
           };
-          console.log(this.comparisonContent);
-          console.log(res);
+
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
@@ -494,7 +512,8 @@ export default {
       this.MyLineupId = id;
       this.MyLineupName = name;
 
-      PlayerAPI.getTeamStatWithRecommend(
+      this.modals.loading = true;
+      PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         (res) => {
           this.MyLineupPlayers = res.playerList;
@@ -507,65 +526,75 @@ export default {
           this.CommonTeamStatData = this.computeMyTeamStatData();
           this.isModifiedMyTeamStat = true;
 
-          (this.comparisonContent = {
-            Dif: {
-              eraDif: this.MyTeamStats.era - this.teamStats.era,
-              healthDif: this.MyTeamStats.health - this.teamStats.health,
-              controlDif: this.MyTeamStats.control - this.teamStats.control,
-              stabilityDif:
-                this.MyTeamStats.stability - this.teamStats.stability,
-              deterrentDif:
-                this.MyTeamStats.deterrent - this.teamStats.deterrent,
-              powerDif: this.MyTeamStats.power - this.teamStats.power,
-              speedDif: this.MyTeamStats.speed - this.teamStats.speed,
-              contactDif: this.MyTeamStats.contact - this.teamStats.contact,
-              defenseDif: this.MyTeamStats.defense - this.teamStats.defense,
-              shoulderDif: this.MyTeamStats.shoulder - this.teamStats.shoulder,
-            },
-            absoluteValue: {
-              era: Math.abs(this.comparisonContent.Dif.eraDif),
-              health: Math.abs(this.comparisonContent.Dif.healthDif),
-              control: Math.abs(this.comparisonContent.Dif.controlDif),
-              stability: Math.abs(this.comparisonContent.Dif.stabilityDif),
-              deterrent: Math.abs(this.comparisonContent.Dif.deterrentDif),
-              power: Math.abs(this.comparisonContent.Dif.powerDif),
-              speed: Math.abs(this.comparisonContent.Dif.speedDif),
-              contact: Math.abs(this.comparisonContent.Dif.controlDif),
-              defense: Math.abs(this.comparisonContent.Dif.defenseDif),
-              shoulder: Math.abs(this.comparisonContent.Dif.shoulderDif),
-            },
-          }),
-            console.log(this.comparisonContent),
-            console.log(res);
+          this.comparisonContent = {
+            ERA: this.MyTeamStats.era - this.teamStats.era,
+            HEALTH: this.MyTeamStats.health - this.teamStats.health,
+            CONTROL: this.MyTeamStats.control - this.teamStats.control,
+            STABILITY: this.MyTeamStats.stability - this.teamStats.stability,
+            DETERRENT: this.MyTeamStats.deterrent - this.teamStats.deterrent,
+            POWER: this.MyTeamStats.power - this.teamStats.power,
+            SPEED: this.MyTeamStats.speed - this.teamStats.speed,
+            CONTACT: this.MyTeamStats.contact - this.teamStats.contact,
+            DEFENSE: this.MyTeamStats.defense - this.teamStats.defense,
+            SHOULDER: this.MyTeamStats.shoulder - this.teamStats.shoulder,
+          };
+
+          this.compareTableData = this.sortObjectEtries(this.comparisonContent);
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getMyPlayerStat(id) {
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         "num=" + id,
         (res) => {
           console.log(res);
           this.MyplayerStats = res;
           this.MyPlayerStatData = this.computeMyPlayerStatData();
+          this.modals.loading = false;
         },
         (err) => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },

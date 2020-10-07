@@ -16,6 +16,9 @@ const getApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -47,6 +50,9 @@ const postApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -64,7 +70,7 @@ const postApi = (url, data, callback, errorCallback) => {
 }
 
 const putApi = (url, data, callback, errorCallback) => {
-    http.get(url, data, header())
+    http.put(url, data, header())
         .then(res => {
             // RestAPI 서버가 null 을 응답하는 경우
             if(res == null) {
@@ -78,6 +84,9 @@ const putApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -94,9 +103,8 @@ const putApi = (url, data, callback, errorCallback) => {
         });
 }
 
-/*
 const deleteApi = (url, data, callback, errorCallback) => {
-    http.get(url, data, header())
+    http.delete(url + '?' + data, header())
         .then(res => {
             // RestAPI 서버가 null 을 응답하는 경우
             if(res == null) {
@@ -110,6 +118,9 @@ const deleteApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+                    
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -125,7 +136,6 @@ const deleteApi = (url, data, callback, errorCallback) => {
             errorCallback(err);
         });
 }
-*/
 
 const PlayerAPI = {
     getPlayerList:(data,callback,errorCallback)=>postApi('/spring/info/playerlist',data,callback,errorCallback),
@@ -134,10 +144,17 @@ const PlayerAPI = {
     getLineupList:(data,callback,errorCallback)=>getApi('/spring/lineupList',data,callback,errorCallback),
     getTeamStatWithRecommend:(data,callback,errorCallback)=>getApi('/spring/recommend1',data,callback,errorCallback),
     getTeamStat:(data,callback,errorCallback)=>postApi('/spring/recommend1/change',data,callback,errorCallback),
+    getSimilarPlayers:(data,callback,errorCallback)=>getApi('/spring/recommend/player',data,callback,errorCallback),
 
     getLineupPlayerWithTeamStat:(data,callback,errorCallback)=>getApi('/spring/lineup',data,callback,errorCallback),
     addLineup:(data,callback,errorCallback)=>postApi('/spring/lineup/insert',data,callback,errorCallback),
     modifyLineup:(data,callback,errorCallback)=>putApi('/spring/lineup/update',data,callback,errorCallback),
+    modifyLineupName:(data,callback,errorCallback)=>putApi('/spring/lineup/changename',data,callback,errorCallback),
+    deleteLineup:(data,callback,errorCallback)=>deleteApi('/spring/lineup/delete',data,callback,errorCallback),
+
+    readFavorite:(data,callback,errorCallback)=>getApi('/spring/favList',data,callback,errorCallback),
+    addFavorite:(data,callback,errorCallback)=>postApi('/spring/favorites/insert',data,callback,errorCallback),
+    deleteFavorite:(data,callback,errorCallback)=>deleteApi('/spring/favorites/delete',data,callback,errorCallback),
 
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
     testLogin:(data,callback,errorCallback)=>postApi('/spring/login/temp',data,callback,errorCallback),

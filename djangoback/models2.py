@@ -12,7 +12,6 @@ class Lineup(models.Model):
     lineup_id = models.AutoField(primary_key=True)
     lineup_name = models.CharField(max_length=50)
     user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
     hitter1 = models.IntegerField(blank=True, null=True)
     hitter2 = models.IntegerField(blank=True, null=True)
     hitter3 = models.IntegerField(blank=True, null=True)
@@ -175,12 +174,12 @@ class Team(models.Model):
         managed = False
         db_table = 'team'
 
+
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     email = models.CharField(max_length=200, blank=True, null=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     picture = models.CharField(max_length=200, blank=True, null=True)
-    role = models.CharField(max_length=200, blank=True, null=True)
     team = models.ForeignKey(Team, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:

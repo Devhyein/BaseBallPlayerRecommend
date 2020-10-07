@@ -11,21 +11,25 @@ import java.util.List;
 import java.util.Map;
 
 import com.ssafy.bigdata.dao.player.PlayerDao;
-import com.ssafy.bigdata.dto.Lineup;
-import com.ssafy.bigdata.dto.LineupList;
+import com.ssafy.bigdata.dto.Favorites;
 import com.ssafy.bigdata.dto.Player;
 import com.ssafy.bigdata.dto.RestResponse;
 import com.ssafy.bigdata.dto.TeamStat;
+import com.ssafy.bigdata.dto.User;
+import com.ssafy.bigdata.service.FavoritesService;
 import com.ssafy.bigdata.service.PlayerServiceImpl;
 import com.ssafy.bigdata.service.TeamService;
+import com.ssafy.bigdata.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,54 +41,37 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/spring")
 public class TeamController {
 
+    @Autowired
     private TeamService teamService;
+    @Autowired
     private PlayerServiceImpl playerServiceImpl;
+    @Autowired
     private PlayerDao playerDao;
-
     @Autowired
-    public void setPlayerDao(PlayerDao playerDao) {
-        this.playerDao = playerDao;
-    }
-    
+    private FavoritesService favoritesService;
     @Autowired
-    public void setTeamService(TeamService teamService) {
-        this.teamService = teamService;
-    }
-
-    @Autowired
-    public void setPlayerServiceImpl(PlayerServiceImpl playerServiceImpl) {
-        this.playerServiceImpl = playerServiceImpl;
-    }
-    
-    @ApiOperation(value = "라인업 목록")
-    @GetMapping("/team/lineup")
-    public Object get_lineupList() {
-        final RestResponse response = new RestResponse();
-        List<LineupList>res = new ArrayList<LineupList>();
-
-        List<Lineup> lineupList = teamService.getLineupList();
-
-        for(Lineup list : lineupList){
-            LineupList lineup = new LineupList();
-            lineup.setId(list.getLineup_id());
-            lineup.setName(list.getLineup_name());
-            res.add(lineup);
-        }
-
-        response.status = true;
-        response.msg = "success";
-        response.data = res;
-        return response;
-    }
-
+    private UserService userService;
 
     @ApiOperation(value = "선수 리스트, 팀 스탯, 추천 선수")
     @GetMapping("/recommend1")
-    public Object search_player(@RequestParam int lineup) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
         final RestResponse response = new RestResponse();
         HashMap<String,Object>res = new HashMap<String,Object>();
         List<Player> playerlist = new ArrayList<Player>();
         List<Player> recommendlist = new ArrayList<Player>();
+
+        ////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
 
         // 라인업의 선수 반환
         try {
@@ -100,6 +87,12 @@ public class TeamController {
                             p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                             p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
                             p.setPlayer_position(index++);
+
+                            Favorites favorites = new Favorites();
+                            favorites.setPlayer_id(p.getPlayer_id());
+                            favorites.setUser_id(user.getUser_id());
+
+                            p.setIsFavorite(favoritesService.isFavorite(favorites));
                         }
                     }
                 } catch (Exception e) {
@@ -129,6 +122,12 @@ public class TeamController {
                                 p.setPlayer_team(playerDao.findTeamName(p.getTeam_id()));
                                 p.setPosition(playerDao.findPlayerPosition(p.getPlayer_id())); 
                                 p.setPlayer_age(playerServiceImpl.getAgeWithBirth(p.getPlayer_birth()));
+                                
+                                Favorites favorites = new Favorites();
+                                favorites.setPlayer_id(p.getPlayer_id());
+                                favorites.setUser_id(user.getUser_id());
+
+                                p.setIsFavorite(favoritesService.isFavorite(favorites));
                             }
                         }
                     } catch (Exception e) {
@@ -148,6 +147,7 @@ public class TeamController {
         res.put("playerList", playerlist);
         res.put("teamStat", data);
         res.put("recommendList", recommendlist);
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
 
 
         response.status = true;
@@ -178,18 +178,18 @@ public class TeamController {
             String st = br.readLine();
             List<Integer> list = new ArrayList<Integer>();  
             System.out.println("** "+st);
-            String line = "";          
             String digit = "";
             while (st.length()>0) {
                 String ch = st.substring(0, 1);
                 st = st.substring(1);
                 if(Character.isDigit(ch.charAt(0))){
-                    digit += ch.charAt(0);
+                    digit += ch;
                 } else if(ch.charAt(0)==',' || ch.charAt(0)==']'){
-                    list.add(Integer.parseInt(digit));
-                    digit = "";
+                    if(digit.length() > 0) {
+                        list.add(Integer.parseInt(digit));
+                        digit = "";
+                    }
                 }
-                line+=ch;
             }
 
             result.status = true;
@@ -206,8 +206,22 @@ public class TeamController {
 
     @ApiOperation(value = "선수 리스트로 팀 스탯 반환")
     @PostMapping("/recommend1/change")
-    public Object search_player(@RequestBody final Map<String, Object> request) {
+    public Object search_player(@RequestHeader final HttpHeaders header, @RequestBody final Map<String, Object> request) {
         final RestResponse response = new RestResponse();
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
         List<Integer> playerList = (List<Integer>) request.get("playerList");
         TeamStat data = new TeamStat();
         // 팀 분석 하기 위한 서비스 호출
@@ -219,9 +233,14 @@ public class TeamController {
             response.msg = "failed";
             response.data = null;
         }
+
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("teamStat", data);
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
+
         response.status = true;
         response.msg = "success";
-        response.data = data;
+        response.data = res;
         return response;
     }
 }
