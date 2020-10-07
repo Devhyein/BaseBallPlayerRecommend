@@ -83,7 +83,7 @@ def hitter_clustering(pid):
 
     # 계층형 클러스터링
     mergings = linkage(df_normalized, method='complete')
-    predict = pd.DataFrame(fcluster(mergings, 0.1, criterion='distance'))
+    predict = pd.DataFrame(fcluster(mergings, 0.27, criterion='distance'))
 
     # K-Mean 클러스터링
     # model = KMeans(n_clusters=7,algorithm='auto')
@@ -123,7 +123,7 @@ def pitcher_clustering(pid):
 
     # 계층형 클러스터링
     mergings = linkage(df_normalized, method='complete')
-    predict = pd.DataFrame(fcluster(mergings, 0.15, criterion='distance'))
+    predict = pd.DataFrame(fcluster(mergings, 0.33, criterion='distance'))
 
     # # K-means 클러스터링
     # model = KMeans(n_clusters=27,algorithm='auto')
