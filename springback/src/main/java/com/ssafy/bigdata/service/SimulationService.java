@@ -9,9 +9,9 @@ import com.ssafy.bigdata.dto.simulation.Simulation;
 public interface SimulationService {
 
         // 시뮬레이션 생성
-        public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, int is_attack, int innings,
+        public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack, int innings,
                         boolean is_top, int out_count, String base_info, String my_score, String your_score,
-                        int hit_order);
+                        int my_hit_order, int your_hit_order, int game_status);
 
         // 시뮬레이션 조회
         public Simulation searchSimulation(int simulation_id);

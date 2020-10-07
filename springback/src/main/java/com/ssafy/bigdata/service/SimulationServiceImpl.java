@@ -12,7 +12,9 @@ import com.ssafy.bigdata.dto.simulation.Score;
 import com.ssafy.bigdata.dto.simulation.Simulation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SimulationServiceImpl implements SimulationService {
 
     @Autowired
@@ -20,9 +22,10 @@ public class SimulationServiceImpl implements SimulationService {
     PlayerDao playerDao;
 
     @Override
-    public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, int is_attack, int innings,
-            boolean is_top, int out_count, String base_info, String my_score, String your_score, int hit_order) {
-        return 0;
+    public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack, int innings,
+            boolean is_top, int out_count, String base_info, String my_score, String your_score, int my_hit_order, int your_hit_order, int game_status) {
+        int res = simulationDao.createSimulation(user_id, my_lineup_id, your_lineup_id, is_attack, innings, is_top, out_count, base_info, my_score, your_score, my_hit_order, your_hit_order, game_status);
+        return res;
     }
 
     @Override

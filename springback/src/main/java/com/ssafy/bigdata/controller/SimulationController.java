@@ -34,7 +34,7 @@ public class SimulationController {
 
     @ApiOperation(value = "시뮬레이션 게임 시작")
     @PostMapping("/start")
-    public Object simulationStart(@RequestBody int user_id, int my_lineup_id, int your_lineup_id, int is_attack) {
+    public Object simulationStart(@RequestBody int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack) {
         final RestResponse response = new RestResponse();
         Score score = null; // 스코어 정보를 담을 객체
         HitInfo hit_info = null; // 타석 정보를 담을 객체
@@ -45,7 +45,7 @@ public class SimulationController {
         try {
             // 시물레이션
             int simulation_status = simulationService.createSimulation(user_id, my_lineup_id, your_lineup_id, is_attack,
-                    1, true, 0, "0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0", " 0,0,0,0,0,0,0,0,0,0,0,0", 1); // 생성
+                    1, true, 0, "0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0", " 0,0,0,0,0,0,0,0,0,0,0,0",0, 0 ,1); // 생성
             simulation_id = simulationService.searchSimulationByUserId(user_id);// 시뮬레이션 아이디
 
             if (simulation_status == 1) {
