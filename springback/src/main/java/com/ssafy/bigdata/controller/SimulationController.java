@@ -41,8 +41,8 @@ public class SimulationController {
 
     @ApiOperation(value = "시뮬레이션 게임 시작")
     @PostMapping("/start")
-    public Object simulationStart(@RequestHeader final HttpHeaders header, @RequestBody SimulationStart simulationStart) {
-        System.out.println("tktktktktk");
+    public Object simulationStart(@RequestHeader final HttpHeaders header,
+            @RequestBody SimulationStart simulationStart) {
         final RestResponse response = new RestResponse();
         Score score = null; // 스코어 정보를 담을 객체
         HitInfo hit_info = null; // 타석 정보를 담을 객체
@@ -50,10 +50,10 @@ public class SimulationController {
         Simulation simulation = null; // 시뮬레이션을 담을 객체
         int simulation_id; // id
         System.out.println("게임시작 백에 들어왔따따따따ㅏㅏㅏ");
-         /////////////////////////////////////////////////////////////////////
-        ///////            토큰 해석
+        /////////////////////////////////////////////////////////////////////
+        /////// 토큰 해석
         User user = userService.getUserByToken(header.get("token").get(0));
-     
+
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
@@ -61,17 +61,17 @@ public class SimulationController {
             response.data = null;
             return response;
         }
+
         //////////////////////////////////////////////////////////////////////
 
-
+        // 시물레이션
         try {
-            // 시물레이션
-            System.out.println("시뮬레이션 시작");
-            int simulation_status = simulationService.createSimulation(simulationStart.getUser_id(), simulationStart.getMy_lineup_id(), simulationStart.getYour_lineup_id(), simulationStart.isIs_attack(),
-                    1, true, 0, "0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0", " 0,0,0,0,0,0,0,0,0,0,0,0",0, 0 ,1); // 생성
-            System.out.println("시뮬레이션 생성");
+            // 생성
+            int simulation_status = simulationService.createSimulation(simulationStart.getUser_id(),
+                    simulationStart.getMy_lineup_id(), simulationStart.getYour_lineup_id(),
+                    simulationStart.isIs_attack(), 1, true, 0, "0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0",
+                    "0,0,0,0,0,0,0,0,0,0,0,0", 0, 0, 1);
             simulation_id = simulationService.searchSimulationByUserId(simulationStart.getUser_id());// 시뮬레이션 아이디
-            System.out.println("SIMULATION_ID : "+simulation_id);
             if (simulation_status == 1) {
                 simulation = simulationService.searchSimulation(simulation_id);
             } else {
@@ -82,7 +82,6 @@ public class SimulationController {
             List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulationStart.getMy_lineup_id());
             List<Integer> your_lineup = lineupService.getPlayerListByLineup(simulationStart.getYour_lineup_id());
             simulation = simulationService.searchSimulation(simulation_id);
-
             // 스코어 정보
             try {
                 int score_status = simulationService.createScore(simulation_id); // 생성
@@ -100,12 +99,12 @@ public class SimulationController {
             }
 
             // simulate
-            simulation = simulationService.progressSimulation(simulation, simulation_id, score, my_lineup,
-                    your_lineup); // 시뮬레이션 진행
+            simulation = simulationService.progressSimulation(simulation, simulation_id, score, my_lineup, your_lineup); // 시뮬레이션
+            System.out.println("시뮬레이션 : " + simulation.toString());
 
             // data
             HashMap<String, Object> data = new HashMap<>();
-            data.put("simulation",new SimulationData(simulation, score, hit_info));
+            data.put("simulation", new SimulationData(simulation, score, hit_info));
             data.put("token", userService.getTokenByEmail(user.getEmail()));
             response.status = true;
             response.msg = "success create simulation and play first innings";
