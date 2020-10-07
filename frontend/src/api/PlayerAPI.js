@@ -16,6 +16,9 @@ const getApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -47,6 +50,9 @@ const postApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -78,6 +84,9 @@ const putApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면
@@ -109,6 +118,9 @@ const deleteApi = (url, data, callback, errorCallback) => {
 
                 // 서버의 수행이 성공적이었다면 callback 수행
                 if(responseData.status) {
+                    // 서버의 수행이 성공적이었다면 토큰이 넘어옴
+                    sessionStorage.setItem('jwt-token', responseData.data.token);
+                    
                     callback(responseData.data);
                 }
                 // 서버에서 오류가 발생했다면

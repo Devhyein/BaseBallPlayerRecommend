@@ -178,6 +178,15 @@
       </div>
       <!--End table-->
     </div>
+
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
   </div>
 </template>
 
@@ -196,6 +205,10 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from 'sweetalert';
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     PlayerStatChart,
@@ -203,6 +216,8 @@ export default {
 
     // CustomTable,
     PlayerStatTable,
+
+    Loading,
   },
   data() {
     return {
@@ -246,6 +261,7 @@ export default {
       modals: {
         position: false,
         team: false,
+        loading: false,
       },
       // 포지션 필터링용 리스트
       positionFilter: [false,
@@ -260,6 +276,13 @@ export default {
       teamRenderKey: 0,
 
       tableRenderKey: 0,
+    }
+  },
+  created() {
+    if(this.$store.state.userInfo.id == undefined) {
+      swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+      this.$router.push({name: "Login"});
+      return;
     }
   },
   computed: {
@@ -401,6 +424,7 @@ export default {
       }
       teams = teams.slice(0, -1);
 
+      this.modals.loading = true;
       PlayerAPI.getPlayerList(
         {
           searchText: searchText,
@@ -408,11 +432,19 @@ export default {
           positions: positions
         },
         res => {
-          this.playerList = res;
+          this.playerList = res.playerList;
           this.resetPlayerListTable();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -455,6 +487,12 @@ export default {
         },
         err => {
           console.log(err);
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -500,6 +538,12 @@ export default {
       this.modifyFavorite(this.playerListShowData[idx].player_id, this.playerListShowData[idx].isFavorite);
     },
     modifyFavorite(id, s) {
+      // 로그인이 안되어있다면 동작하지 않음
+      if(this.$store.state.userInfo.id == undefined) {
+        swal("경고", "로그인이 필요한 서비스입니다.", "warning");
+        return;
+      }
+
       // 별에 불들어왔다면 즐겨찾기에 추가
       if(s) {
         PlayerAPI.addFavorite(
@@ -511,6 +555,11 @@ export default {
           },
           err => {
             console.log(err);
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }
@@ -523,6 +572,11 @@ export default {
           },
           err => {
             console.log(err);
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }

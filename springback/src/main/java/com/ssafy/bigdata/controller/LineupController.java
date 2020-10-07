@@ -61,7 +61,7 @@ public class LineupController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -76,9 +76,13 @@ public class LineupController {
             res.add(lineup);
         }
 
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("lineupList", res);
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+
         response.status = true;
         response.msg = "success";
-        response.data = res;
+        response.data = data;
         return response;
     }
 
@@ -96,7 +100,7 @@ public class LineupController {
         if (user == null) {
             System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
             response.status = false;
-            response.msg = "Token Failed";
+            response.msg = "NoToken";
             response.data = null;
             return response;
         }
@@ -142,6 +146,7 @@ public class LineupController {
 
         res.put("playerList", playerlist);
         res.put("teamStat", data);
+        res.put("token", userService.getTokenByEmail(user.getEmail()));
 
         response.status = true;
         response.msg = "success";
@@ -151,9 +156,23 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 등록")
     @PostMapping("/lineup/insert")
-    public Object insertLineup(@RequestBody HashMap<String, Object> request) {
+    public Object insertLineup(@RequestHeader final HttpHeaders header, @RequestBody HashMap<String, Object> request) {
         final RestResponse response = new RestResponse();
         int res=0;
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
         try{
             List<Object> up = (List<Object>) request.get("lineup"); 
             String lineup_name = (String) up.get(0);
@@ -172,14 +191,16 @@ public class LineupController {
             e.printStackTrace();
         }
         
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+
         if(res!=0){
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         }else{
             response.status = false;
             response.msg = "fail to insert lineup";
-            response.data = res;
         }
         
         return response;
@@ -187,18 +208,33 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 수정")
     @PutMapping("/lineup/update")
-    public Object updateLineup(@RequestBody Lineup lineup) {
+    public Object updateLineup(@RequestHeader final HttpHeaders header, @RequestBody Lineup lineup) {
         final RestResponse response = new RestResponse();
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
 
         int res = lineupService.updateLineup(lineup);
         if(res!=0){
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         }else{
             response.status = false;
             response.msg = "fail to update lineup";
-            response.data = res;
         }
 
         return response;
@@ -206,18 +242,33 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 삭제")
     @DeleteMapping("/lineup/delete")
-    public Object updateLineup(@RequestParam int lineup) {
+    public Object updateLineup(@RequestHeader final HttpHeaders header, @RequestParam int lineup) {
         final RestResponse response = new RestResponse();
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
 
         int res = lineupService.deleteLineup(lineup);
         if(res!=0){
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         }else{
             response.status = false;
             response.msg = "fail to delete lineup";
-            response.data = res;
         }
 
         return response;
@@ -225,18 +276,33 @@ public class LineupController {
 
     @ApiOperation(value = "라인업 이름 변경")
     @PutMapping("/lineup/changename")
-    public Object modifyLineupName(@RequestBody Lineup lineup) {
+    public Object modifyLineupName(@RequestHeader final HttpHeaders header, @RequestBody Lineup lineup) {
         final RestResponse response = new RestResponse();
+
+        /////////////////////////////////////////////////////////////////////
+        ///////            토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+     
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+        //////////////////////////////////////////////////////////////////////
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
 
         int res = lineupService.modifyLineupName(lineup);
         if(res!=0){
             response.status = true;
             response.msg = "success";
-            response.data = res;
+            response.data = data;
         }else{
             response.status = false;
             response.msg = "fail to modify lineup name";
-            response.data = res;
         }
 
         return response;

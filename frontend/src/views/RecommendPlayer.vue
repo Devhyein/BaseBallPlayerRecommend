@@ -243,6 +243,15 @@
       </div>
     </div>
 
+    <!-- loading modal -->
+    <loading :active.sync="modals.loading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -259,10 +268,16 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Alert
 import swal from 'sweetalert';
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
     CustomRadarChart,
     // CustomTable
+
+    Loading,
   },
   data() {
     return {
@@ -380,6 +395,10 @@ export default {
       removedTableRenderKey: 0,
 
       similarTab: false,
+
+      modals: {
+        loading: false,
+      },
     }
   },
   watch: {
@@ -400,14 +419,24 @@ export default {
       return;
     }
 
+    this.modals.loading = true;
     PlayerAPI.getLineupList(
       "none=none",
       res => {
-        this.lineupList = res;
+        this.lineupList = res.lineupList;
         console.log(res);
+
+        this.modals.loading = false;
       },
       err => {
         console.log(err);
+        this.modals.loading = false;
+
+        if(err.msg == 'NoToken') {
+          swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+          this.$store.commit('deleteUserInfo');
+          this.$router.push({ name: "Login" });
+        }
       }
     );
 
@@ -478,6 +507,7 @@ export default {
       this.lineupId = id;
       this.lineupName = name;
 
+      this.modals.loading = true;
       PlayerAPI.getTeamStatWithRecommend(
         "lineup=" + id,
         res => {
@@ -489,21 +519,45 @@ export default {
           delete this.teamStats.team_id;
 
           this.teamStatData = this.computeTeamStatData();
+
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       );
     },
     getPlayerStat(id) {
+
+      this.modals.loading = true;
       PlayerAPI.getPlayerStat(
         'num=' + id,
         res => {
           this.playerStats = res;
           this.playerStatData = this.computePlayerStatData();
+
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
         },
         err => {
           console.log(err);
+          if(!this.similarTab) {
+            this.modals.loading = false;
+          }
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
 
@@ -515,9 +569,17 @@ export default {
             this.similarPlayers = res.recommendList;
             
             this.resetSimilarPlayerShowData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }
@@ -560,14 +622,23 @@ export default {
         this.removedSel = -1;
 
         // 이땐 오직 플레이어의 스탯만 가져오기
+        this.modals.loading = true;
         PlayerAPI.getPlayerStat(
           'num=' + this.similarPlayerListShowData[index].player_id,
           res => {
             this.playerStats = res;
             this.playerStatData = this.computePlayerStatData();
+            this.modals.loading = false;
           },
           err => {
             console.log(err);
+            this.modals.loading = false;
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
         this.playerName = this.similarPlayerListShowData[index].player_name;
@@ -648,15 +719,25 @@ export default {
       for(let player of this.lineupPlayers) {
         idList.push(player.player_id);
       }
+
+      this.modals.loading = true;
       PlayerAPI.getTeamStat(
         {playerList: idList},
         res => {
-          this.modifiedTeamStat = res;
+          this.modifiedTeamStat = res.teamStat;
           this.isModifiedTeamStat = true;
           this.teamStatData = this.computeTeamStatData();
+          this.modals.loading = false;
         },
         err => {
           console.log(err);
+          this.modals.loading = false;
+
+          if(err.msg == 'NoToken') {
+            swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+            this.$store.commit('deleteUserInfo');
+            this.$router.push({ name: "Login" });
+          }
         }
       )
     },
@@ -711,6 +792,12 @@ export default {
           },
           err => {
             console.log(err);
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }
@@ -723,6 +810,12 @@ export default {
           },
           err => {
             console.log(err);
+
+            if(err.msg == 'NoToken') {
+              swal("경고", "세션만료! 다시 로그인 해주세요!", "warning");
+              this.$store.commit('deleteUserInfo');
+              this.$router.push({ name: "Login" });
+            }
           }
         )
       }
