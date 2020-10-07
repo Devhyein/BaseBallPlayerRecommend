@@ -548,7 +548,6 @@ export default {
           player.player_name, 
           player.player_team, 
           player.position,
-          player.player_num,
           player.player_age
         ]);
       }

@@ -2,17 +2,17 @@
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
     <side-bar :background-color="sidebarBackground" short-title="Argon" title="Argon">
       <template slot="links">
-        <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}" />
+        <sidebar-item :link="{name: '홈', icon: 'ni ni-tv-2 text-primary', path: '/main'}" />
         <sidebar-item
-          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search'}"
+          :link="{name: '선수 검색', icon: 'fa fa-search text-blue', path: '/search'}"
         />
         <sidebar-item
-          :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
+          :link="{name: '선수 추천', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
         />
         <sidebar-item
-          :link="{name: 'Lineup', icon: 'ni ni-cart text-green', path: '/lineup'}"
+          :link="{name: '라인업 편집', icon: 'ni ni-cart text-green', path: '/lineup'}"
         />
-        <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
+        <sidebar-item :link="{name: '라인업 비교', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
 
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>
