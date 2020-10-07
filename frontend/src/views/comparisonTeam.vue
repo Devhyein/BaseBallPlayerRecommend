@@ -62,7 +62,7 @@
           <custom-radar-chart
             class="col"
             title="Team Stat"
-            :subTitle="lineupName"
+            :subTitle="radarChartTitle"
             :data="CommonTeamStatData"
             :type="chartType"
           />
@@ -247,6 +247,8 @@ export default {
       modals: {
         loading: false,
       },
+
+      radarChartTitle: ''
     };
   },
   created() {
@@ -296,6 +298,23 @@ export default {
       this.comparisonContent
     );
     console.log(this.compareTableData)
+  },
+  watch: {
+    lineupName() {
+      let left = this.lineupName;
+      let right = this.MyLineupName;
+
+      if(left == '상대 라인업 선택') {
+        left = '';
+      }
+      if(right == '나의 라인업 선택') {
+        right = '';
+      }
+      this.radarChartTitle = left + " vs " + right;
+    },
+    MyLineupName() {
+      this.radarChartTitle = this.lineupName + " vs " + this.MyLineupName;
+    }
   },
 
   methods: {
