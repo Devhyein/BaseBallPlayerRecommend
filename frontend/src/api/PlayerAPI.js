@@ -141,6 +141,12 @@ const PlayerAPI = {
 
     googleLogin:(data,callback,errorCallback)=>postApi('/spring/login',data,callback,errorCallback),
     testLogin:(data,callback,errorCallback)=>postApi('/spring/login/temp',data,callback,errorCallback),
+
+    // 시뮬레이션
+    gameStart:(data,callback,errorCallback)=>postApi('/spring/game/start',data,callback,errorCallback),
+    gameProgress:(data,callback,errorCallback)=>postApi('/spring/game/progress',data,callback,errorCallback),
+    gameEnd:(data,callback,errorCallback)=>getApi('/spring/game/end',data,callback,errorCallback),
+    
 }
 
 export default PlayerAPI

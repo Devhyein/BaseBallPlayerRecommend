@@ -2,7 +2,7 @@
   <div>
     <base-header type="translucent-default" class="pb-5 pt-5">
     </base-header>
-    <div class="p-3">
+    <div class="p-3 mt-5">
       <main-carousel/>
     </div>
     <br>

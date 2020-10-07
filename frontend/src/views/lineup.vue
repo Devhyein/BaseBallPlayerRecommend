@@ -130,7 +130,7 @@
               <base-button class="mb-2" :type="positionFilter[10] ? 'secondary' : 'warning'" @click="changePositionFilter(10)">지명타자</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.position = false">Close</base-button>
+                <base-button type="secondary" @click="modals.position = false">완료</base-button>
             </template>
           </modal>
 
@@ -171,7 +171,7 @@
               <base-button class="mb-2" :type="teamFilter[21] ? 'secondary' : 'warning'" @click="changeTeamFilter(21)">KT 위즈</base-button>
             </div>
             <template slot="footer">
-                <base-button type="secondary" @click="modals.team = false">Close</base-button>
+                <base-button type="secondary" @click="modals.team = false">완료</base-button>
             </template>
           </modal>
 
@@ -385,7 +385,7 @@ export default {
     }
   },
   created() {
-    if(this.$store.state.userInfo.user_id == undefined) {
+    if(this.$store.state.userInfo.id == undefined) {
       swal("경고", "로그인이 필요한 서비스입니다.", "warning");
       this.$router.push({name: "Login"});
       return;
@@ -393,7 +393,7 @@ export default {
 
     // 라인업 리스트 가져오기
     PlayerAPI.getLineupList(
-      "user_id=" + this.$store.state.userInfo.user_id,
+      "none=none",
       res => {
         this.lineupList = res;
       },
@@ -565,7 +565,7 @@ export default {
         text: '라인업 이름 입력',
         content: "input",
         button: {
-          text: "Search!",
+          text: "저장",
           closeModal: false,
         },
       })
@@ -590,12 +590,23 @@ export default {
 
       PlayerAPI.addLineup(
         {
-          user_id: this.$store.state.userInfo.user_id,
+          user_id: this.$store.state.userInfo.id,
           lineup: arr
         },
         res => {
           console.log(res);
           swal('성공', '라인업 추가 성공!', 'success');
+
+          // 라인업 리스트 가져와서 갱신하기
+          PlayerAPI.getLineupList(
+            "none=none",
+            res => {
+              this.lineupList = res;
+            },
+            err => {
+              console.log(err);
+            }
+          );
         },
         err => {
           swal('실패', '라인업 추가 실패ㅠ', 'error');

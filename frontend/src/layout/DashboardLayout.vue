@@ -4,7 +4,7 @@
       <template slot="links">
         <sidebar-item :link="{name: 'Main', icon: 'ni ni-tv-2 text-primary', path: '/main'}" />
         <sidebar-item
-          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search/player'}"
+          :link="{name: 'Search Player', icon: 'fa fa-search text-blue', path: '/search'}"
         />
         <sidebar-item
           :link="{name: 'Recommend Player', icon: 'fa fa-thumbs-up text-red', path: '/recommend'}"
@@ -13,6 +13,7 @@
           :link="{name: 'Lineup', icon: 'ni ni-cart text-green', path: '/lineup'}"
         />
         <sidebar-item :link="{name: 'Comparison Team', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
+        <sidebar-item :link="{name: 'Simulation Game', icon: 'ni ni-controller', path: '/Simulation'}"/>
 
         <!--
         <sidebar-item :link="{name: 'Dashboard', icon: 'ni ni-planet text-blue', path: '/dashboard'}"/>

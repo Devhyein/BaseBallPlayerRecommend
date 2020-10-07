@@ -27,7 +27,7 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Dashboard.vue')
         },
         {
-          path: '/search/player',
+          path: '/search',
           name: 'search_player',
           component: () => import(/* webpackChunkName: "demo" */ './views/SearchPlayer.vue')
         },
@@ -56,6 +56,11 @@ export default new Router({
           path: '/icons',
           name: 'icons',
           component: () => import('./views/Icons.vue')
+        },
+        {
+          path: '/simulation',
+          name: 'simulation',
+          component: () => import('./views/Simulation.vue')
         },
         /*
         {
