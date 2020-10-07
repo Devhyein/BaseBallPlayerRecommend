@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface SimulationDao {
 
     // 시뮬레이션 생성
-    public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack, int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score, int hit_order, int game_status);
+    public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack, int innings, boolean is_top, int out_count, String base_info, int my_score, int your_score, int my_hit_order, int your_hit_order, int game_status);
 
     // 시뮬레이션 조회
     public Simulation searchSimulation(int simulation_id);

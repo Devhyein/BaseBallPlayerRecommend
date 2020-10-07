@@ -5,8 +5,8 @@
 <mapper namespace="com.ssafy.bigdata.dao.simulation.SimulationDao">
     <!-- 시뮬레이션 -->
     <insert id = "createSimulation">
-        INSERT INTO simulation(user_id, my_lineup_id, your_lineup_id, is_attack, innings, is_top, out_count, base_info, my_score, your_score, hit_order, game_status)
-        VALUES (#{user_id}, #{my_lineup_id}, #{your_lineup_id}, #{is_attack}, #{innings}, #{is_top}, #{out_count}, #{base_info}, #{my_score}, #{your_score}, #{hit_order}, #{game_status})
+        INSERT INTO simulation(user_id, my_lineup_id, your_lineup_id, is_attack, innings, is_top, out_count, base_info, my_score, your_score, my_hit_order, your_hit_order, game_status)
+        VALUES (#{user_id}, #{my_lineup_id}, #{your_lineup_id}, #{is_attack}, #{innings}, #{is_top}, #{out_count}, #{base_info}, #{my_score}, #{your_score}, #{my_hit_order}, #{your_hit_order}, #{game_status})
     </insert>
 
     <select id="searchSimulation" resultType="Simulation" parameterType="int">
@@ -21,7 +21,7 @@
         UPDATE simulation
         SET is_attack = #{is_attack}, innings = #{innings}, is_top = #{is_top}, 
         out_count = #{out_count}, base_info = #{base_info}, my_score = #{my_score}, 
-        your_score = #{your_score}, hit_order = #{hit_order} 
+        your_score = #{your_score}, hit_order = #{hit_order}, my_hit_order = #{my_hit_order}, your_hit_order = #{your_hit_order}
         WHERE simulation_id = #{simulation_id}
     </update>
 
