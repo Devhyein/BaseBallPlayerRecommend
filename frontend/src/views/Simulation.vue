@@ -118,8 +118,9 @@
             </thead>
             <tbody style="margin-top:5px;">
               <tr v-if="game.is_attack">
-                <td>{{game.my_hit_order+1}}</td>
-                <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
+                <td>{{game.my_hit_order}}</td>
+                <td v-if="game.my_hit_order>0">{{lineupPlayers[game.my_hit_order-1].player_name}}</td>
+                <td v-else>{{lineupPlayers[game.my_hit_order].player_name}}</td>
                 <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
@@ -128,8 +129,9 @@
                 <td>{{hit_info.foul_count}}</td>
               </tr>
               <tr v-else>
-                <td>{{game.your_hit_order+1}}</td>
-                <td>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
+                <td>{{game.your_hit_order}}</td>
+                <td v-if="game.your_hit_order>0">{{yourLineupPlayers[game.your_hit_order-1].player_name}}</td>
+                <td v-else>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
                 <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
@@ -311,9 +313,8 @@ export default {
       // my_lineup_array : [],
       total_score : 0,
       your_total_score : 0,
-      // teamStatData : [],
-      // playerStatData : [],
-      // searchedPlayerTableData : []
+      my_score_array : [0,0,0,0,0,0,0,0,0,0,0,0],
+      your_score_array : [0,0,0,0,0,0,0,0,0,0,0,0]
     }
   },
 
@@ -444,6 +445,8 @@ export default {
             this.total_score += this.game.my_score_array[i];
             this.your_total_score += this.game.your_score_array[i];
           }
+          // this.game.my
+          // for(let i=0;i<12)
 
           this.isLoading = false;
           swal("성공", "게임을 시작합니다.", "success");
@@ -460,7 +463,7 @@ export default {
       this.isLoading = true;
       PlayerAPI.gameProgress(
         {
-          simulation_id : this.simulation_id
+          simulation_id : this.game.simulation_id
         },
         res => {
           console.log(res);
