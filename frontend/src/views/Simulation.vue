@@ -119,8 +119,8 @@
             </thead>
             <draggable v-model="hit_info" tag="tbody" style="margin-top:5px;">
               <tr>
-                <td>{{game.hit_order+1}}</td>
-                <td>{{lineupPlayers[game.hit_order].player_name}}</td>
+                <td>{{game.my_hit_order+1}}</td>
+                <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
                 <td v-for="row in hit_info" :key="row">{{row}}</td>
               </tr>
             </draggable>
@@ -134,7 +134,7 @@
           </div>
 
           <div v-if="start" class="gameBtn"> 
-            <base-button type="primary" v-if="game.game_status">게임진행</base-button>
+            <base-button type="primary" v-if="game.game_status" @click="clickProgressBtn">게임진행</base-button>
             <base-button type="primary" v-if="game.game_status" @click="clickEndBtn">게임종료</base-button>
           </div>
         </div>
@@ -229,7 +229,9 @@ export default {
       yourLineupList: [],
 
       // 라인업 선수 목록
-      lineupPlayers: [],
+      lineupPlayers: [{
+        player_name : ""
+      }],
       yourLineupPlayers: [],
 
       // 드롭다운으로 라인업 선택하는 동작을 위한 변수
@@ -274,7 +276,8 @@ export default {
         base_info_array : [0,0,0],
         my_score : [],
         your_score : [],
-        hit_order : 0, 
+        my_hit_order : 0, 
+        your_hit_order : 0, 
         game_status : false
       },
       score : {
@@ -408,26 +411,33 @@ export default {
       data.your_lineup_id = this.yourLineupId;
       data.is_attack = true;
 
-      this.isLoading = true;
+      // this.isLoading = true;
       PlayerAPI.gameStart(
         data,
         res => {
           console.log(res);
           this.start = true;
-          this.game = res.game;
-          this.score = res.score;
-          this.hit_info = res.hit_info;
+          this.game = res.simulation.game;
+          this.score = res.simulation.score;
+          this.hit_info = res.simulation.hit_info;
           this.lineupId = this.game.my_lineup_id;
           this.yourLineupId = this.game.your_lineup_id;
+          this.score.total_score = 0;
+          this.score.your_total_score = 0;
+          for (let i=0; i < this.score.my_score_array; i++) {
+            this.total_score += this.score.my_score_array[i];
+            this.your_total_score += this.score.your_score_array[i];
+          }
 
+          // this.isLoading = false;
           swal("성공", "게임을 시작합니다.", "success");
-          this.isLoading = false;
         },
         err => {
           swal('실패', '게임 시작에 실패햐였습니다.', 'error');
           console.log(err);
-          this.isLoading = false;
-        }
+          // this.isLoading = false;
+        },
+
       )
     },
     clickProgressBtn() {
@@ -438,9 +448,9 @@ export default {
         },
         res => {
           console.log(res);
-          this.game = res.game;
-          this.score = res.score;
-          this.hit_info = res.hit_info;
+          this.game = res.simulation.game;
+          this.score = res.simulation.score;
+          this.hit_info = res.simulation.hit_info;
           this.lineupId = this.game.my_lineup_id;
           this.yourLineupId = this.game.your_lineup_id;
 
