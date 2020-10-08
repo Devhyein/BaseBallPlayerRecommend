@@ -506,7 +506,7 @@ export default {
       this.isLoading = true;
       
       PlayerAPI.gameEnd(
-        "simulation_id=" + this.simulation_id,
+        "simulation_id=" + this.game.simulation_id,
         "user_id=" + this.game.user_id,
         res => {
           console.log(res);

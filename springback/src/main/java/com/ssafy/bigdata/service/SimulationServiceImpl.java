@@ -74,6 +74,7 @@ public class SimulationServiceImpl implements SimulationService {
         String your_score = score.getYour_score();
         int[] your_score_arr = new int[12];
         int out_count = simulation.getOut_count();
+        System.out.println(" OUT_COUNT : " + out_count);
 
         // 점수 정보
         st = new StringTokenizer(simulation.getMy_score(), ",");
@@ -146,6 +147,9 @@ public class SimulationServiceImpl implements SimulationService {
                 System.out.println("hitter_out : " + hitter_out + " / random :" + random);
                 if (hitter_out < random) {
                     sb.append("수비에 잡혀 아웃!");
+                    out_count++;
+                    simulation.setOut_count(out_count);
+                    System.out.println("out_count : " + out_count);
                     break;
                 } else {
                     if ((hitter.getHitter_homerun() / hitter.getHitter_pa()) * 100 > random) {
@@ -213,11 +217,11 @@ public class SimulationServiceImpl implements SimulationService {
                             if (is_attack) {
                                 my_score_arr[simulation.getInnings() - 1] += 1;
                                 simulation.setMy_score_array(my_score_arr);
-                                base_info_array[3] = 0;
+                                base_info_array[i] = 0;
                             } else {
                                 your_score_arr[simulation.getInnings() - 1] += 1;
                                 simulation.setYour_score_array(your_score_arr);
-                                base_info_array[3] = 0;
+                                base_info_array[i] = 0;
                             }
                         }
                     }
@@ -345,11 +349,15 @@ public class SimulationServiceImpl implements SimulationService {
         updateScore(score);
 
         // 차례가 끝난경우 이닝 증가.
-        if (simulation.getOut_count() == 3 && !simulation.isIs_top()) {
+        if (simulation.getOut_count() == 3) {
+            System.out.println("공수 교대!!!!!!");
             is_attack = (is_attack ? false : true);
-            int c = simulation.getInnings();
             simulation.setIs_attack(is_attack);
-            simulation.setInnings(c++);
+            simulation.setOut_count(0);
+            if (!simulation.isIs_top()) {
+                int c = simulation.getInnings();
+                simulation.setInnings(c++);
+            }
         }
 
         // update 시뮬레이션 DB
