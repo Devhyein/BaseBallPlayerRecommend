@@ -123,7 +123,7 @@ public class SimulationController {
         HitInfo hit_info = null; // 타석 정보를 담을 객체
         Lineup lineup = null; // 라인업 정보를 담을 객체
         Simulation simulation = simulationService.searchSimulation(simulation_id); // 시뮬레이션을 담을 객체
-
+        System.out.println("진행이야11111111111111111111111");
         // 토큰 해석
         User user = userService.getUserByToken(header.get("token").get(0));
 
@@ -139,6 +139,7 @@ public class SimulationController {
 
         // 시물레이션
         try {
+            System.out.println("진행이야22222222222222");
             List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulation.getMy_lineup_id());
             List<Integer> your_lineup = lineupService.getPlayerListByLineup(simulation.getYour_lineup_id());
             simulation = simulationService.searchSimulation(simulation_id);
@@ -150,7 +151,7 @@ public class SimulationController {
                 response.msg = "Fail to create score board.";
                 return response;
             }
-            System.out.println("진행이야@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println("진행이야33333333333333333333");
 
             // simulate
             HashMap<String, Object> data = simulationService.progressSimulation(simulation, simulation_id, score,
@@ -173,8 +174,20 @@ public class SimulationController {
     @GetMapping("/end")
     public Object simulationEnd(@RequestHeader HttpHeaders header, @RequestParam int simulation_id) {
         final RestResponse response = new RestResponse();
+        // 토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
 
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
+            response.data = null;
+            return response;
+        }
+
+        //////////////////////////////////////////////////////////////////////
         System.out.println("게임 종료");
+        simulationService.endSimulation(simulation_id, user);
         try {
             response.status = true;
             response.msg = "success";
