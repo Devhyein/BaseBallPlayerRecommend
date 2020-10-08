@@ -33,8 +33,7 @@
             <table class="table tablesorter table-hover">
               <thead class="thead-light">
                 <tr>
-                  <th>AT BAT</th>
-                  <th>NAME</th>
+                  <th v-for="column in tableColumns" :key="column">{{ column }}</th>
                 </tr>
               </thead>
               <draggable v-model="yourLineupPlayers" tag="tbody">
@@ -72,7 +71,7 @@
           <table class="score_table" id="score_table" style="width:100%;margin-top: 25px; margin-bottom:20px;">
             <thead>
               <tr>
-                <th class="col">TEAM</th>
+                <th class="col-2">TEAM</th>
                 <th v-for="key in 12" :key="key" class="inning_score col">{{key}}</th>
                 <!-- <th class="col">결과</th> -->
               </tr>
@@ -80,12 +79,12 @@
             <tbody>
               <tr style="border:1px solid black">
                 <td>{{lineupName}}</td>
-                <td v-for="score in score.my_score_array" :key="score">{{score}}</td>
+                <td v-for="(score,idx) in score.my_score_array" :key="idx">{{score}}</td>
                 <!-- <td class="col">0</td> -->
               </tr>            
               <tr>
                 <td>{{yourLineupName}}</td>
-                <td v-for="key in score.your_score_array" :key="key">{{key}}</td>
+                <td v-for="(score,idx) in score.your_score_array" :key="idx">{{score}}</td>
                 <!-- <td class="col">0</td> -->
               </tr>
             </tbody>
@@ -114,14 +113,19 @@
           <table style="width:100%;margin-top: 20px;">
             <thead>
               <tr>
-                <th v-for="column in hitterInfoColumns" :key="column">{{ column }}</th>
+                <th v-for="(column,idx) in hitterInfoColumns" :key="idx">{{ column }}</th>
               </tr>
             </thead>
             <draggable v-model="hit_info" tag="tbody" style="margin-top:5px;">
-              <tr>
+              <tr v-if="game.is_attack">
                 <td>{{game.my_hit_order+1}}</td>
                 <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
-                <td v-for="row in hit_info" :key="row">{{row}}</td>
+                <td v-for="(row,idx) in hit_info" :key="idx">{{row}}</td>
+              </tr>
+              <tr v-else>
+                <td>{{game.your_hit_order+1}}</td>
+                <td>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
+                <td v-for="(row,idx) in hit_info" :key="idx">{{row}}</td>
               </tr>
             </draggable>
           </table>
@@ -177,12 +181,14 @@
                   <th v-for="column in tableColumns" :key="column">{{ column }}</th>
                 </tr>
               </thead>
-              <draggable v-model="lineupPlayers" tag="tbody">
-                <tr v-for="(row, rowIdx) in lineupPlayers" :key="rowIdx">
-                    <td>{{atBat[rowIdx]}}</td>
-                    <td>{{row.player_name}}</td>
-                </tr>
-              </draggable>
+              <template v-if="lineupPlayers.length>1">
+                <draggable v-model="lineupPlayers" tag="tbody">
+                  <tr v-for="(row, rowIdx) in lineupPlayers" :key="rowIdx">
+                      <td>{{atBat[rowIdx]}}</td>
+                      <td>{{row.player_name}}</td>
+                  </tr>
+                </draggable>
+              </template>
             </table>
           </div>
         </div>
@@ -242,13 +248,13 @@ export default {
 
       // 라인업 선수 테이블 컬럼들
       tableColumns: [
-        "At bat"
-        , "Name"
+        "타순"
+        , "이름"
       ],     
       // 상대 라인업 선수 테이블 컬럼들
       yourTableColumns: [
-        "At bat"
-        , "Name"
+        "타순"
+        , "이름"
       ],
 
       // 테이블을 위한 데이터
