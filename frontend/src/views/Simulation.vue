@@ -189,6 +189,15 @@
       </div>
     </div>
 
+    <!-- loading modal -->
+    <loading :active.sync="isLoading"
+        loader="bars"
+        color="#007bff"
+        :height="128"
+        :width="128"
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
@@ -203,12 +212,18 @@ import PlayerAPI from "@/api/PlayerAPI";
 // Drag and Drop
 import draggable from 'vuedraggable'
 
+// Loading
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   components: {
-    draggable
+    draggable,
+    Loading
   },
   data() {
     return {
+      isLoading: false,
       // 라인업 리스트
       lineupList: [],
       yourLineupList: [],
@@ -289,15 +304,20 @@ export default {
       this.$router.push({name: "Login"});
       return;
     }
+    
+    this.isLoading = true;
     // 라인업 리스트 가져오기
     PlayerAPI.getLineupList(
       "none=none",
       res => {
         this.lineupList = res.lineupList;
         this.yourLineupList = res.lineupList;
+
+        this.isLoading = false;
       },
       err => {
         console.log(err);
+        this.isLoading = false;
       }
     );
 
@@ -311,6 +331,7 @@ export default {
       this.lineupName = name;
       this.isNewLineup = false;
 
+      this.isLoading = true;
       PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         res => {
@@ -323,9 +344,11 @@ export default {
           // this.teamStatData = this.computeTeamStatData();
 
           console.log(res);
+          this.isLoading = false;
         },
         err => {
           console.log(err);
+          this.isLoading = false;
         }
       );
     },
@@ -333,6 +356,7 @@ export default {
       this.yourLineupId = id;
       this.yourLineupName = name;
 
+      this.isLoading = true;
       PlayerAPI.getLineupPlayerWithTeamStat(
         "lineup=" + id,
         res => {
@@ -345,9 +369,12 @@ export default {
           // this.teamStatData = this.computeTeamStatData();
 
           console.log(res);
+
+          this.isLoading = false;
         },
         err => {
           console.log(err);
+          this.isLoading = false;
         }
       );
     },
@@ -380,6 +407,8 @@ export default {
       data.my_lineup_id = this.lineupId;
       data.your_lineup_id = this.yourLineupId;
       data.is_attack = true;
+
+      this.isLoading = true;
       PlayerAPI.gameStart(
         data,
         res => {
@@ -392,14 +421,17 @@ export default {
           this.yourLineupId = this.game.your_lineup_id;
 
           swal("성공", "게임을 시작합니다.", "success");
+          this.isLoading = false;
         },
         err => {
           swal('실패', '게임 시작에 실패햐였습니다.', 'error');
           console.log(err);
+          this.isLoading = false;
         }
       )
     },
     clickProgressBtn() {
+      this.isLoading = true;
       PlayerAPI.gameProgress(
         {
           simulation_id : this.simulation_id
@@ -419,15 +451,18 @@ export default {
             this.your_total_score += this.score.your_score_array[i];
           }
           // swal("성공", "게임을 중단합니다.", "success");
+          this.isLoading = false;
         },
         err => {
           swal('실패', '게임 진행에 실패햐였습니다.', 'error');
           console.log(err);
+          this.isLoading = false;
         }
       )
     },
 
     clickEndBtn() {
+      this.isLoading = true;
       PlayerAPI.gameEnd(
         {
           simulation_id:this.simulationId
@@ -441,10 +476,12 @@ export default {
           this.hit_info = [],
           this.simulation_id = 0
           swal("성공", "게임을 종료하였습니다.", "success");
+          this.isLoading = false;
         },
         err => {
           swal('실패', '게임 종료에 실패햐였습니다.', 'error');
           console.log(err);
+          this.isLoading = false;
         }
       )
     }
