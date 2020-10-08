@@ -21,7 +21,7 @@
         UPDATE simulation
         SET is_attack = #{is_attack}, innings = #{innings}, is_top = #{is_top}, 
         out_count = #{out_count}, base_info = #{base_info}, my_score = #{my_score}, 
-        your_score = #{your_score}, hit_order = #{hit_order}, my_hit_order = #{my_hit_order}, your_hit_order = #{your_hit_order}
+        your_score = #{your_score}, my_hit_order = #{my_hit_order}, your_hit_order = #{your_hit_order}, game_status = #{game_status}
         WHERE simulation_id = #{simulation_id}
     </update>
 
@@ -40,7 +40,7 @@
     <!-- 스코어 -->
     <insert id = "createScore" parameterType="int">
         INSERT INTO score(simulation_id, my_score, your_score)  
-        VALUES (#{simulation_id}, 0, 0);
+        VALUES (#{simulation_id}, "0,0,0,0,0,0,0,0,0,0,0,0", "0,0,0,0,0,0,0,0,0,0,0,0");
     </insert>
 
     <select id = "searchScore" parameterType="int" resultType="Score">

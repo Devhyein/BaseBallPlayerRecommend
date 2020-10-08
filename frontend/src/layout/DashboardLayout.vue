@@ -12,6 +12,7 @@
         <sidebar-item
           :link="{name: '라인업 편집', icon: 'ni ni-cart text-green', path: '/lineup'}"
         />
+        <sidebar-item :link="{name: '시뮬레이션 게임', icon: 'ni ni-controller', path: '/Simulation'}"/>
         <sidebar-item :link="{name: '라인업 비교', icon: 'ni ni-bullet-list-67', path: '/comparisonTeam'}"/>
 
         <!--
