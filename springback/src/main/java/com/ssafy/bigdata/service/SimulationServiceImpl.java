@@ -356,6 +356,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public int endSimulation(int simulation_id,User user) {
+
         StringBuilder sb = new StringBuilder();
         // 시뮬레이션 정보 가지고오기
         Simulation simulation = simulationDao.searchSimulation(simulation_id);
@@ -363,10 +364,11 @@ public class SimulationServiceImpl implements SimulationService {
         simulation.setGame_status(false);
         int res = simulationDao.updateSimulation(simulation);
         sb.append("게임 종료");
+        Score score = simulationDao.searchScore(simulation_id);
 
         // data
         HashMap<String, Object> data = new HashMap<>();
-        data.put("simulation", new SimulationData(simulation));
+        data.put("simulation", new SimulationData(simulation, score, null));
         data.put("token", userService.getTokenByEmail(user.getEmail()));
         return res;
     }
