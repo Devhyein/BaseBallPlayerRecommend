@@ -490,6 +490,7 @@ export default {
       
       PlayerAPI.gameEnd(
         "simulation_id=" + this.simulation_id,
+        "user_id=" + this.game.user_id,
         res => {
           console.log(res);
           // 초기화
