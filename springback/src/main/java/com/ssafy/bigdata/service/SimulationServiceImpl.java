@@ -73,7 +73,7 @@ public class SimulationServiceImpl implements SimulationService {
         int[] my_score_arr = new int[12];
         String your_score = score.getYour_score();
         int[] your_score_arr = new int[12];
-        int out_count = 0;
+        int out_count = simulation.getOut_count();
 
         // 점수 정보
         st = new StringTokenizer(simulation.getMy_score(), ",");
@@ -187,7 +187,8 @@ public class SimulationServiceImpl implements SimulationService {
                 sb.append("삼진 아웃!\n");
                 // 아웃 카운트 증가
                 out_count++;
-                
+                simulation.setOut_count(out_count);
+
             } else if (ball == 4) {
                 sb.append("볼넷");
                 int cnt = 5;
