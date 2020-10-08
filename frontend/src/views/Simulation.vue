@@ -116,18 +116,26 @@
                 <th v-for="(column,idx) in hitterInfoColumns" :key="idx">{{ column }}</th>
               </tr>
             </thead>
-            <draggable v-model="hit_info" tag="tbody" style="margin-top:5px;">
+            <tbody style="margin-top:5px;">
               <tr v-if="game.is_attack">
                 <td>{{game.my_hit_order+1}}</td>
                 <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
-                <td v-for="(row,idx) in hit_info" :key="idx">{{row}}</td>
+                <td>{{hit_info.hit1_count}}</td>
+                <td>{{hit_info.hit2_count}}</td>
+                <td>{{hit_info.hit3_count}}</td>
+                <td>{{hit_info.homerun_count}}</td>
+                <td>{{hit_info.foul_count}}</td>
               </tr>
               <tr v-else>
                 <td>{{game.your_hit_order+1}}</td>
                 <td>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
-                <td v-for="(row,idx) in hit_info" :key="idx">{{row}}</td>
+                <td>{{hit_info.hit1_count}}</td>
+                <td>{{hit_info.hit2_count}}</td>
+                <td>{{hit_info.hit3_count}}</td>
+                <td>{{hit_info.homerun_count}}</td>
+                <td>{{hit_info.foul_count}}</td>
               </tr>
-            </draggable>
+            </tbody>
           </table>
         </div>
 
