@@ -108,7 +108,7 @@
         </div>
 
         <!-- 타석 타자 정보 -->
-        <div style="font-size: 15px; text-align: left;"> 다음 타석 타자 정보 </div>
+        <div v-if="lineupId>0" style="font-size: 15px; text-align: left;"> 이전 타석 타자 정보 </div>
         <div v-if="lineupId>0" style="overflow-x:auto;height:100px; border:1px solid black; margin-bottom:20px;">
           <table style="width:100%;margin-top: 20px;">
             <thead>
@@ -118,8 +118,9 @@
             </thead>
             <tbody style="margin-top:5px;">
               <tr v-if="game.is_attack">
-                <td>{{game.my_hit_order+1}}</td>
-                <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
+                <td>{{game.my_hit_order}}</td>
+                <td v-if="game.my_hit_order>0">{{lineupPlayers[game.my_hit_order-1].player_name}}</td>
+                <td v-else>{{lineupPlayers[game.my_hit_order].player_name}}</td>
                 <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
@@ -128,8 +129,9 @@
                 <td>{{hit_info.foul_count}}</td>
               </tr>
               <tr v-else>
-                <td>{{game.your_hit_order+1}}</td>
-                <td>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
+                <td>{{game.your_hit_order}}</td>
+                <td v-if="game.your_hit_order>0">{{yourLineupPlayers[game.your_hit_order-1].player_name}}</td>
+                <td v-else>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
                 <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
@@ -473,7 +475,7 @@ export default {
       this.isLoading = true;
       PlayerAPI.gameProgress(
         {
-          simulation_id : this.simulation_id
+          simulation_id : this.game.simulation_id
         },
         res => {
           console.log(res);

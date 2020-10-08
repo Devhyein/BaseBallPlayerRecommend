@@ -116,14 +116,16 @@ public class SimulationController {
 
     @ApiOperation(value = "시뮬레이션 게임 진행")
     @PostMapping("/progress")
-    public Object simulationProgress(@RequestHeader HttpHeaders header, @RequestBody int simulation_id) {
+    public Object simulationProgress(@RequestHeader HttpHeaders header, @RequestBody HashMap<String, Object> req) {
         System.out.println("게임 진행 중");
+        int simulation_id = (int) req.get("simulation_id");
+        System.out.println("simulation_id : "+simulation_id);
         final RestResponse response = new RestResponse();
         Score score = null; // 스코어 정보를 담을 객체
         HitInfo hit_info = null; // 타석 정보를 담을 객체
         Lineup lineup = null; // 라인업 정보를 담을 객체
         Simulation simulation = simulationService.searchSimulation(simulation_id); // 시뮬레이션을 담을 객체
-        System.out.println("진행이야11111111111111111111111");
+        System.out.println(simulation.toString());
         // 토큰 해석
         User user = userService.getUserByToken(header.get("token").get(0));
 
@@ -139,7 +141,6 @@ public class SimulationController {
 
         // 시물레이션
         try {
-            System.out.println("진행이야22222222222222");
             List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulation.getMy_lineup_id());
             List<Integer> your_lineup = lineupService.getPlayerListByLineup(simulation.getYour_lineup_id());
             simulation = simulationService.searchSimulation(simulation_id);
@@ -151,7 +152,6 @@ public class SimulationController {
                 response.msg = "Fail to create score board.";
                 return response;
             }
-            System.out.println("진행이야33333333333333333333");
 
             // simulate
             HashMap<String, Object> data = simulationService.progressSimulation(simulation, simulation_id, score,

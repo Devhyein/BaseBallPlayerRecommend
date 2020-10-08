@@ -60,7 +60,15 @@ public class SimulationServiceImpl implements SimulationService {
         }
 
         int my_hit_order = simulation.getMy_hit_order();
+        if (my_hit_order == 9) {
+            my_hit_order = 0;
+            simulation.setMy_hit_order(my_hit_order);
+        }
         int your_hit_order = simulation.getYour_hit_order();
+        if (your_hit_order == 9) {
+            your_hit_order = 0;
+            simulation.setMy_hit_order(your_hit_order);
+        }
         String my_score = score.getMy_score();
         int[] my_score_arr = new int[12];
         String your_score = score.getYour_score();
@@ -237,7 +245,7 @@ public class SimulationServiceImpl implements SimulationService {
                         }
                     }
                 }
-                base_info_array[0] = 1; // 2루 진출
+                base_info_array[1] = 1; // 2루 진출
 
             case 3:
                 // 3루타
@@ -339,6 +347,7 @@ public class SimulationServiceImpl implements SimulationService {
         if (simulation.getOut_count() == 3 && !simulation.isIs_top()) {
             is_attack = (is_attack ? false : true);
             int c = simulation.getInnings();
+            simulation.setIs_attack(is_attack);
             simulation.setInnings(c++);
         }
 
@@ -356,6 +365,7 @@ public class SimulationServiceImpl implements SimulationService {
 
     @Override
     public int endSimulation(int simulation_id, User user) {
+
         StringBuilder sb = new StringBuilder();
         // 시뮬레이션 정보 가지고오기
         Simulation simulation = simulationDao.searchSimulation(simulation_id);
