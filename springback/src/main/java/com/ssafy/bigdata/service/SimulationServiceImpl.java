@@ -347,6 +347,7 @@ public class SimulationServiceImpl implements SimulationService {
         if (simulation.getOut_count() == 3 && !simulation.isIs_top()) {
             is_attack = (is_attack ? false : true);
             int c = simulation.getInnings();
+            simulation.setIs_attack(is_attack);
             simulation.setInnings(c++);
         }
 
