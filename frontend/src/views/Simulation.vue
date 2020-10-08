@@ -417,7 +417,7 @@ export default {
       data.your_lineup_id = this.yourLineupId;
       data.is_attack = true;
 
-      // this.isLoading = true;
+      this.isLoading = true;
       PlayerAPI.gameStart(
         data,
         res => {
@@ -435,13 +435,13 @@ export default {
             this.your_total_score += this.score.your_score_array[i];
           }
 
-          // this.isLoading = false;
+          this.isLoading = false;
           swal("성공", "게임을 시작합니다.", "success");
         },
         err => {
           swal('실패', '게임 시작에 실패햐였습니다.', 'error');
           console.log(err);
-          // this.isLoading = false;
+          this.isLoading = false;
         },
 
       )
@@ -479,10 +479,9 @@ export default {
 
     clickEndBtn() {
       this.isLoading = true;
+      
       PlayerAPI.gameEnd(
-        {
-          simulation_id:this.simulationId
-        },
+        "simulation_id=" + this.simulation_id,
         res => {
           console.log(res);
           // 초기화

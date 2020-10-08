@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -116,8 +117,8 @@ public class SimulationController {
 
     @ApiOperation(value = "시뮬레이션 게임 진행")
     @PostMapping("/progress")
-    public Object simulationProgress(@RequestBody int simulation_id, int replaced_player, int removed_player) {
-
+    public Object simulationProgress(@RequestHeader HttpHeaders header, @RequestBody int simulation_id) {
+        System.out.println("게임 진행 중");
         final RestResponse response = new RestResponse();
 
         try {
@@ -134,9 +135,10 @@ public class SimulationController {
 
     @ApiOperation(value = "시뮬레이션 게임 종료")
     @GetMapping("/end")
-    public Object simulationEnd(@RequestHeader HttpHeaders header) {
+    public Object simulationEnd(@RequestHeader HttpHeaders header, @RequestParam int simulation_id) {
         final RestResponse response = new RestResponse();
 
+        System.out.println("게임 종료");
         try {
             response.status = true;
             response.msg = "success";
