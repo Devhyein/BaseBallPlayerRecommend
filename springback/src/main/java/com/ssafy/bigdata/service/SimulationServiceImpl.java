@@ -60,7 +60,15 @@ public class SimulationServiceImpl implements SimulationService {
         }
 
         int my_hit_order = simulation.getMy_hit_order();
+        if (my_hit_order == 9) {
+            my_hit_order = 0;
+            simulation.setMy_hit_order(my_hit_order);
+        }
         int your_hit_order = simulation.getYour_hit_order();
+        if (your_hit_order == 9) {
+            your_hit_order = 0;
+            simulation.setMy_hit_order(your_hit_order);
+        }
         String my_score = score.getMy_score();
         int[] my_score_arr = new int[12];
         String your_score = score.getYour_score();
@@ -355,7 +363,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public int endSimulation(int simulation_id,User user) {
+    public int endSimulation(int simulation_id, User user) {
 
         StringBuilder sb = new StringBuilder();
         // 시뮬레이션 정보 가지고오기
