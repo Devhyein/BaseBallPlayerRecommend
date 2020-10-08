@@ -79,12 +79,12 @@
             <tbody>
               <tr style="border:1px solid black">
                 <td>{{lineupName}}</td>
-                <td v-for="(score,idx) in score.my_score_array" :key="idx">{{score}}</td>
+                <td v-for="(score,idx) in my_score_array" :key="idx">{{score}}</td>
                 <!-- <td class="col">0</td> -->
               </tr>            
               <tr>
                 <td>{{yourLineupName}}</td>
-                <td v-for="(score,idx) in score.your_score_array" :key="idx">{{score}}</td>
+                <td v-for="(score,idx) in your_score_array" :key="idx">{{score}}</td>
                 <!-- <td class="col">0</td> -->
               </tr>
             </tbody>
@@ -315,6 +315,9 @@ export default {
       your_total_score : 0,
       my_score_array : [0,0,0,0,0,0,0,0,0,0,0,0],
       your_score_array : [0,0,0,0,0,0,0,0,0,0,0,0]
+      // teamStatData : [],
+      // playerStatData : [],
+      // searchedPlayerTableData : []
     }
   },
 
@@ -441,12 +444,21 @@ export default {
           this.yourLineupId = this.game.your_lineup_id;
           this.score.total_score = 0;
           this.score.your_total_score = 0;
-          for (let i=0; i < this.game.my_score_array; i++) {
-            this.total_score += this.game.my_score_array[i];
-            this.your_total_score += this.game.your_score_array[i];
+          for (let i=0; i < this.score.my_score_array; i++) {
+            this.total_score += this.score.my_score_array[i];
+            this.your_total_score += this.score.your_score_array[i];
+          
           }
-          // this.game.my
-          // for(let i=0;i<12)
+          var my = this.score.my_score.split(',');
+          var your = this.score.your_score.split(',');
+
+          for(let i=0;i<12;i++){
+            this.my_score_array[i] = Number(my[i]);
+            this.your_score_array[i] = Number(your[i]);
+          }
+
+          console.log(this.my_score_array);
+          console.log(this.your_score_array);
 
           this.isLoading = false;
           swal("성공", "게임을 시작합니다.", "success");
