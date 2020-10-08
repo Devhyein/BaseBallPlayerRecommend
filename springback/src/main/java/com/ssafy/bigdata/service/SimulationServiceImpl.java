@@ -182,17 +182,17 @@ public class SimulationServiceImpl implements SimulationService {
                     }
                 }
             }
-        }
-        System.out.println(roota);
-        if (strike == 3) {
-            sb.append("삼진 아웃!\n");
-            // 아웃 카운트 증가
-            out_count++;
-
-        } else if (ball == 4) {
-            sb.append("볼넷");
-            int cnt = 5;
-            roota = 5;
+            System.out.println(roota);
+            if (strike == 3) {
+                sb.append("삼진 아웃!\n");
+                // 아웃 카운트 증가
+                out_count++;
+                
+            } else if (ball == 4) {
+                sb.append("볼넷");
+                int cnt = 5;
+                roota = 5;
+            }
         }
         System.out.println(sb + "");
         System.out.println("roota : " + roota);
