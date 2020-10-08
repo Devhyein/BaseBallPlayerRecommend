@@ -62,9 +62,9 @@ public class SimulationServiceImpl implements SimulationService {
         int my_hit_order = simulation.getMy_hit_order();
         int your_hit_order = simulation.getYour_hit_order();
         String my_score = score.getMy_score();
-        int[] my_score_arr = new int[my_score.length()];
+        int[] my_score_arr = new int[12];
         String your_score = score.getYour_score();
-        int[] your_score_arr = new int[your_score.length()];
+        int[] your_score_arr = new int[12];
         int out_count = 0;
 
         // 점수 정보
@@ -331,7 +331,6 @@ public class SimulationServiceImpl implements SimulationService {
         }
         simulation.setMy_score_array(my_score_arr);
         simulation.setYour_score_array(your_score_arr);
-        System.out.println(" score점수@@@ : " + score_save);
         updateScore(score);
 
         // 차례가 끝난경우 이닝 증가.

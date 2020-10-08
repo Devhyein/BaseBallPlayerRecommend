@@ -49,9 +49,8 @@ public class SimulationController {
         Lineup lineup = null; // 라인업 정보를 담을 객체
         Simulation simulation = null; // 시뮬레이션을 담을 객체
         int simulation_id; // id
-        System.out.println("게임시작 백에 들어왔따따따따ㅏㅏㅏ");
-        /////////////////////////////////////////////////////////////////////
-        /////// 토큰 해석
+
+        // 토큰 해석
         User user = userService.getUserByToken(header.get("token").get(0));
 
         if (user == null) {
@@ -99,11 +98,11 @@ public class SimulationController {
             }
 
             // simulate
-            HashMap<String, Object> data =  simulationService.progressSimulation(simulation, simulation_id, score, my_lineup, your_lineup,user); // 시뮬레이션
+            HashMap<String, Object> data = simulationService.progressSimulation(simulation, simulation_id, score,
+                    my_lineup, your_lineup, user); // 시뮬레이션
             System.out.println("시뮬레이션 : " + simulation.toString());
 
             // data
-            
             response.status = true;
             response.msg = "success create simulation and play first innings";
             response.data = data;
@@ -120,14 +119,51 @@ public class SimulationController {
     public Object simulationProgress(@RequestHeader HttpHeaders header, @RequestBody int simulation_id) {
         System.out.println("게임 진행 중");
         final RestResponse response = new RestResponse();
+        Score score = null; // 스코어 정보를 담을 객체
+        HitInfo hit_info = null; // 타석 정보를 담을 객체
+        Lineup lineup = null; // 라인업 정보를 담을 객체
+        Simulation simulation = simulationService.searchSimulation(simulation_id); // 시뮬레이션을 담을 객체
 
-        try {
-            response.status = true;
-            response.msg = "success";
+        // 토큰 해석
+        User user = userService.getUserByToken(header.get("token").get(0));
+
+        if (user == null) {
+            System.out.println("토큰이 없거나, 유효하지 않은 토큰입니다.");
+            response.status = false;
+            response.msg = "NoToken";
             response.data = null;
+            return response;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        // 시물레이션
+        try {
+            List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulation.getMy_lineup_id());
+            List<Integer> your_lineup = lineupService.getPlayerListByLineup(simulation.getYour_lineup_id());
+            simulation = simulationService.searchSimulation(simulation_id);
+            // 스코어 정보
+            try {
+                score = simulationService.searchScore(simulation_id);
+            } catch (Exception e) {
+                response.status = false;
+                response.msg = "Fail to create score board.";
+                return response;
+            }
+            System.out.println("진행이야@@@@@@@@@@@@@@@@@@@@@@");
+
+            // simulate
+            HashMap<String, Object> data = simulationService.progressSimulation(simulation, simulation_id, score,
+                    my_lineup, your_lineup, user);
+            System.out.println("시뮬레이션 : " + simulation.toString());
+
+            // data
+            response.status = true;
+            response.msg = "success play";
+            response.data = data;
         } catch (Exception e) {
             response.status = false;
-            response.msg = "fail to progress game";
+            response.msg = "fail to start game";
         }
 
         return response;
