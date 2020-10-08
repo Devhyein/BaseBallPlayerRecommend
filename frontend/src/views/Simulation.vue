@@ -108,7 +108,7 @@
         </div>
 
         <!-- 타석 타자 정보 -->
-        <div style="font-size: 15px; text-align: left;"> 다음 타석 타자 정보 </div>
+        <div v-if="lineupId>0" style="font-size: 15px; text-align: left;"> 이전 타석 타자 정보 </div>
         <div v-if="lineupId>0" style="overflow-x:auto;height:100px; border:1px solid black; margin-bottom:20px;">
           <table style="width:100%;margin-top: 20px;">
             <thead>
@@ -120,6 +120,7 @@
               <tr v-if="game.is_attack">
                 <td>{{game.my_hit_order+1}}</td>
                 <td>{{lineupPlayers[game.my_hit_order].player_name}}</td>
+                <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
                 <td>{{hit_info.hit3_count}}</td>
@@ -129,6 +130,7 @@
               <tr v-else>
                 <td>{{game.your_hit_order+1}}</td>
                 <td>{{yourLineupPlayers[game.your_hit_order].player_name}}</td>
+                <td>{{hit_info.at_bat_count}}</td>
                 <td>{{hit_info.hit1_count}}</td>
                 <td>{{hit_info.hit2_count}}</td>
                 <td>{{hit_info.hit3_count}}</td>
@@ -438,9 +440,9 @@ export default {
           this.yourLineupId = this.game.your_lineup_id;
           this.score.total_score = 0;
           this.score.your_total_score = 0;
-          for (let i=0; i < this.score.my_score_array; i++) {
-            this.total_score += this.score.my_score_array[i];
-            this.your_total_score += this.score.your_score_array[i];
+          for (let i=0; i < this.game.my_score_array; i++) {
+            this.total_score += this.game.my_score_array[i];
+            this.your_total_score += this.game.your_score_array[i];
           }
 
           this.isLoading = false;

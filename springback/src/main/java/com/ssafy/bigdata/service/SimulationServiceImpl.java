@@ -355,7 +355,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public int endSimulation(int simulation_id,User) {
+    public int endSimulation(int simulation_id,User user) {
         StringBuilder sb = new StringBuilder();
         // 시뮬레이션 정보 가지고오기
         Simulation simulation = simulationDao.searchSimulation(simulation_id);
