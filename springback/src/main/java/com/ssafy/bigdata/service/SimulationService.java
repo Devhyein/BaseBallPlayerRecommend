@@ -1,7 +1,9 @@
 package com.ssafy.bigdata.service;
 
+import java.util.HashMap;
 import java.util.List;
 
+import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.dto.simulation.HitInfo;
 import com.ssafy.bigdata.dto.simulation.Score;
 import com.ssafy.bigdata.dto.simulation.Simulation;
@@ -20,8 +22,8 @@ public interface SimulationService {
         public int searchSimulationByUserId(int user_id);
 
         // 시뮬레이션 진행
-        public Simulation progressSimulation(Simulation simulation, int simulation_id, Score score,
-                        List<Integer> my_lineup, List<Integer> your_lineup);
+        public HashMap<String, Object> progressSimulation(Simulation simulation, int simulation_id, Score score,
+                        List<Integer> my_lineup, List<Integer> your_lineup, User user);
 
         // 시뮬레이션 종료
         public int endSimulation(int simulation_id);
