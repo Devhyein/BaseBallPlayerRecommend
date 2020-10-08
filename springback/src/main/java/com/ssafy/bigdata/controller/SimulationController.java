@@ -140,19 +140,13 @@ public class SimulationController {
         //////////////////////////////////////////////////////////////////////
 
         // 시물레이션
-        System.out.println("진행이야11111111111111111111111");
         try {
-            System.out.println("진행이야2222222222222");
             List<Integer> my_lineup = lineupService.getPlayerListByLineup(simulation.getMy_lineup_id());
-            System.out.println("진행이야2222222222222");
             List<Integer> your_lineup = lineupService.getPlayerListByLineup(simulation.getYour_lineup_id());
-            System.out.println("진행이야2222222222222");
             simulation = simulationService.searchSimulation(simulation_id);
             // 스코어 정보
             try {
-                System.out.println("진행이야11111111111111");
                 score = simulationService.searchScore(simulation_id);
-                System.out.println("진행이야33333333333333333333");
             } catch (Exception e) {
                 response.status = false;
                 response.msg = "Fail to create score board.";

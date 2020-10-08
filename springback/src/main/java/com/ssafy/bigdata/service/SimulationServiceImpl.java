@@ -245,7 +245,7 @@ public class SimulationServiceImpl implements SimulationService {
                         }
                     }
                 }
-                base_info_array[0] = 1; // 2루 진출
+                base_info_array[1] = 1; // 2루 진출
 
             case 3:
                 // 3루타
