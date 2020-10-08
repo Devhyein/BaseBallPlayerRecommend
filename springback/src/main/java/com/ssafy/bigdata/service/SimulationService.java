@@ -26,7 +26,7 @@ public interface SimulationService {
                         List<Integer> my_lineup, List<Integer> your_lineup, User user);
 
         // 시뮬레이션 종료
-        public int endSimulation(int simulation_id);
+        public int endSimulation(int simulation_id,User user);
 
         // 스코어 생성
         public int createScore(int simulation_id);

@@ -119,6 +119,8 @@ public class SimulationServiceImpl implements SimulationService {
         }
         sb.append((hit_order + 1) + "번 타자 ");
         while (strike != 3 && ball != 4) {
+            int hit_count = hit_info.getAt_bat_count();
+            hit_info.setAt_bat_count(hit_count + 1);
             hit = hitter.getHitter_ba() * 1000;
             random = Math.random() * 1000;
             double hitter_out = (double) 100 * (hitter.getHitter_pa() - hitter.getHitter_so() - hitter.getHitter_hit())
@@ -353,7 +355,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public int endSimulation(int simulation_id) {
+    public int endSimulation(int simulation_id,User) {
         StringBuilder sb = new StringBuilder();
         // 시뮬레이션 정보 가지고오기
         Simulation simulation = simulationDao.searchSimulation(simulation_id);
@@ -361,6 +363,11 @@ public class SimulationServiceImpl implements SimulationService {
         simulation.setGame_status(false);
         int res = simulationDao.updateSimulation(simulation);
         sb.append("게임 종료");
+
+        // data
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("simulation", new SimulationData(simulation));
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
         return res;
     }
 
