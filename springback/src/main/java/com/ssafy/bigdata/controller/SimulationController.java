@@ -9,7 +9,6 @@ import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.dto.simulation.HitInfo;
 import com.ssafy.bigdata.dto.simulation.Score;
 import com.ssafy.bigdata.dto.simulation.Simulation;
-import com.ssafy.bigdata.dto.simulation.SimulationData;
 import com.ssafy.bigdata.dto.simulation.SimulationStart;
 import com.ssafy.bigdata.service.LineupService;
 import com.ssafy.bigdata.service.SimulationService;
@@ -99,13 +98,11 @@ public class SimulationController {
             }
 
             // simulate
-            simulation = simulationService.progressSimulation(simulation, simulation_id, score, my_lineup, your_lineup); // 시뮬레이션
+            HashMap<String, Object> data =  simulationService.progressSimulation(simulation, simulation_id, score, my_lineup, your_lineup,user); // 시뮬레이션
             System.out.println("시뮬레이션 : " + simulation.toString());
 
             // data
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("simulation", new SimulationData(simulation, score, hit_info));
-            data.put("token", userService.getTokenByEmail(user.getEmail()));
+            
             response.status = true;
             response.msg = "success create simulation and play first innings";
             response.data = data;

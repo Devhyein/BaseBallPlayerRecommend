@@ -1,5 +1,6 @@
 package com.ssafy.bigdata.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -7,9 +8,11 @@ import com.ssafy.bigdata.dao.player.PlayerDao;
 import com.ssafy.bigdata.dao.simulation.SimulationDao;
 import com.ssafy.bigdata.dto.RecordHitter;
 import com.ssafy.bigdata.dto.RecordPitcher;
+import com.ssafy.bigdata.dto.User;
 import com.ssafy.bigdata.dto.simulation.HitInfo;
 import com.ssafy.bigdata.dto.simulation.Score;
 import com.ssafy.bigdata.dto.simulation.Simulation;
+import com.ssafy.bigdata.dto.simulation.SimulationData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ public class SimulationServiceImpl implements SimulationService {
     SimulationDao simulationDao;
     @Autowired
     PlayerDao playerDao;
+    @Autowired
+    UserService userService;
 
     @Override
     public int createSimulation(int user_id, int my_lineup_id, int your_lineup_id, boolean is_attack, int innings,
@@ -44,8 +49,8 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
-    public Simulation progressSimulation(Simulation simulation, int simulation_id, Score score, List<Integer> my_lineup,
-            List<Integer> your_lineup) {
+    public HashMap<String, Object> progressSimulation(Simulation simulation, int simulation_id, Score score,
+            List<Integer> my_lineup, List<Integer> your_lineup, User user) {
         System.out.println("게임 진행 시작");
         StringBuilder sb = new StringBuilder();
         int[] base_info_array = new int[3];
@@ -96,6 +101,7 @@ public class SimulationServiceImpl implements SimulationService {
             System.out.println(hit_info);
             if (hit_info == null) {
                 createHitInfo(simulation_id, my_lineup.get(my_hit_order)); // 생성
+                hit_info = searchHitInfo(simulation_id, my_lineup.get(my_hit_order));
             }
 
         }
@@ -108,16 +114,16 @@ public class SimulationServiceImpl implements SimulationService {
             hit_info = searchHitInfo(simulation_id, your_lineup.get(your_hit_order));
             if (hit_info == null) {
                 createHitInfo(simulation_id, your_lineup.get(your_hit_order)); // 생성
+                hit_info = searchHitInfo(simulation_id, your_lineup.get(your_hit_order));
             }
         }
-         System.out.println(strike);
-         System.out.println(ball);
+        sb.append((hit_order + 1) + "번 타자 ");
         while (strike != 3 && ball != 4) {
-            sb.append((hit_order + 1) + "번 타자 ");
             hit = hitter.getHitter_ba() * 1000;
             random = Math.random() * 1000;
-            double hitter_out = (hitter.getHitter_pa() - hitter.getHitter_so() - hitter.getHitter_hit())
-                    / hitter.getHitter_pa() * 1000;
+            double hitter_out = (double) 100 * (hitter.getHitter_pa() - hitter.getHitter_so() - hitter.getHitter_hit())
+                    / hitter.getHitter_pa();
+
             if (hit < random) {
                 double ball_random = Math.random() * 100;
                 if (ball_random > 40) {
@@ -126,155 +132,225 @@ public class SimulationServiceImpl implements SimulationService {
                     ball++;
                 }
             } else {
-                random = Math.random() * 1000;
+                random = Math.random() * 100;
+                System.out.println("hitter_out : " + hitter_out + " / random :" + random);
                 if (hitter_out < random) {
                     sb.append("수비에 잡혀 아웃!");
+                    break;
                 } else {
-                    if (hitter.getHitter_homerun() / hitter.getHitter_pa() * 100 > random) {
+                    if ((hitter.getHitter_homerun() / hitter.getHitter_pa()) * 100 > random) {
                         roota = 4;
+                        System.out.println("홈런@@@@@@@@@@@ (hitter.getHitter_homerun() / hitter.getHitter_pa() : "
+                                + (hitter.getHitter_homerun() / hitter.getHitter_pa()));
                         sb.append("홈런!\n");
-                        hit_info.setHomerun_count(hit_info.getHomerun_count() + 1);
+                        int cnt = hit_info.getHomerun_count();
+                        hit_info.setHomerun_count(cnt + 1);
+                        break;
 
                     } else if (hitter.getHitter_slg() * 50 > random) {
                         roota = 3;
+                        System.out.println(hit_info.toString());
+                        System.out.println("3루타@@@@@@@@");
                         sb.append("3루타!\n");
                         int cnt = hit_info.getHit3_count();
-                        hit_info.setHit3_count(cnt++);
+                        hit_info.setHit3_count(cnt + 1);
+                        break;
                     } else if (hitter.getHitter_slg() * 100 > random) {
                         roota = 2;
+                        System.out.println("2루타@@@@@@@@");
                         sb.append("2루타!\n");
                         int cnt = hit_info.getHit2_count();
-                        hit_info.setHit2_count(cnt++);
+                        hit_info.setHit2_count(cnt + 1);
+                        break;
                     } else {
                         roota = 1;
+                        System.out.println("1루타@@@@@@@@");
                         sb.append("1루타!\n");
                         int cnt = hit_info.getHit1_count();
-                        hit_info.setHit1_count(cnt++);
+                        hit_info.setHit1_count(cnt + 1);
+                        break;
                     }
                 }
             }
         }
+        System.out.println(roota);
         if (strike == 3) {
             sb.append("삼진 아웃!\n");
             // 아웃 카운트 증가
             out_count++;
 
         } else if (ball == 4) {
-            sb.append(" 볼넷");
+            sb.append("볼넷");
             int cnt = 5;
+            roota = 5;
         }
-        
+        System.out.println(sb + "");
+        System.out.println("roota : " + roota);
         // 진루
         switch (roota) {
             case 1:
-            // 1루타
-            for (int i = 0; i < 3; i++) {
-                int a = base_info_array[i + 1];
-                if (a != 0) {
-                    if (i != 2) {
-                        base_info_array[i + 1] = 1;
-                        base_info_array[i] = 0;
-                        
-                    } else {
-                        // 득점
-                        if (is_attack) {
-                            my_score_arr[simulation.getInnings() - 1] += 1;
-                            base_info_array[3] = 0;
+                // 1루타
+                for (int i = 2; i == 0; i--) {
+                    int a = base_info_array[i + 1];
+                    if (a != 0) {
+                        if (i != 2) {
+                            base_info_array[i + 1] = 1;
+                            base_info_array[i] = 0;
+
                         } else {
-                            your_score_arr[simulation.getInnings() - 1] += 1;
-                            base_info_array[3] = 0;
+                            // 득점
+                            if (is_attack) {
+                                my_score_arr[simulation.getInnings() - 1] += 1;
+                                simulation.setMy_score_array(my_score_arr);
+                                base_info_array[3] = 0;
+                            } else {
+                                your_score_arr[simulation.getInnings() - 1] += 1;
+                                simulation.setYour_score_array(your_score_arr);
+                                base_info_array[3] = 0;
+                            }
                         }
                     }
                 }
-            }
-            base_info_array[0] = 1; // 1루 진출
-            
-            break;
+                base_info_array[0] = 1; // 1루 진출
+
+                break;
             case 2:
-            // 2루타
-            for (int i = 0; i < 3; i++) {
-                int a = base_info_array[i];
-                if (a != 0) {
-                    if (i == 1) {
-                        base_info_array[2] = 1;
-                    } else {
+                // 2루타
+                for (int i = 2; i == 0; i--) {
+                    int a = base_info_array[i];
+                    if (a != 0) {
+                        if (i == 1) {
+                            base_info_array[2] = 1;
+                        } else {
+                            // 득점
+                            if (is_attack) {
+                                my_score_arr[simulation.getInnings() - 1] += 1;
+                                simulation.setMy_score_array(my_score_arr);
+                                base_info_array[i] = 0;
+                            } else {
+                                your_score_arr[simulation.getInnings() - 1] += 1;
+                                simulation.setYour_score_array(your_score_arr);
+                                base_info_array[i] = 0;
+                            }
+                        }
+                    }
+                }
+                base_info_array[0] = 1; // 2루 진출
+
+            case 3:
+                // 3루타
+                for (int i = 2; i == 0; i--) {
+                    int a = base_info_array[i];
+                    if (a != 0) {
                         // 득점
                         if (is_attack) {
                             my_score_arr[simulation.getInnings() - 1] += 1;
+                            simulation.setMy_score_array(my_score_arr);
                             base_info_array[i] = 0;
                         } else {
                             your_score_arr[simulation.getInnings() - 1] += 1;
+                            simulation.setYour_score_array(your_score_arr);
                             base_info_array[i] = 0;
                         }
                     }
                 }
-            }
-            base_info_array[0] = 1; // 2루 진출
-            
-            case 3:
-            // 3루타
-            for (int i = 0; i < 3; i++) {
-                int a = base_info_array[i];
-                if (a != 0) {
-                    // 득점
-                    if (is_attack) {
-                        my_score_arr[simulation.getInnings() - 1] += 1;
-                        base_info_array[i] = 0;
-                    } else {
-                        your_score_arr[simulation.getInnings() - 1] += 1;
-                        base_info_array[i] = 0;
-                    }
-                }
-            }
-            base_info_array[2] = 1; // 3루 진출
-            break;
-            
+                base_info_array[2] = 1; // 3루 진출
+                break;
+
             case 4:
-            // 홈런
-            for (int i = 0; i < 3; i++) {
-                int a = base_info_array[i];
-                if (a != 0) {
-                    // 득점
-                    if (is_attack) {
-                        my_score_arr[simulation.getInnings() - 1] += 1;
-                        base_info_array[i] = 0;
-                    } else {
-                        your_score_arr[simulation.getInnings() - 1] += 1;
-                        base_info_array[i] = 0;
+                // 홈런
+                for (int i = 2; i == 0; i--) {
+                    int a = base_info_array[i];
+                    if (a != 0) {
+                        // 득점
+                        if (is_attack) {
+                            my_score_arr[simulation.getInnings() - 1] += 1;
+                            simulation.setMy_score_array(my_score_arr);
+                            base_info_array[i] = 0;
+                        } else {
+                            your_score_arr[simulation.getInnings() - 1] += 1;
+                            simulation.setYour_score_array(your_score_arr);
+                            base_info_array[i] = 0;
+                        }
                     }
                 }
-            }
-            if (is_attack) {
-                my_score_arr[simulation.getInnings() - 1] += 1;
-            } else {
-                your_score_arr[simulation.getInnings() - 1] += 1;
-            }
-            break;
+                if (is_attack) {
+                    my_score_arr[simulation.getInnings() - 1] += 1;
+                } else {
+                    your_score_arr[simulation.getInnings() - 1] += 1;
+                }
+                break;
+
+            case 5:
+                // 볼넷
+                for (int i = 0; i < 3; i++) {
+                    int a = base_info_array[i + 1];
+                    if (a != 0) {
+                        if (i != 2) {
+                            base_info_array[i + 1] = 1;
+                            base_info_array[i] = 0;
+
+                        } else {
+                            // 득점
+                            if (is_attack) {
+                                my_score_arr[simulation.getInnings() - 1] += 1;
+                                base_info_array[3] = 0;
+                            } else {
+                                your_score_arr[simulation.getInnings() - 1] += 1;
+                                base_info_array[3] = 0;
+                            }
+                        }
+                    }
+                }
+                base_info_array[0] = 1; // 1루 진출
+
+                break;
         }
-        
-        // 점수 저장
+
+        String base_info = "";
+        for (int i : base_info_array) {
+            base_info += i + ",";
+        }
+        simulation.setBase_info(base_info);
+        simulation.setBase_info_array(base_info_array);
+
+        // 점수,타순 저장
         String score_save = "";
-        for (int i : my_score_arr) {
-            score_save += i + ",";
-        }
         if (is_attack) {
+            for (int i : my_score_arr) {
+                score_save += i + ",";
+            }
             score.setMy_score(score_save);
+            simulation.setMy_hit_order(my_hit_order + 1);
         } else {
+            for (int i : your_score_arr) {
+                score_save += i + ",";
+            }
             score.setYour_score(score_save);
+            simulation.setMy_hit_order(your_hit_order + 1);
         }
+        simulation.setMy_score_array(my_score_arr);
+        simulation.setYour_score_array(your_score_arr);
+        System.out.println(" score점수@@@ : " + score_save);
         updateScore(score);
 
-        // 홈팀의 차례가 끝난경우 이닝 증가.
+        // 차례가 끝난경우 이닝 증가.
         if (simulation.getOut_count() == 3 && !simulation.isIs_top()) {
             is_attack = (is_attack ? false : true);
             int c = simulation.getInnings();
             simulation.setInnings(c++);
         }
-        System.out.println("22222222222222");
+
         // update 시뮬레이션 DB
         simulationDao.updateSimulation(simulation);
         System.out.println(simulation.toString());
-        return simulation;
+
+        // data
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("simulation", new SimulationData(simulation, score, hit_info));
+        data.put("token", userService.getTokenByEmail(user.getEmail()));
+
+        return data;
     }
 
     @Override
