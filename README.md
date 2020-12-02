@@ -1,5 +1,5 @@
 # 당근? 빠따!
-<img src="https://user-images.githubusercontent.com/29700816/100915143-50bcc300-3517-11eb-984d-383bfd633308.png" width="500px" >
+<img src="https://user-images.githubusercontent.com/29700816/100915143-50bcc300-3517-11eb-984d-383bfd633308.png" width="300px" >
 
 <br />
 
@@ -26,17 +26,17 @@
 ## 화면
  * 선수 검색 화면: 스탯티즈로부터 크롤링한 선수 데이터를 검색, 단순 기록 뿐 아니라 막대그래프 & 방사형 그래프를 이용한 스탯 시각화
  
- <img src="https://user-images.githubusercontent.com/29700816/100915134-4ef2ff80-3517-11eb-8784-c4ca5f564dd5.PNG" width="600px" >    
+ <img src="https://user-images.githubusercontent.com/29700816/100915134-4ef2ff80-3517-11eb-8784-c4ca5f564dd5.PNG" width="700px" >    
  
- <img src="https://user-images.githubusercontent.com/29700816/100915136-4f8b9600-3517-11eb-8860-53a82202a168.PNG" width="600px" >    
+ <img src="https://user-images.githubusercontent.com/29700816/100915136-4f8b9600-3517-11eb-8860-53a82202a168.PNG" width="700px" >    
  
 <br/>
  
  * 라인업 비교 및 추천: 내 팀의 라인업과 다른 팀의 라인업을 비교하여 볼 수 있고, 내 팀에 부족한 부분을 채워줄 수 있는 선수를 추천
 
- <img src="https://user-images.githubusercontent.com/29700816/100915137-4f8b9600-3517-11eb-9df8-6ef49b5350ce.PNG" width="500px" >    
+ <img src="https://user-images.githubusercontent.com/29700816/100915137-4f8b9600-3517-11eb-9df8-6ef49b5350ce.PNG" width="700px" >    
  
- <img src="https://user-images.githubusercontent.com/29700816/100915139-50242c80-3517-11eb-8b9f-9361611ec9e5.PNG" width="500px" >    
+ <img src="https://user-images.githubusercontent.com/29700816/100915139-50242c80-3517-11eb-8b9f-9361611ec9e5.PNG" width="700px" >    
 
 ### 일정
 <img src="https://user-images.githubusercontent.com/29700816/100915140-50bcc300-3517-11eb-97ec-761b394007c4.PNG" width="700px" >    
